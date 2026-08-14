@@ -40,12 +40,12 @@
             position: absolute;
             top: 20px;
             right: 20px;
-            background: rgba(255, 255, 255, 0.12);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 26px;
-            width: 46px;
-            height: 46px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 28px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
@@ -54,12 +54,13 @@
             transition: 0.2s ease-in-out;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(4px);
+            z-index: 1001;
         }
         #settingsIconBtn:hover {
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.3);
             color: #fff;
             transform: rotate(45deg) scale(1.08);
-            border-color: rgba(255, 255, 255, 0.6);
+            border-color: rgba(255, 255, 255, 0.7);
         }
         #settingsIconBtn:active {
             transform: scale(0.95);
@@ -72,8 +73,9 @@
         #ui { width: 960px; display: flex; justify-content: space-between; align-items: center; padding: 10px 25px; background: linear-gradient(to bottom, #34495e, #2c3e50); box-sizing: border-box; border-radius: 0 0 12px 12px; border-top: 5px solid #1a252f; font-size: 20px; box-shadow: inset 0 -4px 8px rgba(0,0,0,0.3); }
         .ui-group { display: flex; align-items: center; gap: 15px; }
         
-        .stone-counters { display: flex; gap: 18px; font-size: 22px; background: #2c3e50; padding: 6px 22px; border-radius: 30px; border: 2px solid #1a252f; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5); color: #f1c40f;}
-        .stone-counters span { display: flex; align-items: center; text-shadow: 1px 1px 0px #000;}
+        .stone-counters { display: flex; gap: 20px; font-size: 24px; background: #2c3e50; padding: 6px 24px; border-radius: 30px; border: 2px solid #1a252f; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5); color: #f1c40f;}
+        .stone-counters span { display: flex; align-items: center; text-shadow: 1px 1px 0px #000; gap: 6px;}
+        .stone-counters img { vertical-align: middle; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)); }
         
         .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, #ffffff, #f1f2f6); color: #2c3e50; border-radius: 25px; border: 8px solid #34495e; box-shadow: 0 25px 50px rgba(0,0,0,0.6), inset 0 0 0 6px #ecf0f1; z-index: 100; text-align: center; width: 600px; padding: 15px;}
         .modal.active { display: block; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -101,7 +103,7 @@
         .action-btn:active { transform: translateY(8px); box-shadow: 0 0 0 #d35400; }
         .action-btn:disabled { filter: grayscale(1); opacity: 0.6; cursor: not-allowed; box-shadow: 0 0 0 #333; transform: translateY(8px); }
 
-        .stone-btn { font-size: 18px; padding: 8px 12px; margin: 5px; background: linear-gradient(to bottom, #3498db, #2980b9); color: white; box-shadow: 0 5px 0 #1abc9c; border-color: white; border-radius: 12px;}
+        .stone-btn { font-size: 18px; padding: 8px 14px; margin: 5px; background: linear-gradient(to bottom, #3498db, #2980b9); color: white; box-shadow: 0 5px 0 #1abc9c; border-color: white; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
         .stone-btn.mega { background: linear-gradient(to bottom, #9b59b6, #8e44ad); box-shadow: 0 5px 0 #2c3e50; }
         .stone-btn.dyna { background: linear-gradient(to bottom, #e74c3c, #c0392b); box-shadow: 0 5px 0 #8e44ad; }
         .skill-btn { font-size: 18px; padding: 10px; margin: 5px; border-radius: 15px; border: 4px solid white; cursor: pointer; font-family: 'ZCOOL KuaiLe', sans-serif; transition: 0.2s; width: 45%; background: #34495e; color: white;}
@@ -127,14 +129,15 @@
         <p style="font-size: 24px; max-width: 780px; text-align: center; line-height: 1.6;">
             <strong>【火箭隊 20 波總決戰】</strong><br>
             迎擊火箭隊與各大邪惡勢力！每 3 波迎戰幹部與首領 BOSS！<br>
-            極巨化與超級進化石專屬去背圖標更新！
+            極巨化與超級進化石專屬去背高畫質圖標更新！
         </p>
-        <div style="display:flex; gap: 20px; margin-top: 20px; flex-wrap:wrap; justify-content:center;">
+        <div style="display:flex; gap: 20px; margin-top: 30px; flex-wrap:wrap; justify-content:center;">
             <button class="start-btn" id="realStartBtnEasy" style="background:linear-gradient(to bottom, #2ecc71, #27ae60); box-shadow: 0 10px 0 #1e8449;" onclick="startGame('easy')">👶 小一新生模式</button>
             <button class="start-btn" id="realStartBtn" onclick="startGame('normal')">👦 中年級學生</button>
         </div>
     </div>
 
+    <!-- 儲存後可保留的設定選單 -->
     <div id="settingsModal" class="modal" style="width: 600px; z-index: 1005;">
         <span class="close-btn" onclick="closeSettings()">×</span>
         <div class="modal-body">
@@ -155,11 +158,11 @@
                     <input type="checkbox" id="cfgEasyMultToggle" checked onchange="document.getElementById('easyMultNumsBox').style.display=this.checked?'flex':'none'" style="width:26px; height:26px; cursor: pointer;"> ✖️ 九九乘法 (指定倍數)
                 </label>
                 <div id="easyMultNumsBox" style="display: flex; gap: 12px; flex-wrap: wrap; padding-left: 36px; margin-bottom: 5px; font-size:20px; color:#2c3e50; font-family: 'Arial', sans-serif; font-weight: bold;">
-                    <label><input type="checkbox" class="ez-mult-cb" value="1" checked style="width:18px; height:18px;"> 1</label>
+                    <label><input type="checkbox" class="ez-mult-cb" value="1" style="width:18px; height:18px;"> 1</label>
                     <label><input type="checkbox" class="ez-mult-cb" value="2" checked style="width:18px; height:18px;"> 2</label>
                     <label><input type="checkbox" class="ez-mult-cb" value="3" style="width:18px; height:18px;"> 3</label>
                     <label><input type="checkbox" class="ez-mult-cb" value="4" style="width:18px; height:18px;"> 4</label>
-                    <label><input type="checkbox" class="ez-mult-cb" value="5" style="width:18px; height:18px;"> 5</label>
+                    <label><input type="checkbox" class="ez-mult-cb" value="5" checked style="width:18px; height:18px;"> 5</label>
                     <label><input type="checkbox" class="ez-mult-cb" value="6" style="width:18px; height:18px;"> 6</label>
                     <label><input type="checkbox" class="ez-mult-cb" value="7" style="width:18px; height:18px;"> 7</label>
                     <label><input type="checkbox" class="ez-mult-cb" value="8" style="width:18px; height:18px;"> 8</label>
@@ -205,12 +208,12 @@
             <div class="ui-group" style="gap:25px;">
                 <div id="coinBox" style="font-size: 36px; font-weight: bold; color: #f1c40f; text-shadow: 2px 2px 0 #000;">💰 <span id="coinDisplay">150</span></div>
                 <div class="stone-counters" style="display:flex; gap:20px; align-items:center; background:rgba(0,0,0,0.5); padding:8px 20px; border-radius:30px; border:2px solid #34495e;">
-                    <span style="display:flex; align-items:center; gap:8px;">
-                        <canvas id="uiIconMega" width="32" height="32"></canvas>
+                    <span style="display:flex; align-items:center;">
+                        <img id="uiIconMegaImg" src="" width="32" height="32" style="display:inline-block;">
                         <span id="uiStoneM" style="color:#f1c40f; font-weight:bold; font-size: 26px;">0</span>
                     </span>
-                    <span style="display:flex; align-items:center; gap:8px;">
-                        <canvas id="uiIconDyna" width="32" height="32"></canvas>
+                    <span style="display:flex; align-items:center;">
+                        <img id="uiIconDynaImg" src="" width="32" height="32" style="display:inline-block;">
                         <span id="uiStoneD" style="color:#f1c40f; font-weight:bold; font-size: 26px;">0</span>
                     </span>
                 </div>
@@ -258,10 +261,18 @@
                 
                 <div id="stoneBtns" style="display: none; margin-top: 12px; background: rgba(0,0,0,0.05); padding: 12px; border-radius: 20px; border: 3px dashed #bdc3c7;">
                     <div style="font-size: 18px; color: #8e44ad; margin-bottom: 8px; font-weight: bold;">💎 消耗進化石：覺醒隱藏力量 (限時30秒)</div>
-                    <button id="btnM" class="action-btn stone-btn mega" onclick="prepareStone('mega')">🔮 超級進化 (<span id="txtStoneM">0</span>)</button>
-                    <button id="btnX" class="action-btn stone-btn" onclick="prepareStone('megaX')">🔵 超級X石 (<span id="txtStoneX">0</span>)</button>
-                    <button id="btnY" class="action-btn stone-btn" onclick="prepareStone('megaY')">🔴 超級Y石 (<span id="txtStoneY">0</span>)</button>
-                    <button id="btnD" class="action-btn stone-btn dyna" onclick="prepareStone('dynamax')">🌠 極巨化 (<span id="txtStoneD">0</span>)</button>
+                    <button id="btnM" class="action-btn stone-btn mega" onclick="prepareStone('mega')">
+                        <img id="btnIconM" src="" width="24" height="24"> 超級進化 (<span id="txtStoneM">0</span>)
+                    </button>
+                    <button id="btnX" class="action-btn stone-btn" onclick="prepareStone('megaX')">
+                        <img id="btnIconX" src="" width="24" height="24"> 超級X石 (<span id="txtStoneX">0</span>)
+                    </button>
+                    <button id="btnY" class="action-btn stone-btn" onclick="prepareStone('megaY')">
+                        <img id="btnIconY" src="" width="24" height="24"> 超級Y石 (<span id="txtStoneY">0</span>)
+                    </button>
+                    <button id="btnD" class="action-btn stone-btn dyna" onclick="prepareStone('dynamax')">
+                        <img id="btnIconD" src="" width="24" height="24"> 極巨化 (<span id="txtStoneD">0</span>)
+                    </button>
                 </div>
             </div>
         </div>
@@ -299,7 +310,7 @@
         <div id="mathModal" class="modal" style="width: 650px;">
             <span class="close-btn" onclick="cancelAction()">×</span>
             <div class="modal-body">
-                <h2 id="mathTitle" style="font-size: 46px;">大木博士的考驗</h2>
+                <h2 id="mathTitle" style="font-size: 44px;">大木博士的考驗</h2>
                 <div id="mathWarning" style="color: #c0392b; font-weight: bold; font-size: 20px;">⚠️ 請輸入正確答案！</div>
                 <div id="questionText">8 × 7 = ?</div>
                 <div id="mathChoices" style="display:flex; flex-direction:column; align-items:center; gap:10px; margin-top:15px;"></div>
@@ -313,6 +324,149 @@
     </audio>
 
     <script>
+        // --- 核心全域設定與函數 (最頂端宣告，避免 undefined) ---
+        var defaultGameConfig = {
+            easyClock: true, easyVisual: true, easyBasic: true, easyMultNums: [2, 5],
+            normalAddSub: true, normalMult: true
+        };
+        var gameConfig = defaultGameConfig;
+        try {
+            var savedConfig = JSON.parse(localStorage.getItem('pokemonGameConfig'));
+            if (savedConfig && typeof savedConfig === 'object') {
+                gameConfig = Object.assign({}, defaultGameConfig, savedConfig);
+            }
+        } catch(e) {}
+
+        function openSettings() {
+            var m = document.getElementById('settingsModal');
+            if(m) m.classList.add('active');
+            var c1 = document.getElementById('cfgEasyClock'); if(c1) c1.checked = gameConfig.easyClock;
+            var c2 = document.getElementById('cfgEasyVisual'); if(c2) c2.checked = gameConfig.easyVisual;
+            var c3 = document.getElementById('cfgEasyBasic'); if(c3) c3.checked = gameConfig.easyBasic;
+            var c4 = document.getElementById('cfgNormalAddSub'); if(c4) c4.checked = gameConfig.normalAddSub;
+            var c5 = document.getElementById('cfgNormalMult'); if(c5) c5.checked = gameConfig.normalMult;
+            
+            var hasMult = gameConfig.easyMultNums && gameConfig.easyMultNums.length > 0;
+            var mt = document.getElementById('cfgEasyMultToggle'); if(mt) mt.checked = hasMult;
+            var mb = document.getElementById('easyMultNumsBox'); if(mb) mb.style.display = hasMult ? 'flex' : 'none';
+            
+            var cbs = document.querySelectorAll('.ez-mult-cb');
+            for(var i=0; i<cbs.length; i++) {
+                cbs[i].checked = gameConfig.easyMultNums.indexOf(parseInt(cbs[i].value)) !== -1;
+            }
+        }
+        window.openSettings = openSettings;
+
+        function closeSettings() {
+            var m = document.getElementById('settingsModal');
+            if(m) m.classList.remove('active');
+        }
+        window.closeSettings = closeSettings;
+
+        function saveSettings() {
+            gameConfig.easyClock = document.getElementById('cfgEasyClock').checked;
+            gameConfig.easyVisual = document.getElementById('cfgEasyVisual').checked;
+            gameConfig.easyBasic = document.getElementById('cfgEasyBasic').checked;
+            gameConfig.normalAddSub = document.getElementById('cfgNormalAddSub').checked;
+            gameConfig.normalMult = document.getElementById('cfgNormalMult').checked;
+            
+            var multEnabled = document.getElementById('cfgEasyMultToggle').checked;
+            gameConfig.easyMultNums = [];
+            if(multEnabled) {
+                var cbs = document.querySelectorAll('.ez-mult-cb');
+                for(var i=0; i<cbs.length; i++) {
+                    if(cbs[i].checked) gameConfig.easyMultNums.push(parseInt(cbs[i].value));
+                }
+                if(gameConfig.easyMultNums.length === 0) {
+                    alert("您開啟了小一乘法，但未選擇任何倍數！已自動幫您勾選「2」。");
+                    gameConfig.easyMultNums = [2];
+                }
+            }
+            
+            if(!gameConfig.easyClock && !gameConfig.easyVisual && !gameConfig.easyBasic && gameConfig.easyMultNums.length === 0) {
+                gameConfig.easyBasic = true;
+                document.getElementById('cfgEasyBasic').checked = true;
+                alert("小一模式至少需選擇一種題型！已自動幫您勾選「數字加減法」。");
+            }
+            if(!gameConfig.normalAddSub && !gameConfig.normalMult) {
+                gameConfig.normalAddSub = true;
+                document.getElementById('cfgNormalAddSub').checked = true;
+                alert("中年級模式至少需選擇一種題型！已自動幫您勾選「兩位數加減法」。");
+            }
+
+            try {
+                localStorage.setItem('pokemonGameConfig', JSON.stringify(gameConfig));
+            } catch(e) {}
+
+            if(typeof sfx !== 'undefined' && sfx.upgrade) sfx.upgrade();
+            closeSettings();
+        }
+        window.saveSettings = saveSettings;
+
+        // --- 完美去背高清向量圖標 ---
+        var SVG_MEGA = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">' +
+            '<defs>' +
+            '<radialGradient id="megaGrad" cx="38%" cy="32%" r="68%">' +
+            '<stop offset="0%" stop-color="#ffffff" stop-opacity="0.8"/>' +
+            '<stop offset="18%" stop-color="#f368e0"/>' +
+            '<stop offset="42%" stop-color="#54a0ff"/>' +
+            '<stop offset="68%" stop-color="#1dd1a1"/>' +
+            '<stop offset="90%" stop-color="#10ac84"/>' +
+            '<stop offset="100%" stop-color="#c8d6e5"/>' +
+            '</radialGradient>' +
+            '<linearGradient id="dnaGrad" x1="20%" y1="10%" x2="80%" y2="90%">' +
+            '<stop offset="0%" stop-color="#004e92"/>' +
+            '<stop offset="45%" stop-color="#009432"/>' +
+            '<stop offset="100%" stop-color="#006266"/>' +
+            '</linearGradient>' +
+            '<radialGradient id="glowSpot" cx="50%" cy="50%" r="50%">' +
+            '<stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>' +
+            '<stop offset="60%" stop-color="#ffffff" stop-opacity="0.6"/>' +
+            '<stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>' +
+            '</radialGradient>' +
+            '</defs>' +
+            '<circle cx="100" cy="100" r="92" fill="url(#megaGrad)" stroke="#222f3e" stroke-width="4.5"/>' +
+            '<path d="M 102,30 C 132,30 156,66 148,110 C 142,142 112,170 98,172 C 86,174 74,158 72,140 C 70,118 80,98 88,82 C 96,62 104,46 102,30 Z" fill="url(#dnaGrad)" stroke="#003d1c" stroke-width="3.5"/>' +
+            '<path d="M 100,32 C 72,46 48,82 54,120 C 58,150 86,166 98,170 C 88,142 90,118 82,92 C 76,72 86,50 100,32 Z" fill="url(#dnaGrad)" stroke="#003d1c" stroke-width="3.5"/>' +
+            '<path d="M 72,76 L 118,50 L 128,62 L 78,92 Z" fill="#ffffff" opacity="0.95"/>' +
+            '<path d="M 64,110 L 126,76 L 134,88 L 70,126 Z" fill="#ffffff" opacity="0.95"/>' +
+            '<path d="M 74,144 L 128,110 L 132,122 L 86,156 Z" fill="#ffffff" opacity="0.95"/>' +
+            '<ellipse cx="130" cy="38" rx="18" ry="18" fill="url(#glowSpot)"/>' +
+            '<ellipse cx="166" cy="85" rx="7" ry="15" transform="rotate(25 166 85)" fill="#ffffff" opacity="0.75"/>' +
+            '<path d="M 38,158 Q 42,148 44,142 Q 46,148 50,158 Q 46,168 44,174 Q 42,168 38,158 Z" fill="#ffffff"/>' +
+            '<path d="M 160,45 Q 165,40 170,38 Q 165,36 160,31 Q 155,36 150,38 Q 155,40 160,45 Z" fill="#ffffff"/>' +
+            '</svg>';
+
+        var SVG_DYNA = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">' +
+            '<defs>' +
+            '<filter id="dynaNeon" x="-25%" y="-25%" width="150%" height="150%">' +
+            '<feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#ff3838" flood-opacity="0.9"/>' +
+            '<feDropShadow dx="0" dy="0" stdDeviation="10" flood-color="#ff1493" flood-opacity="0.6"/>' +
+            '</filter>' +
+            '<linearGradient id="dynaFill" x1="50%" y1="0%" x2="50%" y2="100%">' +
+            '<stop offset="0%" stop-color="#ffffff"/>' +
+            '<stop offset="25%" stop-color="#ff9ff3"/>' +
+            '<stop offset="65%" stop-color="#f368e0"/>' +
+            '<stop offset="100%" stop-color="#d63031"/>' +
+            '</linearGradient>' +
+            '</defs>' +
+            '<g filter="url(#dynaNeon)">' +
+            '<path d="M 100,38 L 108,64 L 174,32 L 100,106 L 26,32 L 92,64 Z" fill="url(#dynaFill)"/>' +
+            '<path d="M 100,106 L 76,142 L 16,166 L 76,116 Z" fill="url(#dynaFill)"/>' +
+            '<path d="M 100,106 L 124,142 L 184,166 L 124,116 Z" fill="url(#dynaFill)"/>' +
+            '<polygon points="100,36 110,64 100,56 90,64" fill="#ffffff"/>' +
+            '<line x1="120" y1="116" x2="148" y2="92" stroke="#9e003a" stroke-width="7" stroke-linecap="round"/>' +
+            '<line x1="132" y1="130" x2="162" y2="104" stroke="#9e003a" stroke-width="7" stroke-linecap="round"/>' +
+            '<line x1="144" y1="144" x2="174" y2="118" stroke="#9e003a" stroke-width="7" stroke-linecap="round"/>' +
+            '</g>' +
+            '</svg>';
+
+        var CUTOUT_MEGA_SRC = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(SVG_MEGA);
+        var CUTOUT_DYNA_SRC = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(SVG_DYNA);
+
+        var imgMegaStone = new Image(); imgMegaStone.src = CUTOUT_MEGA_SRC;
+        var imgDynamax = new Image(); imgDynamax.src = CUTOUT_DYNA_SRC;
+
         window.requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || function(callback) { window.setTimeout(callback, 1000 / 60); };
 
         if (!CanvasRenderingContext2D.prototype.roundRect) {
@@ -324,71 +478,13 @@
             };
         }
 
-        function renderTransparentMegaStone(ctx, size) {
-            var r = size / 2;
-            ctx.save();
-            ctx.translate(r, r);
-            var grad = ctx.createLinearGradient(-r, -r, r, r);
-            grad.addColorStop(0, '#a29bfe');
-            grad.addColorStop(0.3, '#74b9ff');
-            grad.addColorStop(0.6, '#55efc4');
-            grad.addColorStop(1, '#ffeaa7');
-            ctx.fillStyle = grad;
-            ctx.beginPath();
-            ctx.arc(0, 0, r * 0.88, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.strokeStyle = '#2d3436';
-            ctx.lineWidth = size * 0.08;
-            ctx.stroke();
-            ctx.fillStyle = '#00b894';
-            ctx.beginPath();
-            ctx.moveTo(0, -r * 0.6);
-            ctx.bezierCurveTo(r * 0.5, -r * 0.3, r * 0.4, r * 0.3, 0, r * 0.55);
-            ctx.bezierCurveTo(-r * 0.4, r * 0.2, -r * 0.3, -r * 0.4, 0, -r * 0.6);
-            ctx.fill();
-            ctx.fillStyle = 'rgba(255,255,255,0.7)';
-            ctx.beginPath();
-            ctx.ellipse(r * 0.35, -r * 0.25, r * 0.15, r * 0.25, 0.4, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.restore();
-        }
-
-        function renderTransparentDynamax(ctx, size) {
-            var r = size / 2;
-            ctx.save();
-            ctx.translate(r, r);
-            ctx.shadowColor = '#ff3838';
-            ctx.shadowBlur = 10;
-            ctx.fillStyle = '#ff3838';
-            ctx.beginPath();
-            ctx.moveTo(0, -r * 0.85);
-            ctx.lineTo(r * 0.8, -r * 0.7);
-            ctx.lineTo(r * 0.2, -r * 0.1);
-            ctx.lineTo(r * 0.85, r * 0.75);
-            ctx.lineTo(r * 0.25, r * 0.6);
-            ctx.lineTo(0, r * 0.1);
-            ctx.lineTo(-r * 0.25, r * 0.6);
-            ctx.lineTo(-r * 0.85, r * 0.75);
-            ctx.lineTo(-r * 0.2, -r * 0.1);
-            ctx.lineTo(-r * 0.8, -r * 0.7);
-            ctx.closePath();
-            ctx.fill();
-            ctx.fillStyle = '#ff7675';
-            ctx.beginPath();
-            ctx.moveTo(0, -r * 0.5);
-            ctx.lineTo(r * 0.4, -r * 0.4);
-            ctx.lineTo(0, 0);
-            ctx.lineTo(-r * 0.4, -r * 0.4);
-            ctx.closePath();
-            ctx.fill();
-            ctx.restore();
-        }
-
-        function initUICanvases() {
-            var cM = document.getElementById('uiIconMega');
-            if(cM) renderTransparentMegaStone(cM.getContext('2d'), 32);
-            var cD = document.getElementById('uiIconDyna');
-            if(cD) renderTransparentDynamax(cD.getContext('2d'), 32);
+        function updateUIImages() {
+            var m1 = document.getElementById('uiIconMegaImg'); if(m1) m1.src = CUTOUT_MEGA_SRC;
+            var d1 = document.getElementById('uiIconDynaImg'); if(d1) d1.src = CUTOUT_DYNA_SRC;
+            var bm = document.getElementById('btnIconM'); if(bm) bm.src = CUTOUT_MEGA_SRC;
+            var bx = document.getElementById('btnIconX'); if(bx) bx.src = CUTOUT_MEGA_SRC;
+            var by = document.getElementById('btnIconY'); if(by) by.src = CUTOUT_MEGA_SRC;
+            var bd = document.getElementById('btnIconD'); if(bd) bd.src = CUTOUT_DYNA_SRC;
         }
 
         var audioCtx; var isMusicPlaying = true; var bgmPlayer = document.getElementById('bgmPlayer');
@@ -657,7 +753,7 @@
                     if(sOpt.mx) POKEMON_DATA[sId].megaXId = sOpt.mx; 
                     if(sOpt.my) POKEMON_DATA[sId].megaYId = sOpt.my;
                     if(sOpt.gmax) POKEMON_DATA[sId].gmaxId = sOpt.gmax;
-                    if(sOpt.sName) POKEMON_DATA[sId].sName = sOpt.sName; // 修復此處變數名稱
+                    if(sOpt.sName) POKEMON_DATA[sId].sName = sOpt.sName;
                 }
                 POOLS[sRarity].push(sId);
             }
@@ -769,67 +865,6 @@
         var waveBreakTimer = 180; var isWaveActive = false; 
 
         var pendingAction = null; var pendingC = 0, pendingR = 0; var pendingPokeId = 0; var selectedTower = null; var pendingStoneType = null; var pendingTechType = null; var pendingEvoId = null; var pendingChestX = 0; var pendingChestY = 0;
-        
-        var gameConfig = {
-            easyClock: true, easyVisual: true, easyBasic: true, easyMultNums: [2, 5],
-            normalAddSub: true, normalMult: true
-        };
-
-        window.openSettings = function() {
-            document.getElementById('settingsModal').classList.add('active');
-            document.getElementById('cfgEasyClock').checked = gameConfig.easyClock;
-            document.getElementById('cfgEasyVisual').checked = gameConfig.easyVisual;
-            document.getElementById('cfgEasyBasic').checked = gameConfig.easyBasic;
-            document.getElementById('cfgNormalAddSub').checked = gameConfig.normalAddSub;
-            document.getElementById('cfgNormalMult').checked = gameConfig.normalMult;
-            
-            var hasMult = gameConfig.easyMultNums && gameConfig.easyMultNums.length > 0;
-            document.getElementById('cfgEasyMultToggle').checked = hasMult;
-            document.getElementById('easyMultNumsBox').style.display = hasMult ? 'flex' : 'none';
-            
-            var cbs = document.querySelectorAll('.ez-mult-cb');
-            for(var i=0; i<cbs.length; i++) {
-                cbs[i].checked = gameConfig.easyMultNums.indexOf(parseInt(cbs[i].value)) !== -1;
-            }
-        };
-
-        window.closeSettings = function() {
-            document.getElementById('settingsModal').classList.remove('active');
-        };
-
-        window.saveSettings = function() {
-            gameConfig.easyClock = document.getElementById('cfgEasyClock').checked;
-            gameConfig.easyVisual = document.getElementById('cfgEasyVisual').checked;
-            gameConfig.easyBasic = document.getElementById('cfgEasyBasic').checked;
-            gameConfig.normalAddSub = document.getElementById('cfgNormalAddSub').checked;
-            gameConfig.normalMult = document.getElementById('cfgNormalMult').checked;
-            
-            var multEnabled = document.getElementById('cfgEasyMultToggle').checked;
-            gameConfig.easyMultNums = [];
-            if(multEnabled) {
-                var cbs = document.querySelectorAll('.ez-mult-cb');
-                for(var i=0; i<cbs.length; i++) {
-                    if(cbs[i].checked) gameConfig.easyMultNums.push(parseInt(cbs[i].value));
-                }
-                if(gameConfig.easyMultNums.length === 0) {
-                    alert("您開啟了小一乘法，但未選擇任何倍數！已自動幫您勾選「2」。");
-                    gameConfig.easyMultNums = [2];
-                }
-            }
-            
-            if(!gameConfig.easyClock && !gameConfig.easyVisual && !gameConfig.easyBasic && gameConfig.easyMultNums.length === 0) {
-                gameConfig.easyBasic = true;
-                document.getElementById('cfgEasyBasic').checked = true;
-                alert("小一模式至少需選擇一種題型！已自動幫您勾選「數字加減法」。");
-            }
-            if(!gameConfig.normalAddSub && !gameConfig.normalMult) {
-                gameConfig.normalAddSub = true;
-                document.getElementById('cfgNormalAddSub').checked = true;
-                alert("中年級模式至少需選擇一種題型！已自動幫您勾選「兩位數加減法」。");
-            }
-            sfx.upgrade();
-            closeSettings();
-        };
 
         var currentMathAnswer = 0; var currentBuildChoices = []; var shakeTime = 0; var hitPause = 0;
 
@@ -892,10 +927,10 @@
         DroppedItem.prototype.draw = function(ctx) {
             ctx.save(); 
             ctx.translate(this.x, this.y + this.bounceY); 
-            if (this.type.indexOf('mega') !== -1) {
-                renderTransparentMegaStone(ctx, 36);
-            } else if (this.type === 'dynamax') {
-                renderTransparentDynamax(ctx, 36);
+            if (this.type.indexOf('mega') !== -1 && imgMegaStone.complete) {
+                ctx.drawImage(imgMegaStone, -18, -18, 36, 36);
+            } else if (this.type === 'dynamax' && imgDynamax.complete) {
+                ctx.drawImage(imgDynamax, -18, -18, 36, 36);
             }
             ctx.restore();
         };
@@ -1052,15 +1087,15 @@
 
             var safeWave = Math.max(1, Math.min(20, currentWave));
             
-            var hpMultiplier = Math.pow(1.28, safeWave - 1); 
-            this.maxHp = Math.floor(75 * hpMultiplier + safeWave * 30);
+            var hpMultiplier = Math.pow(1.30, safeWave - 1); 
+            this.maxHp = Math.floor(85 * hpMultiplier + safeWave * 35);
             if (this.isBoss) {
-                this.maxHp *= (safeWave === 20 ? 18 : 12);
+                this.maxHp *= (safeWave === 20 ? 20 : 12);
             }
             this.hp = this.maxHp;
             
-            this.baseSpeed = Math.min(0.5, 0.26 + (safeWave * 0.012)); 
-            if(this.isBoss) this.baseSpeed *= 0.7;
+            this.baseSpeed = Math.min(0.55, 0.28 + (safeWave * 0.015)); 
+            if(this.isBoss) this.baseSpeed *= 0.65;
             this.speed = this.baseSpeed;
             
             this.flash = 0; this.hitScale = 1.0; this.statuses = { paralyze: 0, freeze: 0, burn: 0, poison: 0, sleep: 0 };
@@ -1496,12 +1531,11 @@
             if(baseLevel >= BASE_RATES.length) ctx.fillText('👑', cx - 15, cy - 95);
         }
 
-        var gameMode = 'normal';
-        window.startGame = function(mode) { 
+        function startGame(mode) { 
             try {
                 gameMode = mode || 'normal';
                 initAudio(); 
-                initUICanvases();
+                updateUIImages();
                 var overlay = document.getElementById('startOverlay');
                 if (overlay) overlay.style.display = 'none'; 
                 isPaused = false; gameStarted = true; sfx.coin(); updateUI(); 
@@ -1509,9 +1543,10 @@
             } catch (err) {
                 alert("啟動遊戲失敗，請截圖： " + err.message);
             }
-        };
+        }
+        window.startGame = startGame;
 
-        window.toggleUserPause = function() {
+        function toggleUserPause() {
             if(!gameStarted || gameOver) return;
             sfx.click();
             userPaused = !userPaused;
@@ -1526,7 +1561,8 @@
                 sf.innerHTML = '';
                 sf.style.background = 'rgba(241,196,15,0.6)';
             }
-        };
+        }
+        window.toggleUserPause = toggleUserPause;
 
         canvas.addEventListener('click', function(e) {
             initAudio(); if(isPaused || gameOver || !gameStarted || userPaused) return;
@@ -1574,10 +1610,14 @@
         });
 
         function showModal(id, setupFunc) { if(setupFunc) setupFunc(); var m = document.querySelectorAll('.modal'); for(var i=0; i<m.length; i++) m[i].classList.remove('active'); document.getElementById(id).classList.add('active'); isPaused = true; }
-        window.closeModals = function() { var m = document.querySelectorAll('.modal'); for(var i=0; i<m.length; i++) m[i].classList.remove('active'); document.getElementById('mathTitle').innerText = "大木博士的考驗"; isPaused = false; };
-        window.cancelAction = function() { pendingAction = null; sfx.click(); closeModals(); };
+        
+        function closeModals() { var m = document.querySelectorAll('.modal'); for(var i=0; i<m.length; i++) m[i].classList.remove('active'); document.getElementById('mathTitle').innerText = "大木博士的考驗"; isPaused = false; }
+        window.closeModals = closeModals;
 
-        window.sellTower = function() {
+        function cancelAction() { pendingAction = null; sfx.click(); closeModals(); }
+        window.cancelAction = cancelAction;
+
+        function sellTower() {
             if(!selectedTower) return;
             var refund = Math.floor(selectedTower.data.cost * 0.8) || 10;
             coins += refund;
@@ -1593,7 +1633,8 @@
             floatTexts.push(new FloatingText(selectedTower.x, selectedTower.y, "+" + refund + "💰", "#f1c40f", 30));
             closeModals();
             updateUI();
-        };
+        }
+        window.sellTower = sellTower;
 
         function openBaseModal() {
             document.getElementById('baseLvText').innerText = baseLevel; var rates = BASE_RATES[Math.min(baseLevel - 1, BASE_RATES.length-1)];
@@ -1604,11 +1645,12 @@
             showModal('baseModal');
         }
 
-        window.triggerTechUpgrade = function(type) {
+        function triggerTechUpgrade(type) {
             var cost = 200 + (type === 'dmg' ? globalDmgLevel : globalRateLevel) * 150;
             if (coins >= cost) { pendingTechType = type; pendingAction = 'techUpgrade'; closeModals(); showModal('mathModal', function() { openMathModal(3); }); } 
             else { var w = document.getElementById('warningMsg'); w.innerText="金幣不足！"; w.style.opacity = 1; setTimeout(function() { w.style.opacity = 0; }, 1500); triggerShake(3); sfx.error(); }
-        };
+        }
+        window.triggerTechUpgrade = triggerTechUpgrade;
 
         function openBuildModal() {
             var container = document.getElementById('buildChoices'); container.innerHTML = '';
@@ -1653,11 +1695,12 @@
             showModal('buildModal');
         }
 
-        window.rerollShop = function() {
+        function rerollShop() {
             if (rerollsThisWave >= 5) { sfx.error(); var w = document.getElementById('warningMsg'); w.innerText="本波刷新次數已達上限！"; w.style.opacity = 1; setTimeout(function() { w.style.opacity = 0; }, 1500); triggerShake(3); return; }
             if (coins >= 15) { sfx.coin(); coins -= 15; rerollsThisWave++; currentBuildChoices = []; updateUI(); openBuildModal(); document.getElementById('rerollBtn').innerText = "🔄 刷新商店 (💰 15) [剩餘 " + (5 - rerollsThisWave) + " 次]"; } 
             else { sfx.error(); var w = document.getElementById('warningMsg'); w.innerText="金幣不足！"; w.style.opacity = 1; setTimeout(function() { w.style.opacity = 0; }, 1500); triggerShake(3); }
-        };
+        }
+        window.rerollShop = rerollShop;
 
         function openUpgradeModal(tower) {
             selectedTower = tower; document.getElementById('upgTitle').innerText = tower.data.name; document.getElementById('upgImg').src = tower.img ? tower.img.src : getPokeImg(tower.pokeId).src;
@@ -1786,10 +1829,10 @@
                         var mCount = stones.mega;
                         var dCount = stones.dynamax;
                         
-                        document.getElementById('btnM').style.display = tower.data.megaId ? 'inline-block' : 'none'; 
-                        document.getElementById('btnX').style.display = tower.data.megaXId ? 'inline-block' : 'none';
-                        document.getElementById('btnY').style.display = tower.data.megaYId ? 'inline-block' : 'none'; 
-                        document.getElementById('btnD').style.display = tower.data.gmaxId ? 'inline-block' : 'none'; 
+                        document.getElementById('btnM').style.display = tower.data.megaId ? 'inline-flex' : 'none'; 
+                        document.getElementById('btnX').style.display = tower.data.megaXId ? 'inline-flex' : 'none';
+                        document.getElementById('btnY').style.display = tower.data.megaYId ? 'inline-flex' : 'none'; 
+                        document.getElementById('btnD').style.display = tower.data.gmaxId ? 'inline-flex' : 'none'; 
                         document.getElementById('txtStoneM').innerText = mCount; 
                         document.getElementById('txtStoneX').innerText = mCount;
                         document.getElementById('txtStoneY').innerText = mCount; 
@@ -1806,7 +1849,7 @@
             showModal('upgradeModal');
         }
 
-        window.prepareStone = function(type) { 
+        function prepareStone(type) { 
             var consumeType = (type === 'mega' || type === 'megaX' || type === 'megaY') ? 'mega' : 'dynamax';
             if(stones[consumeType] > 0) { 
                 sfx.click(); pendingStoneType = type; pendingAction = 'useStone'; closeModals(); showModal('mathModal', function() { openMathModal(3); }); 
@@ -1814,7 +1857,8 @@
                 sfx.error(); 
                 var w = document.getElementById('warningMsg'); w.innerText="進化石數量不足！"; w.style.opacity = 1; setTimeout(function() { w.style.opacity = 0; }, 1500); triggerShake(3);
             } 
-        };
+        }
+        window.prepareStone = prepareStone;
 
         function openMathModal(difficulty) {
             var num1, num2, type, ans, qText;
@@ -1959,22 +2003,24 @@
             setTimeout(function(){ inputField.focus(); }, 100);
         }
 
-        window.submitMath = function() {
+        function submitMath() {
             var input = document.getElementById('mathInput');
             if(!input) return;
             var val = parseInt(input.value);
             if(isNaN(val)) return;
             input.disabled = true;
             handleAnswerResult(val === currentMathAnswer, currentMathAnswer);
-        };
+        }
+        window.submitMath = submitMath;
 
-        window.checkMathChoiceStr = function(valStr, btnElement) {
+        function checkMathChoiceStr(valStr, btnElement) {
             var btns = document.querySelectorAll('#mathChoices button');
             for(var i=0; i<btns.length; i++) { btns[i].disabled = true; btns[i].style.opacity = '0.5'; }
             handleAnswerResult(valStr === window.currentMathAnswerStr, window.currentMathAnswerStr);
-        };
+        }
+        window.checkMathChoiceStr = checkMathChoiceStr;
 
-        window.handleAnswerResult = function(isCorrect, ansText) {
+        function handleAnswerResult(isCorrect, ansText) {
             var hintText = document.getElementById('hintText');
             var input = document.getElementById('mathInput');
             
@@ -2039,7 +2085,7 @@
                     setTimeout(function() { pendingAction = null; closeModals(); }, 1500); 
                 }
             }
-        };
+        }
 
         var lastFrameTime = 0;
 
@@ -2168,7 +2214,7 @@
         window.addEventListener('load', function() { 
             try { 
                 drawMap(); 
-                initUICanvases();
+                updateUIImages();
             } catch(e) { console.error(e); }
         });
     </script>
