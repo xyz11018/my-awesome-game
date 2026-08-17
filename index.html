@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>寶可夢：數學防衛戰 V77 雙人同心默契版</title>
+    <title>寶可夢：數學防衛戰 V78 雙人極速流暢版</title>
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
     
@@ -106,7 +106,6 @@
         #musicToggle { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6); color: white; border: 3px solid white; font-size: 24px; border-radius: 50%; width: 50px; height: 50px; cursor: pointer; z-index: 30; box-shadow: 0 4px 10px rgba(0,0,0,0.5);}
         #pauseToggleBtn { position: absolute; top: 15px; right: 75px; background: rgba(0,0,0,0.6); color: white; border: 3px solid white; font-size: 24px; border-radius: 50%; width: 50px; height: 50px; cursor: pointer; z-index: 30; box-shadow: 0 4px 10px rgba(0,0,0,0.5);}
         
-        /* 雙人同心互動按鈕 */
         #giftBtn {
             display: none; position: absolute; top: 15px; left: 15px;
             background: linear-gradient(135deg, #f39c12, #e67e22);
@@ -230,7 +229,7 @@
         <button class="start-btn" style="background: linear-gradient(to bottom, #3498db, #2980b9); box-shadow: 0 10px 0 #1f618d; font-size: 44px; padding: 20px 50px;" onclick="location.reload()">🔄 時光倒流 (重新開始)</button>
     </div>
 
-    <h1>⚡ 精靈寶可夢：數學防衛戰 V77 ⚡</h1>
+    <h1>⚡ 精靈寶可夢：數學防衛戰 V78 ⚡</h1>
     
     <div id="gameWrapper">
         <div id="gameContainer">
@@ -353,7 +352,6 @@
     </audio>
 
     <script>
-        // === 全域圖片快取池 ===
         var imageCache = {};
         function getCachedImg(id) {
             if (imageCache[id]) return imageCache[id];
@@ -394,7 +392,6 @@
         window.addEventListener('resize', resizeApp);
         document.addEventListener("DOMContentLoaded", resizeApp);
 
-        // --- P2P 連線系統核心 (PeerJS) ---
         var peer = null;
         var conn = null;
         var isHost = false;
@@ -403,11 +400,10 @@
         var myRoleName = "訓練家";
         var lobbyMode = 'single';
 
-        // 獨立金幣與同心機制變數
         var myCoins = 150; 
         var clientCoins = 150; 
-        var sosRescueEnergy = 0; // 滿 3 點可施放同心急凍
-        var lastAnswerTime = { host: 0, client: 0 }; // 記錄雙方最後答對時間，判斷 10 秒默契合體
+        var sosRescueEnergy = 0; 
+        var lastAnswerTime = { host: 0, client: 0 }; 
 
         function showLobby(mode) {
             lobbyMode = mode;
@@ -488,7 +484,6 @@
             }
         }
 
-        // --- 建議 4：轉贈金幣給夥伴 ---
         window.giftCoinsToPartner = function() {
             if (myCoins < 50) {
                 sfx.error();
@@ -508,7 +503,6 @@
             }
         };
 
-        // --- 建議 1：發動同心急凍援護 ---
         window.triggerSosRescue = function() {
             sosRescueEnergy = 0;
             updateUI();
@@ -517,7 +511,7 @@
             floatTexts.push(new FloatingText(canvas.width/2, 120, "🤝 同心援護發動！全場強效急凍 4 秒！", "#3498db", 38));
             
             for(var i=0; i<enemies.length; i++) {
-                enemies[i].statuses.slow = 240; // 急凍 4 秒
+                enemies[i].statuses.slow = 240;
             }
 
             if (isMultiplayer) {
@@ -525,13 +519,11 @@
             }
         };
 
-        // 觸發雙人 10 秒默契合體技
         function triggerSynergyCombo() {
             sfx.tera();
             triggerShake(25);
             floatTexts.push(new FloatingText(canvas.width/2, 100, "✨ 雙人默契大爆發！天降神龍彗星雨！", "#fd79a8", 42));
 
-            // 全場流星雨動畫與全體 400 點重傷
             for(var i=0; i<enemies.length; i++) {
                 var en = enemies[i];
                 skillAnims.push(new SkillAnim(canvas.width/2, 0, en.x, en.y, 'dragon', 'aoe', '畫龍點睛'));
@@ -550,24 +542,67 @@
                     gridMap = data.gridMap;
                     myCoins = data.clientCoins;
                     
-                    enemies = [];
+                    // 根據 UID 增量更新怪物，杜絕閃爍與抖動
+                    var updatedEnemies = [];
                     for(var i=0; i<data.enemies.length; i++) {
                         var eData = data.enemies[i];
-                        var en = new Enemy(eData.isBoss, wave);
-                        en.id = eData.id; en.type = eData.type; en.x = eData.x; en.y = eData.y; en.hp = eData.hp; en.maxHp = eData.maxHp;
-                        en.statuses = eData.statuses; en.customName = eData.customName; en.flash = eData.flash;
-                        en.img = getCachedImg(en.id);
-                        enemies.push(en);
+                        var existing = null;
+                        for(var j=0; j<enemies.length; j++) {
+                            if(enemies[j].uid === eData.uid) { existing = enemies[j]; break; }
+                        }
+                        if(existing) {
+                            existing.targetX = eData.x;
+                            existing.targetY = eData.y;
+                            existing.hp = eData.hp;
+                            existing.maxHp = eData.maxHp;
+                            existing.statuses = eData.statuses;
+                            existing.flash = eData.flash;
+                            updatedEnemies.push(existing);
+                        } else {
+                            var en = new Enemy(eData.isBoss, wave);
+                            en.uid = eData.uid;
+                            en.id = eData.id;
+                            en.type = eData.type;
+                            en.x = eData.x;
+                            en.y = eData.y;
+                            en.targetX = eData.x;
+                            en.targetY = eData.y;
+                            en.visOffsetX = eData.visOffsetX;
+                            en.visOffsetY = eData.visOffsetY;
+                            en.hp = eData.hp;
+                            en.maxHp = eData.maxHp;
+                            en.statuses = eData.statuses;
+                            en.flash = eData.flash;
+                            en.img = getCachedImg(en.id);
+                            updatedEnemies.push(en);
+                        }
                     }
+                    enemies = updatedEnemies;
                     
-                    towers = [];
+                    // 防禦塔依座標增量更新
+                    var updatedTowers = [];
                     for(var i=0; i<data.towers.length; i++) {
                         var tData = data.towers[i];
-                        var tw = new Tower(tData.c, tData.r, tData.pokeId, tData.isShiny, tData.owner);
-                        tw.form = tData.form; tw.fixedSkill = tData.fixedSkill; tw.exp = tData.exp;
-                        tw.formTimer = tData.formTimer;
-                        towers.push(tw);
+                        var twExisting = null;
+                        for(var k=0; k<towers.length; k++) {
+                            if(towers[k].c === tData.c && towers[k].r === tData.r) { twExisting = towers[k]; break; }
+                        }
+                        if(twExisting) {
+                            if(twExisting.pokeId !== tData.pokeId) twExisting.setPoke(tData.pokeId);
+                            twExisting.owner = tData.owner;
+                            twExisting.form = tData.form;
+                            twExisting.fixedSkill = tData.fixedSkill;
+                            twExisting.exp = tData.exp;
+                            twExisting.formTimer = tData.formTimer;
+                            updatedTowers.push(twExisting);
+                        } else {
+                            var tw = new Tower(tData.c, tData.r, tData.pokeId, tData.isShiny, tData.owner);
+                            tw.form = tData.form; tw.fixedSkill = tData.fixedSkill; tw.exp = tData.exp;
+                            tw.formTimer = tData.formTimer;
+                            updatedTowers.push(tw);
+                        }
                     }
+                    towers = updatedTowers;
                     updateUI();
                 } else if (data.type === 'CORRECT_ANSWER') {
                     comboCount++;
@@ -577,7 +612,6 @@
                     sfx.upgrade();
                     floatTexts.push(new FloatingText(canvas.width/2, 120, "🔥 " + data.role + " 答對！連擊+" + (comboCount * 2) + "% 攻擊力", "#f1c40f", 34));
                     
-                    // 檢查 10 秒合體技判定
                     var now = Date.now();
                     if (data.role.indexOf('哥哥') !== -1 || (isHost && data.role.indexOf('訓練家') !== -1)) lastAnswerTime.host = now;
                     else lastAnswerTime.client = now;
@@ -665,8 +699,9 @@
             var enemyList = [];
             for(var i=0; i<enemies.length; i++) {
                 enemyList.push({
-                    id: enemies[i].id, type: enemies[i].type, x: enemies[i].x, y: enemies[i].y, hp: enemies[i].hp, maxHp: enemies[i].maxHp,
-                    isBoss: enemies[i].isBoss, statuses: enemies[i].statuses, customName: enemies[i].customName, flash: enemies[i].flash
+                    uid: enemies[i].uid, id: enemies[i].id, type: enemies[i].type, x: enemies[i].x, y: enemies[i].y, 
+                    visOffsetX: enemies[i].visOffsetX, visOffsetY: enemies[i].visOffsetY,
+                    hp: enemies[i].hp, maxHp: enemies[i].maxHp, isBoss: enemies[i].isBoss, statuses: enemies[i].statuses, customName: enemies[i].customName, flash: enemies[i].flash
                 });
             }
             var towerList = [];
@@ -692,7 +727,7 @@
             }
         }
 
-        // --- 音效與語音系統 (TTS) ---
+        // --- 音效系統 ---
         var audioCtx; var isMusicPlaying = true; var bgmPlayer = document.getElementById('bgmPlayer');
         var currentSpeechText = "";
 
@@ -789,7 +824,6 @@
 
         function getDist(x1, y1, x2, y2) { return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)); }
 
-        // --- 歷代邪惡組織配置 ---
         var EVIL_TEAMS = [
             { name: "火箭隊 (Team Rocket)", color: "#c0392b", grunts: [19, 23, 41, 109], boss: 150 },
             { name: "熔岩隊 & 水艦隊", color: "#d35400", grunts: [261, 318, 322, 341], boss: 383 },
@@ -1198,9 +1232,15 @@
             ctx.restore();
         }
 
+        // --- 怪物類（加入唯一 UID 與平滑過渡目標座標） ---
+        var nextEnemyUid = 1;
         function Enemy(isBoss, currentWave) {
-            this.x = pixelPath[0].x; this.y = pixelPath[0].y; this.pathIndex = 1; this.isBoss = isBoss;
-            this.visOffsetX = (Math.random() - 0.5) * 30; this.visOffsetY = (Math.random() - 0.5) * 30;
+            this.uid = isHost ? (nextEnemyUid++) : 0;
+            this.x = pixelPath[0].x; this.y = pixelPath[0].y; 
+            this.targetX = this.x; this.targetY = this.y;
+            this.pathIndex = 1; this.isBoss = isBoss;
+            this.visOffsetX = (Math.random() - 0.5) * 24; 
+            this.visOffsetY = (Math.random() - 0.5) * 24;
 
             var hpMultiplier = Math.pow(1.55, currentWave); 
             this.maxHp = Math.floor(25 * hpMultiplier); if(this.isBoss) this.maxHp *= 10; this.hp = this.maxHp;
@@ -1229,6 +1269,14 @@
             if(this.statuses.poison > 0) { this.statuses.poison--; if(this.statuses.poison % 25 === 0) hitEnemy(this, 4 + wave, null, true, false); }
             if(this.statuses.paralyze > 0) { this.statuses.paralyze--; return; }
 
+            // 副機端：平滑內插補間跟隨主機座標，徹底消除瞬移抖動
+            if (isMultiplayer && !isHost) {
+                this.x += (this.targetX - this.x) * 0.25;
+                this.y += (this.targetY - this.y) * 0.25;
+                return;
+            }
+
+            // 房主端：原生路徑物理推算
             this.speed = this.statuses.slow > 0 ? this.baseSpeed * 0.5 : this.baseSpeed;
             if(this.statuses.slow > 0) this.statuses.slow--;
 
@@ -1281,11 +1329,10 @@
             }
         }
 
-        // --- 建議 2：防禦塔增加擁有者光圈 ---
         function Tower(c, r, pokeId, isShiny, owner) {
             this.c = c; this.r = r; this.isMythic = (POOLS.mythic.indexOf(pokeId) !== -1);
             this.isShiny = !!isShiny;
-            this.owner = owner || (isHost ? 'host' : 'client'); // 'host' (哥哥) | 'client' (弟弟)
+            this.owner = owner || (isHost ? 'host' : 'client');
             this.x = c * GRID_SIZE + GRID_SIZE/2; this.y = r * GRID_SIZE + GRID_SIZE/2;
             gridMap[c][r] = 2;
             this.exp = 0; this.fireTimer = 0;  
@@ -1372,7 +1419,6 @@
             var drawSize = (this.isMythic || this.form !== 'normal') ? 120 : 80; 
             var yOff = (this.isMythic || this.form !== 'normal') ? -60 : -40;
 
-            // 繪製擁有者光圈（哥哥藍圈、弟弟綠圈）
             if (isMultiplayer) {
                 ctx.save();
                 ctx.lineWidth = 3;
@@ -1804,7 +1850,6 @@
             }
         };
 
-        // --- 數學題目系統 ---
         function openMathModal(difficulty) {
             var num1, num2, type, ans, qText, speechQText;
             var isEvolve = (difficulty === 'evolve');
@@ -1931,7 +1976,6 @@
                     sendNetAction({ type: 'CORRECT_ANSWER', role: myRoleName });
                 }
 
-                // 檢查 10 秒內合體技
                 if (Math.abs(lastAnswerTime.host - lastAnswerTime.client) < 10000 && lastAnswerTime.host > 0 && lastAnswerTime.client > 0) {
                     triggerSynergyCombo();
                     lastAnswerTime.host = 0;
@@ -2049,10 +2093,10 @@
                     }
                 }
 
-                // 房主每 5 幀廣播一次實時狀態
+                // 房主每 3 幀廣播一次實時狀態
                 if (isHost && isMultiplayer) {
                     netSyncTimer++;
-                    if (netSyncTimer >= 5) { broadcastState(); netSyncTimer = 0; }
+                    if (netSyncTimer >= 3) { broadcastState(); netSyncTimer = 0; }
                 }
 
                 var newChests = []; for(var i=0; i<chests.length; i++) { if(!skipUpdate) chests[i].update(); chests[i].draw(ctx); if(chests[i].active) newChests.push(chests[i]); } chests = newChests;
