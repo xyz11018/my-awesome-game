@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>寶可夢：數學防衛戰 V75 雙人連線同心版</title>
+    <title>寶可夢：數學防衛戰 V77 雙人同心默契版</title>
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
-    <!-- 引入 WebRTC 點對點免費連線庫 -->
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
     
     <script>
         window.onerror = function(msg, url, line) {
-            alert("遊戲載入發生錯誤！ \n錯誤訊息：" + msg + " \n行號：" + line);
+            console.error("錯誤訊息：" + msg + " 行號：" + line);
             return false;
         };
     </script>
@@ -59,7 +58,7 @@
         canvas { display: block; cursor: default; }
         
         #ui { width: 960px; display: flex; justify-content: space-between; align-items: center; padding: 10px 25px; background: linear-gradient(to bottom, #34495e, #2c3e50); box-sizing: border-box; border-radius: 0 0 12px 12px; border-top: 5px solid #1a252f; font-size: 20px; box-shadow: inset 0 -4px 8px rgba(0,0,0,0.3); }
-        .ui-group { display: flex; align-items: center; gap: 15px; }
+        .ui-group { display: flex; align-items: center; gap: 12px; }
         
         .stone-counters { display: flex; gap: 12px; font-size: 17px; background: #2c3e50; padding: 6px 16px; border-radius: 30px; border: 2px solid #1a252f; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5); color: #f1c40f;}
         .stone-counters span { display: flex; align-items: center; text-shadow: 1px 1px 0px #000;}
@@ -87,7 +86,6 @@
         .action-btn { background: linear-gradient(to bottom, #f1c40f, #f39c12); color: #c0392b; border: 4px solid #fff; padding: 12px 25px; font-size: 24px; border-radius: 20px; cursor: pointer; margin-top: 10px; font-family: 'ZCOOL KuaiLe', sans-serif; box-shadow: 0 8px 0 #d35400; transition: 0.1s; text-shadow: 1px 1px 0 rgba(255,255,255,0.5); }
         .action-btn:hover { filter: brightness(1.1); transform: translateY(-4px); box-shadow: 0 12px 0 #d35400; }
         .action-btn:active { transform: translateY(8px); box-shadow: 0 0 0 #d35400; }
-        .action-btn:disabled { filter: grayscale(1); opacity: 0.6; cursor: not-allowed; box-shadow: 0 0 0 #333; transform: translateY(8px); }
 
         .stone-btn { font-size: 20px; padding: 10px 16px; margin: 5px; background: linear-gradient(to bottom, #3498db, #2980b9); color: white; box-shadow: 0 5px 0 #1abc9c; border: 3px solid white; border-radius: 15px; cursor: pointer; font-family: 'ZCOOL KuaiLe';}
         .stone-btn.mega { background: linear-gradient(to bottom, #9b59b6, #8e44ad); box-shadow: 0 5px 0 #2c3e50; }
@@ -103,13 +101,31 @@
         .skill-card:active { transform: translateY(4px); box-shadow: none; }
         .skill-card.active-skill { background: #27ae60; border-color: #2ecc71; box-shadow: 0 6px 0 #1e8449; }
         
-        #questionText { font-size: 54px; color: #2c3e50; text-shadow: 3px 3px 0px rgba(0,0,0,0.1); margin: 15px 0; background: #ecf0f1; padding: 15px; border-radius: 20px; border: 5px dashed #bdc3c7;}
-        
         #warningMsg { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); background: #e74c3c; border: 5px solid #fff; color: white; padding: 15px 40px; border-radius: 25px; font-size: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); pointer-events: none; opacity: 0; transition: opacity 0.2s; z-index: 5;}
         
         #musicToggle { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6); color: white; border: 3px solid white; font-size: 24px; border-radius: 50%; width: 50px; height: 50px; cursor: pointer; z-index: 30; box-shadow: 0 4px 10px rgba(0,0,0,0.5);}
         #pauseToggleBtn { position: absolute; top: 15px; right: 75px; background: rgba(0,0,0,0.6); color: white; border: 3px solid white; font-size: 24px; border-radius: 50%; width: 50px; height: 50px; cursor: pointer; z-index: 30; box-shadow: 0 4px 10px rgba(0,0,0,0.5);}
         
+        /* 雙人同心互動按鈕 */
+        #giftBtn {
+            display: none; position: absolute; top: 15px; left: 15px;
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white; border: 3px solid white; border-radius: 20px;
+            padding: 8px 16px; font-size: 20px; cursor: pointer; font-family: 'ZCOOL KuaiLe';
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5); z-index: 30; transition: 0.1s;
+        }
+        #giftBtn:hover { transform: scale(1.05); }
+        #giftBtn:active { transform: scale(0.95); }
+
+        #sosBtn {
+            display: none; position: absolute; bottom: 140px; right: 20px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            border: 4px solid #fff; border-radius: 30px; padding: 10px 24px;
+            font-size: 24px; font-family: 'ZCOOL KuaiLe'; color: white;
+            box-shadow: 0 0 20px #3498db, 0 6px 0 #1b4f72; cursor: pointer; z-index: 50;
+            animation: popIn 0.3s ease-out;
+        }
+
         .coin-anim { animation: coinBounce 0.3s ease-out; color: #f1c40f !important;}
         .tech-box { background: rgba(0,0,0,0.05); padding: 15px; border-radius: 15px; border: 2px dashed #bdc3c7; margin-bottom: 10px; text-align: left; }
 
@@ -138,7 +154,6 @@
             animation: rainbowGlow 3s infinite linear;
         }
 
-        /* 雙人連線控制面板樣式 */
         .lobby-box {
             background: rgba(44, 62, 80, 0.95);
             border: 4px solid #f1c40f;
@@ -164,7 +179,6 @@
 <body>
 
 <div id="main-wrap">
-    <!-- 主大廳與雙人連線設定視窗 -->
     <div id="startOverlay">
         <h1 style="font-size: 52px;">⚡ 寶可夢：數學防衛戰 ⚡</h1>
         
@@ -172,7 +186,7 @@
             <p style="font-size: 24px; max-width: 750px; line-height: 1.6; margin: 10px auto;">
                 <strong>【雙人跨平台同心合作版】</strong><br>
                 👦 哥哥在電腦、👶 弟弟在平板，輸入 4 位數房號即可跨設備連線！<br>
-                各自作答符合年級題目，共享防線血量與連擊攻擊力！
+                💰 獨立金幣自由使用，專屬光圈防誤觸，更有合體彗星大招！
             </p>
             <div style="display:flex; gap: 15px; margin-top: 15px; flex-wrap:wrap; justify-content:center;">
                 <button class="start-btn" style="background:linear-gradient(to bottom, #9b59b6, #8e44ad); box-shadow: 0 8px 0 #5e3370;" onclick="showLobby('host')">🏠 我是房主 (建立房間)</button>
@@ -181,7 +195,6 @@
             </div>
         </div>
 
-        <!-- 建立/加入房間介面 -->
         <div id="lobbyView" class="lobby-box" style="display:none;">
             <h2 id="lobbyTitle" style="color:#f1c40f; margin-top:0; font-size:36px;">連線大廳</h2>
             
@@ -211,22 +224,22 @@
         </div>
     </div>
 
-    <!-- 遊戲結束選單 -->
     <div id="gameOverOverlay">
         <h1 class="game-over-title">💥防線崩潰💥<br>宇宙毀滅！</h1>
         <p class="game-over-subtitle" id="finalWaveText">大木博士的研究所被夷為平地了！</p>
         <button class="start-btn" style="background: linear-gradient(to bottom, #3498db, #2980b9); box-shadow: 0 10px 0 #1f618d; font-size: 44px; padding: 20px 50px;" onclick="location.reload()">🔄 時光倒流 (重新開始)</button>
     </div>
 
-    <h1>⚡ 精靈寶可夢：數學防衛戰 V75 ⚡</h1>
+    <h1>⚡ 精靈寶可夢：數學防衛戰 V77 ⚡</h1>
     
     <div id="gameWrapper">
         <div id="gameContainer">
+            <button id="giftBtn" onclick="giftCoinsToPartner()">🎁 贊助夥伴 💰50</button>
             <button id="musicToggle" onclick="toggleMusic()">🔊</button>
             <button id="pauseToggleBtn" onclick="toggleUserPause()">⏸️</button>
+            <button id="sosBtn" onclick="triggerSosRescue()">🤝 同心急凍！</button>
             <button id="teraBtn" onclick="activateTera()">💎 太晶爆發！</button>
             
-            <div id="screenFlash" style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(241,196,15,0.6);pointer-events:none;opacity:0;transition:opacity 0.1s;z-index:20;"></div>
             <div id="warningMsg">哎呀！這裡不能建造喔！</div>
             <canvas id="gameCanvas" width="960" height="640"></canvas>
         </div>
@@ -327,7 +340,7 @@
             <div class="modal-body">
                 <h2 id="mathTitle" style="font-size: 44px;">大木博士的考驗</h2>
                 <button class="voice-btn" onclick="speakCurrentQuestion()">📢 聽題目</button>
-                <div id="questionText">8 × 7 = ?</div>
+                <div id="questionText" style="font-size: 54px; color: #2c3e50; text-shadow: 3px 3px 0px rgba(0,0,0,0.1); margin: 15px 0; background: #ecf0f1; padding: 15px; border-radius: 20px; border: 5px dashed #bdc3c7;">8 × 7 = ?</div>
                 <div id="mathChoices" style="display:flex; flex-direction:column; align-items:center; gap:5px; margin-top:10px;"></div>
                 <div id="hintText" style="font-size: 26px; margin-top: 15px; min-height: 35px; font-weight: bold;"></div>
             </div>
@@ -340,7 +353,21 @@
     </audio>
 
     <script>
-        // === 畫布 Polyfills ===
+        // === 全域圖片快取池 ===
+        var imageCache = {};
+        function getCachedImg(id) {
+            if (imageCache[id]) return imageCache[id];
+            var img = new Image();
+            img.crossOrigin = "Anonymous";
+            var baseUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/";
+            var fallImg = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/";
+            img.setAttribute('data-fallback', fallImg + id + ".png");
+            img.onerror = function() { this.src = this.getAttribute('data-fallback'); };
+            img.src = baseUrl + id + ".png";
+            imageCache[id] = img;
+            return img;
+        }
+
         window.requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || function(cb) { window.setTimeout(cb, 1000 / 60); };
 
         if (!CanvasRenderingContext2D.prototype.roundRect) {
@@ -374,7 +401,13 @@
         var isMultiplayer = false;
         var myGrade = 'normal';
         var myRoleName = "訓練家";
-        var lobbyMode = 'single'; // 'host' | 'join' | 'single'
+        var lobbyMode = 'single';
+
+        // 獨立金幣與同心機制變數
+        var myCoins = 150; 
+        var clientCoins = 150; 
+        var sosRescueEnergy = 0; // 滿 3 點可施放同心急凍
+        var lastAnswerTime = { host: 0, client: 0 }; // 記錄雙方最後答對時間，判斷 10 秒默契合體
 
         function showLobby(mode) {
             lobbyMode = mode;
@@ -414,7 +447,7 @@
             document.getElementById('hostRoomCode').innerText = code;
             peer = new Peer('pkmn-' + code);
             
-            peer.on('open', function(id) {
+            peer.on('open', function() {
                 isHost = true;
             });
             peer.on('connection', function(c) {
@@ -424,6 +457,7 @@
                 sfx.shiny();
                 document.getElementById('netStatusTag').innerText = "🟢 雙人合作中";
                 document.getElementById('netStatusTag').style.background = "#3498db";
+                document.getElementById('giftBtn').style.display = 'block';
             });
         }
 
@@ -435,6 +469,7 @@
             } else if (lobbyMode === 'host') {
                 isMultiplayer = true;
                 isHost = true;
+                document.getElementById('giftBtn').style.display = 'block';
                 startGame();
             } else if (lobbyMode === 'join') {
                 var code = document.getElementById('joinRoomInput').value.trim();
@@ -447,55 +482,175 @@
                     isHost = false;
                     document.getElementById('netStatusTag').innerText = "🟢 雙人合作中";
                     document.getElementById('netStatusTag').style.background = "#3498db";
+                    document.getElementById('giftBtn').style.display = 'block';
                     startGame();
                 });
+            }
+        }
+
+        // --- 建議 4：轉贈金幣給夥伴 ---
+        window.giftCoinsToPartner = function() {
+            if (myCoins < 50) {
+                sfx.error();
+                showWarning("你的金幣不足 💰50，無法贊助喔！");
+                return;
+            }
+            myCoins -= 50;
+            sfx.coin();
+            floatTexts.push(new FloatingText(canvas.width/2, 120, "🎁 已贊助夥伴 💰50 金幣！", "#f1c40f", 30));
+            updateUI();
+
+            if (isHost) {
+                clientCoins += 50;
+                broadcastState();
+            } else {
+                sendNetAction({ type: 'GIFT_COINS', amount: 50, from: myRoleName });
+            }
+        };
+
+        // --- 建議 1：發動同心急凍援護 ---
+        window.triggerSosRescue = function() {
+            sosRescueEnergy = 0;
+            updateUI();
+            sfx.freeze();
+            triggerShake(10);
+            floatTexts.push(new FloatingText(canvas.width/2, 120, "🤝 同心援護發動！全場強效急凍 4 秒！", "#3498db", 38));
+            
+            for(var i=0; i<enemies.length; i++) {
+                enemies[i].statuses.slow = 240; // 急凍 4 秒
+            }
+
+            if (isMultiplayer) {
+                sendNetAction({ type: 'TRIGGER_SOS_RESCUE', from: myRoleName });
+            }
+        };
+
+        // 觸發雙人 10 秒默契合體技
+        function triggerSynergyCombo() {
+            sfx.tera();
+            triggerShake(25);
+            floatTexts.push(new FloatingText(canvas.width/2, 100, "✨ 雙人默契大爆發！天降神龍彗星雨！", "#fd79a8", 42));
+
+            // 全場流星雨動畫與全體 400 點重傷
+            for(var i=0; i<enemies.length; i++) {
+                var en = enemies[i];
+                skillAnims.push(new SkillAnim(canvas.width/2, 0, en.x, en.y, 'dragon', 'aoe', '畫龍點睛'));
+                hitEnemy(en, 400, null, false, true);
             }
         }
 
         function setupNetEvents() {
             conn.on('data', function(data) {
                 if (data.type === 'SYNC_ALL' && !isHost) {
-                    // 客戶端接收主機的全局狀態鏡像
-                    coins = data.coins; health = data.health; wave = data.wave;
+                    health = data.health; wave = data.wave;
                     comboCount = data.comboCount; currentWeather = data.currentWeather;
                     baseLevel = data.baseLevel; teraEnergy = data.teraEnergy; teraActiveTimer = data.teraActiveTimer;
+                    isWaveActive = data.isWaveActive; waveBreakTimer = data.waveBreakTimer;
+                    stones = data.stones || stones;
                     gridMap = data.gridMap;
+                    myCoins = data.clientCoins;
                     
-                    // 同步敵人陣容
                     enemies = [];
                     for(var i=0; i<data.enemies.length; i++) {
                         var eData = data.enemies[i];
                         var en = new Enemy(eData.isBoss, wave);
-                        en.id = eData.id; en.x = eData.x; en.y = eData.y; en.hp = eData.hp; en.maxHp = eData.maxHp;
+                        en.id = eData.id; en.type = eData.type; en.x = eData.x; en.y = eData.y; en.hp = eData.hp; en.maxHp = eData.maxHp;
                         en.statuses = eData.statuses; en.customName = eData.customName; en.flash = eData.flash;
+                        en.img = getCachedImg(en.id);
                         enemies.push(en);
                     }
                     
-                    // 同步塔陣容
                     towers = [];
                     for(var i=0; i<data.towers.length; i++) {
                         var tData = data.towers[i];
-                        var tw = new Tower(tData.c, tData.r, tData.pokeId, tData.isShiny);
+                        var tw = new Tower(tData.c, tData.r, tData.pokeId, tData.isShiny, tData.owner);
                         tw.form = tData.form; tw.fixedSkill = tData.fixedSkill; tw.exp = tData.exp;
                         tw.formTimer = tData.formTimer;
                         towers.push(tw);
                     }
                     updateUI();
                 } else if (data.type === 'CORRECT_ANSWER') {
-                    // 對方答對，增加共用連擊與全域提示
                     comboCount++;
+                    if (comboCount % 2 === 0 && teraEnergy < 5) teraEnergy++;
+                    if (sosRescueEnergy < 3) sosRescueEnergy++;
                     updateUI();
                     sfx.upgrade();
-                    floatTexts.push(new FloatingText(canvas.width/2, 120, "🔥 " + data.role + " 答對了！連擊+" + (comboCount * 2) + "% 攻擊力", "#f1c40f", 34));
+                    floatTexts.push(new FloatingText(canvas.width/2, 120, "🔥 " + data.role + " 答對！連擊+" + (comboCount * 2) + "% 攻擊力", "#f1c40f", 34));
+                    
+                    // 檢查 10 秒合體技判定
+                    var now = Date.now();
+                    if (data.role.indexOf('哥哥') !== -1 || (isHost && data.role.indexOf('訓練家') !== -1)) lastAnswerTime.host = now;
+                    else lastAnswerTime.client = now;
+
+                    if (Math.abs(lastAnswerTime.host - lastAnswerTime.client) < 10000 && lastAnswerTime.host > 0 && lastAnswerTime.client > 0) {
+                        triggerSynergyCombo();
+                        lastAnswerTime.host = 0;
+                        lastAnswerTime.client = 0;
+                    }
+                } else if (data.type === 'GIFT_COINS') {
+                    myCoins += data.amount;
+                    sfx.coin();
+                    floatTexts.push(new FloatingText(canvas.width/2, 120, "💖 收到來自 " + data.from + " 贊助的 💰" + data.amount + " 金幣！", "#2ecc71", 34));
+                    updateUI();
+                    if (isHost) broadcastState();
+                } else if (data.type === 'TRIGGER_SOS_RESCUE') {
+                    sfx.freeze();
+                    triggerShake(10);
+                    floatTexts.push(new FloatingText(canvas.width/2, 120, "🤝 夥伴發動同心援護！全場強效急凍 4 秒！", "#3498db", 38));
+                    for(var i=0; i<enemies.length; i++) enemies[i].statuses.slow = 240;
                 } else if (data.type === 'CLIENT_ACTION' && isHost) {
-                    // 房主接收隊友操作並執行
                     if (data.act === 'build') {
-                        coins -= POKEMON_DATA[data.pokeId].cost;
-                        towers.push(new Tower(data.c, data.r, data.pokeId, data.isShiny));
+                        clientCoins -= POKEMON_DATA[data.pokeId].cost;
+                        towers.push(new Tower(data.c, data.r, data.pokeId, data.isShiny, 'client'));
                     } else if (data.act === 'evolve') {
-                        var targetTower = null;
-                        for(var t=0; t<towers.length; t++){ if(towers[t].c===data.c && towers[t].r===data.r) targetTower=towers[t]; }
-                        if(targetTower) { targetTower.setPoke(data.evoId); targetTower.exp=0; }
+                        for(var t=0; t<towers.length; t++){
+                            if(towers[t].c===data.c && towers[t].r===data.r) {
+                                towers[t].setPoke(data.evoId);
+                                towers[t].exp=0;
+                            }
+                        }
+                    } else if (data.act === 'techUpgrade') {
+                        var cost = 300 + (data.techType === 'dmg' ? globalDmgLevel : globalRateLevel) * 300;
+                        clientCoins -= cost;
+                        if (data.techType === 'dmg') globalDmgLevel++; else globalRateLevel++;
+                    } else if (data.act === 'changeSkill') {
+                        clientCoins -= 50;
+                        for(var t=0; t<towers.length; t++){
+                            if(towers[t].c===data.c && towers[t].r===data.r) {
+                                towers[t].fixedSkill = data.skill;
+                            }
+                        }
+                    } else if (data.act === 'reroll') {
+                        clientCoins -= 15;
+                    } else if (data.act === 'sellTower') {
+                        clientCoins += data.refund;
+                        for(var t=0; t<towers.length; t++){
+                            if(towers[t].c===data.c && towers[t].r===data.r) {
+                                gridMap[data.c][data.r] = 0;
+                                towers.splice(t, 1);
+                                break;
+                            }
+                        }
+                    } else if (data.act === 'useStone') {
+                        var consumeType = (data.stoneType === 'mega' || data.stoneType === 'megaX' || data.stoneType === 'megaY') ? 'mega' : 'dynamax';
+                        stones[consumeType]--;
+                        for(var t=0; t<towers.length; t++){
+                            if(towers[t].c===data.c && towers[t].r===data.r) {
+                                towers[t].form = data.stoneType;
+                                towers[t].formTimer = towers[t].maxFormTimer;
+                            }
+                        }
+                    } else if (data.act === 'catchBoss') {
+                        var emptyCells = [];
+                        for(var c=0; c<COLS; c++) { for(var r=0; r<ROWS; r++) { if(gridMap[c][r] === 0) emptyCells.push({c:c, r:r}); } }
+                        if(emptyCells.length > 0) {
+                            var cell = emptyCells[0];
+                            towers.push(new Tower(cell.c, cell.r, data.bossId, false, 'client'));
+                        }
+                    } else if (data.act === 'chest') {
+                        clientCoins += 60;
+                        for(var i = 0; i < 10; i++) visualCoins.push(new VisualCoin(data.x, data.y));
+                        sfx.chest();
                     }
                     updateUI();
                     broadcastState();
@@ -510,7 +665,7 @@
             var enemyList = [];
             for(var i=0; i<enemies.length; i++) {
                 enemyList.push({
-                    id: enemies[i].id, x: enemies[i].x, y: enemies[i].y, hp: enemies[i].hp, maxHp: enemies[i].maxHp,
+                    id: enemies[i].id, type: enemies[i].type, x: enemies[i].x, y: enemies[i].y, hp: enemies[i].hp, maxHp: enemies[i].maxHp,
                     isBoss: enemies[i].isBoss, statuses: enemies[i].statuses, customName: enemies[i].customName, flash: enemies[i].flash
                 });
             }
@@ -518,13 +673,16 @@
             for(var i=0; i<towers.length; i++) {
                 towerList.push({
                     c: towers[i].c, r: towers[i].r, pokeId: towers[i].pokeId, isShiny: towers[i].isShiny,
+                    owner: towers[i].owner,
                     form: towers[i].form, fixedSkill: towers[i].fixedSkill, exp: towers[i].exp, formTimer: towers[i].formTimer
                 });
             }
             conn.send({
-                type: 'SYNC_ALL', coins: coins, health: health, wave: wave, comboCount: comboCount,
+                type: 'SYNC_ALL', health: health, wave: wave, comboCount: comboCount,
                 currentWeather: currentWeather, baseLevel: baseLevel, teraEnergy: teraEnergy, teraActiveTimer: teraActiveTimer,
-                gridMap: gridMap, enemies: enemyList, towers: towerList
+                isWaveActive: isWaveActive, waveBreakTimer: waveBreakTimer, stones: stones,
+                gridMap: gridMap, enemies: enemyList, towers: towerList,
+                clientCoins: clientCoins
             });
         }
 
@@ -621,6 +779,13 @@
                 window.speechSynthesis.speak(utterance);
             }
         };
+
+        function showWarning(msg) {
+            var w = document.getElementById('warningMsg');
+            w.innerText = msg;
+            w.style.opacity = 1;
+            setTimeout(function() { w.style.opacity = 0; }, 1800);
+        }
 
         function getDist(x1, y1, x2, y2) { return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)); }
 
@@ -805,12 +970,6 @@
             { c: 0.10, r: 0.30, e: 0.35, l: 0.15, m: 0.10 }, { c: 0.05, r: 0.25, e: 0.40, l: 0.20, m: 0.10 }, { c: 0.00, r: 0.20, e: 0.40, l: 0.25, m: 0.15 }
         ];
 
-        function getPokeImg(id) {
-            var img = new Image(); img.crossOrigin = "Anonymous";
-            img.src = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/" + id + ".png";
-            return img;
-        }
-
         var canvas = document.getElementById('gameCanvas'); var ctx = canvas.getContext('2d');
         var GRID_SIZE = 80; var COLS = 12; var ROWS = 8;
         
@@ -833,10 +992,7 @@
         for(var i=0; i<pathCells.length; i++) { pixelPath.push({x: pathCells[i][0] * GRID_SIZE + GRID_SIZE/2, y: pathCells[i][1] * GRID_SIZE + GRID_SIZE/2}); }
         pixelPath.push({x: 1000, y: 6.5 * GRID_SIZE});
 
-        var grassTufts = []; 
-        for(var i=0; i<100; i++) { grassTufts.push({x: Math.random() * 960, y: Math.random() * 640}); }
-
-        var coins = 150; var health = 10; var wave = 0; var baseLevel = 1; var rerollsThisWave = 0; 
+        var health = 10; var wave = 0; var baseLevel = 1; var rerollsThisWave = 0; 
         var globalDmgLevel = 0; var globalRateLevel = 0; var comboCount = 0;
         var isPaused = true; var gameOver = false; var gameStarted = false; var loopStarted = false; var userPaused = false;
 
@@ -942,7 +1098,10 @@
             if (enemy.hp <= 0) { 
                 if(tower) tower.gainExp(10); 
                 var reward = enemy.isBoss ? (20 + wave*5) : (2 + Math.floor(wave/2)); 
-                coins += reward; 
+                
+                myCoins += reward;
+                if (isHost && isMultiplayer) clientCoins += reward;
+
                 for(var i=0; i<Math.min(reward, 8); i++) visualCoins.push(new VisualCoin(enemy.x, enemy.y));
 
                 if(enemy.isBoss) {
@@ -1053,7 +1212,6 @@
 
             if(this.isBoss) {
                 this.id = currentTeam.boss;
-                this.type = getEnemyType(this.id);
             } else {
                 if (Math.random() < 0.7 && currentTeam.grunts.length > 0) {
                     this.id = currentTeam.grunts[Math.floor(Math.random() * currentTeam.grunts.length)];
@@ -1061,15 +1219,9 @@
                     var pool = POOLS.common.concat(POOLS.rare);
                     this.id = parseInt(pool[Math.floor(Math.random() * pool.length)]);
                 }
-                this.type = getEnemyType(this.id);
             }
-
-            var baseUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/";
-            var fallImg = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/";
-            this.img = new Image(); this.img.crossOrigin = "Anonymous"; 
-            this.img.setAttribute('data-fallback', fallImg + this.id + ".png");
-            this.img.onerror = function() { this.src = this.getAttribute('data-fallback'); };
-            this.img.src = baseUrl + this.id + ".png";
+            this.type = getEnemyType(this.id);
+            this.img = getCachedImg(this.id);
         }
         Enemy.prototype.update = function() {
             if(this.flash > 0) this.flash--; if(this.hitScale > 1.0) this.hitScale -= 0.05;
@@ -1089,7 +1241,7 @@
                     if(health <= 0) gameOver = true; 
                 }
             } else { 
-                var dx = target.x - this.x; var dy = target.y - this.y;
+                var dx = target.x - this.x; var dy = target.y - this.y; 
                 this.x += (dx / dist) * this.speed; this.y += (dy / dist) * this.speed; 
             }
         }
@@ -1108,7 +1260,7 @@
             var barW = this.isBoss ? 110 : 50;
             var barX = drawX + offset; var barY = drawY - 5;
             ctx.fillStyle = '#2c3e50'; ctx.beginPath(); ctx.roundRect(barX - barW/2 - 2, barY - 12, barW + 4, 8, 4); ctx.fill(); 
-            ctx.fillStyle = '#e74c3c'; ctx.beginPath(); ctx.roundRect(barX - barW/2, barY - 10, barW, 4, 2); ctx.fill();
+            ctx.fillStyle = '#e74c3c'; ctx.beginPath(); ctx.roundRect(barX - barW/2, barY - 10, barW, 4, 2); ctx.fill(); 
             ctx.fillStyle = '#2ecc71'; ctx.beginPath(); ctx.roundRect(barX - barW/2, barY - 10, barW * (Math.max(0, this.hp) / this.maxHp), 4, 2); ctx.fill();
 
             if (this.isBoss) {
@@ -1129,9 +1281,11 @@
             }
         }
 
-        function Tower(c, r, pokeId, isShiny) {
+        // --- 建議 2：防禦塔增加擁有者光圈 ---
+        function Tower(c, r, pokeId, isShiny, owner) {
             this.c = c; this.r = r; this.isMythic = (POOLS.mythic.indexOf(pokeId) !== -1);
             this.isShiny = !!isShiny;
+            this.owner = owner || (isHost ? 'host' : 'client'); // 'host' (哥哥) | 'client' (弟弟)
             this.x = c * GRID_SIZE + GRID_SIZE/2; this.y = r * GRID_SIZE + GRID_SIZE/2;
             gridMap[c][r] = 2;
             this.exp = 0; this.fireTimer = 0;  
@@ -1142,12 +1296,7 @@
         Tower.prototype.setPoke = function(pokeId) { 
             this.pokeId = pokeId; 
             this.data = POKEMON_DATA[pokeId] || POKEMON_DATA[1]; 
-            var baseUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/";
-            var fallImg = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/";
-            this.img = new Image(); this.img.crossOrigin = "Anonymous"; 
-            this.img.setAttribute('data-fallback', fallImg + pokeId + ".png");
-            this.img.onerror = function() { this.src = this.getAttribute('data-fallback'); };
-            this.img.src = baseUrl + pokeId + ".png";
+            this.img = getCachedImg(pokeId);
             this.fixedSkill = null;
         }
         Tower.prototype.gainExp = function(amount) { if (this.data.nextId && this.exp < this.data.maxExp && this.form === 'normal') { this.exp += amount; if (this.exp > this.data.maxExp) this.exp = this.data.maxExp; } }
@@ -1168,7 +1317,7 @@
 
             var comboDmgMult = 1.0 + (comboCount * 0.02);
             var techDmgMult = 1.0 + (globalDmgLevel * 0.20); 
-            var techRateMult = 1.0 + (globalRateLevel * 0.15);
+            var techRateMult = 1.0 + (globalRateLevel * 0.15); 
             
             this.fireTimer++; 
             var effectiveRate = (this.data.rate * rateMult) / techRateMult;
@@ -1223,6 +1372,18 @@
             var drawSize = (this.isMythic || this.form !== 'normal') ? 120 : 80; 
             var yOff = (this.isMythic || this.form !== 'normal') ? -60 : -40;
 
+            // 繪製擁有者光圈（哥哥藍圈、弟弟綠圈）
+            if (isMultiplayer) {
+                ctx.save();
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = (this.owner === 'host') ? '#3498db' : '#2ecc71';
+                ctx.setLineDash([4, 4]);
+                ctx.beginPath();
+                ctx.arc(this.x, this.y + 20, 32, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.restore();
+            }
+
             if (this.isShiny) {
                 ctx.save();
                 ctx.shadowColor = '#f1c40f'; ctx.shadowBlur = 25;
@@ -1232,9 +1393,19 @@
             }
 
             ctx.save();
-            if (this.img && this.img.complete && this.img.naturalWidth > 0) { 
+            var drawImg = this.img;
+            if (this.form !== 'normal') {
+                var tid = this.pokeId;
+                if (this.form === 'mega' && this.data.megaId) tid = this.data.megaId;
+                if (this.form === 'megaX' && this.data.megaXId) tid = this.data.megaXId;
+                if (this.form === 'megaY' && this.data.megaYId) tid = this.data.megaYId;
+                if (this.form === 'dynamax' && this.data.gmaxId) tid = this.data.gmaxId;
+                drawImg = getCachedImg(tid);
+            }
+
+            if (drawImg && drawImg.complete && drawImg.naturalWidth > 0) { 
                 if (this.isShiny) ctx.filter = 'hue-rotate(180deg) brightness(1.2)';
-                ctx.drawImage(this.img, this.x - drawSize/2, this.y + yOff + bounce, drawSize, drawSize); 
+                ctx.drawImage(drawImg, this.x - drawSize/2, this.y + yOff + bounce, drawSize, drawSize); 
             }
             ctx.restore();
 
@@ -1288,7 +1459,7 @@
         }
 
         function updateUI() {
-            document.getElementById('coinDisplay').innerText = coins; 
+            document.getElementById('coinDisplay').innerText = myCoins; 
             document.getElementById('healthDisplay').innerText = health; 
             document.getElementById('waveDisplay').innerText = Math.max(1, wave);
             document.getElementById('uiStoneM').innerText = stones.mega; 
@@ -1304,6 +1475,13 @@
                 tBtn.style.display = 'block';
             } else {
                 tBtn.style.display = 'none';
+            }
+
+            var sBtn = document.getElementById('sosBtn');
+            if (isMultiplayer && sosRescueEnergy >= 3) {
+                sBtn.style.display = 'block';
+            } else {
+                sBtn.style.display = 'none';
             }
         }
 
@@ -1388,7 +1566,15 @@
             if (cellType === 3) showModal('baseModal', function() { openBaseModal(); });
             else if (cellType === 2) { 
                 var tower = null; for(var t=0; t<towers.length; t++){ if(towers[t].c === c && towers[t].r === r) tower = towers[t]; }
-                if(tower) showModal('upgradeModal', function() { openUpgradeModal(tower); });
+                if(tower) {
+                    var myOwnerRole = isHost ? 'host' : 'client';
+                    if (isMultiplayer && tower.owner !== myOwnerRole) {
+                        sfx.error();
+                        showWarning("這是夥伴的寶可夢喔！不能代替操作！");
+                        return;
+                    }
+                    showModal('upgradeModal', function() { openUpgradeModal(tower); });
+                }
             }
             else if (cellType === 0) { pendingC = c; pendingR = r; showModal('buildModal', function() { openBuildModal(); }); }
         });
@@ -1400,11 +1586,18 @@
         window.sellTower = function() {
             if(!selectedTower) return;
             var refund = Math.floor(selectedTower.data.cost * 0.8) || 10;
-            coins += refund; sfx.coin();
+            myCoins += refund; sfx.coin();
+            var targetC = selectedTower.c;
+            var targetR = selectedTower.r;
             var idx = towers.indexOf(selectedTower);
             if(idx !== -1) towers.splice(idx, 1);
-            gridMap[selectedTower.c][selectedTower.r] = 0;
+            gridMap[targetC][targetR] = 0;
+
+            if (isMultiplayer && !isHost) {
+                sendNetAction({ type: 'CLIENT_ACTION', act: 'sellTower', c: targetC, r: targetR, refund: refund });
+            }
             closeModals(); updateUI();
+            if (isHost) broadcastState();
         };
 
         function openBaseModal() {
@@ -1417,7 +1610,7 @@
 
         window.triggerTechUpgrade = function(type) {
             var cost = 300 + (type === 'dmg' ? globalDmgLevel : globalRateLevel) * 300;
-            if (coins >= cost) { pendingTechType = type; pendingAction = 'techUpgrade'; closeModals(); showModal('mathModal', function() { openMathModal(3); }); } 
+            if (myCoins >= cost) { pendingTechType = type; pendingAction = 'techUpgrade'; closeModals(); showModal('mathModal', function() { openMathModal(3); }); } 
             else { sfx.error(); }
         }
 
@@ -1441,7 +1634,7 @@
             
             for(var b=0; b<currentBuildChoices.length; b++) {
                 (function(choice) {
-                    var data = POKEMON_DATA[choice.id]; var canAfford = coins >= data.cost;
+                    var data = POKEMON_DATA[choice.id]; var canAfford = myCoins >= data.cost;
                     var div = document.createElement('div'); div.className = 'choice-card'; div.style.opacity = canAfford ? '1' : '0.5';
                     if (choice.isShiny) { div.style.border = '5px solid gold'; div.style.boxShadow = '0 0 20px gold'; }
                     var mainImg = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/" + choice.id + ".png";
@@ -1462,13 +1655,18 @@
         }
 
         window.rerollShop = function() {
-            if (coins >= 15 && rerollsThisWave < 5) { sfx.coin(); coins -= 15; rerollsThisWave++; currentBuildChoices = []; updateUI(); openBuildModal(); }
+            if (myCoins >= 15 && rerollsThisWave < 5) { 
+                sfx.coin(); 
+                myCoins -= 15; 
+                if (isMultiplayer && !isHost) sendNetAction({ type: 'CLIENT_ACTION', act: 'reroll' });
+                rerollsThisWave++; currentBuildChoices = []; updateUI(); openBuildModal(); 
+            }
         };
 
         function openUpgradeModal(tower) {
             selectedTower = tower; 
             document.getElementById('upgTitle').innerText = (tower.isShiny ? '✨色違 ' : '') + tower.data.name; 
-            document.getElementById('upgImg').src = tower.img ? tower.img.src : getPokeImg(tower.pokeId).src;
+            document.getElementById('upgImg').src = tower.img ? tower.img.src : getCachedImg(tower.pokeId).src;
             if (tower.isShiny) document.getElementById('upgImg').style.filter = 'hue-rotate(180deg)';
             else document.getElementById('upgImg').style.filter = 'none';
             
@@ -1518,17 +1716,17 @@
                         card.onclick = function() {
                             if (tower.fixedSkill === sk.t) return;
                             var cost = (tower.fixedSkill !== null) ? 50 : 0;
-                            if (cost > 0 && coins < cost) {
+                            if (cost > 0 && myCoins < cost) {
                                 sfx.error();
-                                var w = document.getElementById('warningMsg');
-                                w.innerText = "金幣不足，更換技能需要 💰50！";
-                                w.style.opacity = 1;
-                                setTimeout(function() { w.style.opacity = 0; }, 1500);
+                                showWarning("金幣不足，更換技能需要 💰50！");
                                 return;
                             }
-                            if (cost > 0) coins -= cost;
+                            if (cost > 0) myCoins -= cost;
                             tower.fixedSkill = sk.t;
                             sfx.upgrade();
+                            if (isMultiplayer && !isHost) {
+                                sendNetAction({ type: 'CLIENT_ACTION', act: 'changeSkill', c: tower.c, r: tower.r, skill: sk.t });
+                            }
                             updateUI();
                             openUpgradeModal(tower);
                         };
@@ -1602,14 +1800,11 @@
                 sfx.click(); pendingStoneType = type; pendingAction = 'useStone'; closeModals(); showModal('mathModal', function() { openMathModal(3); }); 
             } else {
                 sfx.error();
-                var w = document.getElementById('warningMsg');
-                w.innerText = "進化石不足！打倒每3波Boss可取得！";
-                w.style.opacity = 1;
-                setTimeout(function() { w.style.opacity = 0; }, 1500);
+                showWarning("進化石不足！打倒每3波Boss可取得！");
             }
         };
 
-        // --- 數學題目系統 (依據「本機設定的年級」出題) ---
+        // --- 數學題目系統 ---
         function openMathModal(difficulty) {
             var num1, num2, type, ans, qText, speechQText;
             var isEvolve = (difficulty === 'evolve');
@@ -1726,11 +1921,21 @@
                 sfx.upgrade(); 
                 comboCount++;
                 if (comboCount % 2 === 0 && teraEnergy < 5) teraEnergy++;
+                if (sosRescueEnergy < 3) sosRescueEnergy++;
                 updateUI();
                 
-                // 傳送答對事件給連線夥伴
+                var now = Date.now();
+                if (isHost) lastAnswerTime.host = now; else lastAnswerTime.client = now;
+
                 if (isMultiplayer) {
                     sendNetAction({ type: 'CORRECT_ANSWER', role: myRoleName });
+                }
+
+                // 檢查 10 秒內合體技
+                if (Math.abs(lastAnswerTime.host - lastAnswerTime.client) < 10000 && lastAnswerTime.host > 0 && lastAnswerTime.client > 0) {
+                    triggerSynergyCombo();
+                    lastAnswerTime.host = 0;
+                    lastAnswerTime.client = 0;
                 }
 
                 floatTexts.push(new FloatingText(canvas.width/2, 100, "🔥 " + myRoleName + " 答對！(+" + (comboCount * 2) + "% 攻擊力)", "#f1c40f", 34));
@@ -1738,8 +1943,9 @@
                 
                 setTimeout(function() {
                     if (pendingAction === 'build') { 
-                        coins -= POKEMON_DATA[pendingPokeId].cost; 
-                        towers.push(new Tower(pendingC, pendingR, pendingPokeId, window.pendingIsShiny)); 
+                        myCoins -= POKEMON_DATA[pendingPokeId].cost; 
+                        var myOwnerRole = isHost ? 'host' : 'client';
+                        towers.push(new Tower(pendingC, pendingR, pendingPokeId, window.pendingIsShiny, myOwnerRole)); 
                         currentBuildChoices = []; 
                         if (isMultiplayer && !isHost) {
                             sendNetAction({ type: 'CLIENT_ACTION', act: 'build', c: pendingC, r: pendingR, pokeId: pendingPokeId, isShiny: window.pendingIsShiny });
@@ -1751,44 +1957,43 @@
                             sendNetAction({ type: 'CLIENT_ACTION', act: 'evolve', c: selectedTower.c, r: selectedTower.r, evoId: pendingEvoId });
                         }
                     } 
-                    else if (pendingAction === 'catchBoss') {
+                    else if (pendingAction === 'catchBoss') { 
                         var emptyCells = [];
                         for(var c=0; c<COLS; c++) { for(var r=0; r<ROWS; r++) { if(gridMap[c][r] === 0) emptyCells.push({c:c, r:r}); } }
                         if(emptyCells.length > 0) {
                             var cell = emptyCells[0];
-                            towers.push(new Tower(cell.c, cell.r, pendingCatchEnemyId, false));
+                            var myOwnerRole = isHost ? 'host' : 'client';
+                            towers.push(new Tower(cell.c, cell.r, pendingCatchEnemyId, false, myOwnerRole));
                             floatTexts.push(new FloatingText(cell.c*GRID_SIZE+40, cell.r*GRID_SIZE+40, "🎉 " + myRoleName + " 成功收服神獸！", "#f1c40f", 36));
                             sfx.shiny();
                         }
-                    }
+                        if (isMultiplayer && !isHost) {
+                            sendNetAction({ type: 'CLIENT_ACTION', act: 'catchBoss', bossId: pendingCatchEnemyId });
+                        }
+                    } 
                     else if (pendingAction === 'techUpgrade') { 
                         var cost = 300 + (pendingTechType === 'dmg' ? globalDmgLevel : globalRateLevel) * 300; 
-                        coins -= cost; if (pendingTechType === 'dmg') globalDmgLevel++; else globalRateLevel++; 
-                    }
+                        myCoins -= cost; if (pendingTechType === 'dmg') globalDmgLevel++; else globalRateLevel++; 
+                        if (isMultiplayer && !isHost) {
+                            sendNetAction({ type: 'CLIENT_ACTION', act: 'techUpgrade', techType: pendingTechType });
+                        }
+                    } 
                     else if (pendingAction === 'useStone') { 
                         var consumeType = (pendingStoneType === 'mega' || pendingStoneType === 'megaX' || pendingStoneType === 'megaY') ? 'mega' : 'dynamax';
                         stones[consumeType]--; 
                         selectedTower.form = pendingStoneType; 
                         selectedTower.formTimer = selectedTower.maxFormTimer;
-                        
-                        var targetImgId = selectedTower.pokeId;
-                        if (pendingStoneType === 'mega' && selectedTower.data.megaId) targetImgId = selectedTower.data.megaId;
-                        if (pendingStoneType === 'megaX' && selectedTower.data.megaXId) targetImgId = selectedTower.data.megaXId;
-                        if (pendingStoneType === 'megaY' && selectedTower.data.megaYId) targetImgId = selectedTower.data.megaYId;
-                        if (pendingStoneType === 'dynamax' && selectedTower.data.gmaxId) targetImgId = selectedTower.data.gmaxId;
-                        
-                        var baseUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/";
-                        var fallImg = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/";
-                        selectedTower.img = new Image();
-                        selectedTower.img.crossOrigin = "Anonymous";
-                        selectedTower.img.setAttribute('data-fallback', fallImg + targetImgId + ".png");
-                        selectedTower.img.onerror = function() { this.src = this.getAttribute('data-fallback'); };
-                        selectedTower.img.src = baseUrl + targetImgId + ".png";
-                    }
+                        if (isMultiplayer && !isHost) {
+                            sendNetAction({ type: 'CLIENT_ACTION', act: 'useStone', c: selectedTower.c, r: selectedTower.r, stoneType: pendingStoneType });
+                        }
+                    } 
                     else if (pendingAction === 'chest') { 
-                        coins += 60; for(var i = 0; i < 10; i++) visualCoins.push(new VisualCoin(pendingChestX, pendingChestY)); 
+                        myCoins += 60; for(var i = 0; i < 10; i++) visualCoins.push(new VisualCoin(pendingChestX, pendingChestY)); 
                         sfx.chest();
-                    }
+                        if (isMultiplayer && !isHost) {
+                            sendNetAction({ type: 'CLIENT_ACTION', act: 'chest', x: pendingChestX, y: pendingChestY });
+                        }
+                    } 
                     pendingAction = null; updateUI(); closeModals();
                     if (isHost) broadcastState();
                 }, 500); 
@@ -1813,7 +2018,7 @@
                 if(teraActiveTimer > 0) { teraActiveTimer--; if(teraActiveTimer===0) updateUI(); }
                 drawMap();
 
-                // 房主專屬主管怪物生成與進程
+                // 房主主管怪物生成與進程
                 if(!skipUpdate && (!isMultiplayer || isHost)) {
                     if (!isWaveActive) {
                         waveBreakTimer--;
@@ -1836,7 +2041,10 @@
                         } else if (enemies.length === 0) {
                             isWaveActive = false; waveBreakTimer = 180; rerollsThisWave = 0; wave++; 
                             if (baseLevel < BASE_RATES.length && wave % 2 === 0) baseLevel++;
-                            coins += 50 + wave * 10; sfx.coin(); updateUI();
+                            var waveReward = 50 + wave * 10;
+                            myCoins += waveReward;
+                            if (isMultiplayer && isHost) clientCoins += waveReward;
+                            sfx.coin(); updateUI();
                         }
                     }
                 }
