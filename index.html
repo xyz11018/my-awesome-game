@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>寶可夢：數學防衛戰 V78 雙人極速流暢版</title>
+    <title>寶可夢：數學防衛戰 V79 雙人極致流暢防重疊版</title>
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
     
@@ -55,7 +55,7 @@
 
         #gameWrapper { position: relative; border: 8px solid #bdc3c7; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.8), inset 0 0 15px rgba(0,0,0,0.5); background: url('https://www.transparenttextures.com/patterns/dark-matter.png') #78C850; background-blend-mode: multiply; }
         #gameContainer { overflow: hidden; border-radius: 12px 12px 0 0; position: relative;}
-        canvas { display: block; cursor: default; }
+        canvas { display: block; cursor: default; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges; }
         
         #ui { width: 960px; display: flex; justify-content: space-between; align-items: center; padding: 10px 25px; background: linear-gradient(to bottom, #34495e, #2c3e50); box-sizing: border-box; border-radius: 0 0 12px 12px; border-top: 5px solid #1a252f; font-size: 20px; box-shadow: inset 0 -4px 8px rgba(0,0,0,0.3); }
         .ui-group { display: flex; align-items: center; gap: 12px; }
@@ -229,7 +229,7 @@
         <button class="start-btn" style="background: linear-gradient(to bottom, #3498db, #2980b9); box-shadow: 0 10px 0 #1f618d; font-size: 44px; padding: 20px 50px;" onclick="location.reload()">🔄 時光倒流 (重新開始)</button>
     </div>
 
-    <h1>⚡ 精靈寶可夢：數學防衛戰 V78 ⚡</h1>
+    <h1>⚡ 精靈寶可夢：數學防衛戰 V79 ⚡</h1>
     
     <div id="gameWrapper">
         <div id="gameContainer">
@@ -352,6 +352,7 @@
     </audio>
 
     <script>
+        // === 全域清晰圖片快取池 ===
         var imageCache = {};
         function getCachedImg(id) {
             if (imageCache[id]) return imageCache[id];
@@ -542,7 +543,6 @@
                     gridMap = data.gridMap;
                     myCoins = data.clientCoins;
                     
-                    // 根據 UID 增量更新怪物，杜絕閃爍與抖動
                     var updatedEnemies = [];
                     for(var i=0; i<data.enemies.length; i++) {
                         var eData = data.enemies[i];
@@ -579,7 +579,6 @@
                     }
                     enemies = updatedEnemies;
                     
-                    // 防禦塔依座標增量更新
                     var updatedTowers = [];
                     for(var i=0; i<data.towers.length; i++) {
                         var tData = data.towers[i];
@@ -589,6 +588,7 @@
                         }
                         if(twExisting) {
                             if(twExisting.pokeId !== tData.pokeId) twExisting.setPoke(tData.pokeId);
+                            twExisting.isShiny = tData.isShiny;
                             twExisting.owner = tData.owner;
                             twExisting.form = tData.form;
                             twExisting.fixedSkill = tData.fixedSkill;
@@ -620,6 +620,16 @@
                         triggerSynergyCombo();
                         lastAnswerTime.host = 0;
                         lastAnswerTime.client = 0;
+                    }
+                } else if (data.type === 'LOCK_CELL' && isHost) {
+                    if (gridMap[data.c][data.r] === 0) {
+                        gridMap[data.c][data.r] = 4; // 標記為預約鎖定
+                        broadcastState();
+                    }
+                } else if (data.type === 'UNLOCK_CELL' && isHost) {
+                    if (gridMap[data.c][data.r] === 4) {
+                        gridMap[data.c][data.r] = 0;
+                        broadcastState();
                     }
                 } else if (data.type === 'GIFT_COINS') {
                     myCoins += data.amount;
@@ -1005,6 +1015,8 @@
         ];
 
         var canvas = document.getElementById('gameCanvas'); var ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
         var GRID_SIZE = 80; var COLS = 12; var ROWS = 8;
         
         var gridMap = [];
@@ -1232,7 +1244,6 @@
             ctx.restore();
         }
 
-        // --- 怪物類（加入唯一 UID 與平滑過渡目標座標） ---
         var nextEnemyUid = 1;
         function Enemy(isBoss, currentWave) {
             this.uid = isHost ? (nextEnemyUid++) : 0;
@@ -1269,14 +1280,12 @@
             if(this.statuses.poison > 0) { this.statuses.poison--; if(this.statuses.poison % 25 === 0) hitEnemy(this, 4 + wave, null, true, false); }
             if(this.statuses.paralyze > 0) { this.statuses.paralyze--; return; }
 
-            // 副機端：平滑內插補間跟隨主機座標，徹底消除瞬移抖動
             if (isMultiplayer && !isHost) {
                 this.x += (this.targetX - this.x) * 0.25;
                 this.y += (this.targetY - this.y) * 0.25;
                 return;
             }
 
-            // 房主端：原生路徑物理推算
             this.speed = this.statuses.slow > 0 ? this.baseSpeed * 0.5 : this.baseSpeed;
             if(this.statuses.slow > 0) this.statuses.slow--;
 
@@ -1334,7 +1343,7 @@
             this.isShiny = !!isShiny;
             this.owner = owner || (isHost ? 'host' : 'client');
             this.x = c * GRID_SIZE + GRID_SIZE/2; this.y = r * GRID_SIZE + GRID_SIZE/2;
-            gridMap[c][r] = 2;
+            gridMap[c][r] = 2; // 設為塔佔用
             this.exp = 0; this.fireTimer = 0;  
             this.form = 'normal'; this.formTimer = 0; this.maxFormTimer = 1800; this.attackCount = 0; this.maxAttackCount = 4; this.frozen = false; 
             this.fixedSkill = null; 
@@ -1529,6 +1538,11 @@
             } else {
                 sBtn.style.display = 'none';
             }
+
+            var rBtn = document.getElementById('rerollBtn');
+            if (rBtn) {
+                rBtn.innerText = '🔄 刷新商店 (💰 15) [剩餘 ' + (5 - rerollsThisWave) + ' 次]';
+            }
         }
 
         window.activateTera = function() {
@@ -1554,10 +1568,18 @@
 
             for(var c = 0; c < COLS; c++) {
                 for(var r = 0; r < ROWS; r++) {
-                    if (gridMap[c][r] === 0) { 
+                    var cellVal = gridMap[c][r];
+                    if (cellVal === 0) { 
                         var x = c * GRID_SIZE + 4; var y = r * GRID_SIZE + 4;
                         ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)'; ctx.lineWidth = 2; ctx.setLineDash([6, 6]);
                         ctx.beginPath(); ctx.roundRect(x, y, GRID_SIZE - 8, GRID_SIZE - 8, 10); ctx.stroke(); ctx.setLineDash([]);
+                    } else if (cellVal === 4) {
+                        // 正在建造中的鎖定警示框
+                        var x = c * GRID_SIZE + 4; var y = r * GRID_SIZE + 4;
+                        ctx.fillStyle = 'rgba(230, 126, 34, 0.3)';
+                        ctx.beginPath(); ctx.roundRect(x, y, GRID_SIZE - 8, GRID_SIZE - 8, 10); ctx.fill();
+                        ctx.strokeStyle = '#e67e22'; ctx.lineWidth = 3; ctx.setLineDash([4, 4]);
+                        ctx.stroke(); ctx.setLineDash([]);
                     }
                 }
             }
@@ -1610,6 +1632,9 @@
             if (c < 0 || c >= COLS || r < 0 || r >= ROWS) return;
             var cellType = gridMap[c][r]; sfx.click();
             if (cellType === 3) showModal('baseModal', function() { openBaseModal(); });
+            else if (cellType === 4) {
+                showWarning("⚠️ 夥伴正在這格答題建造中喔！");
+            }
             else if (cellType === 2) { 
                 var tower = null; for(var t=0; t<towers.length; t++){ if(towers[t].c === c && towers[t].r === r) tower = towers[t]; }
                 if(tower) {
@@ -1622,12 +1647,33 @@
                     showModal('upgradeModal', function() { openUpgradeModal(tower); });
                 }
             }
-            else if (cellType === 0) { pendingC = c; pendingR = r; showModal('buildModal', function() { openBuildModal(); }); }
+            else if (cellType === 0) { 
+                pendingC = c; pendingR = r; 
+                // 預先佔位鎖定該格子
+                gridMap[c][r] = 4;
+                if (isMultiplayer) {
+                    if (isHost) broadcastState();
+                    else sendNetAction({ type: 'LOCK_CELL', c: c, r: r });
+                }
+                showModal('buildModal', function() { openBuildModal(); }); 
+            }
         });
 
         function showModal(id, setupFunc) { if(setupFunc) setupFunc(); var m = document.querySelectorAll('.modal'); for(var i=0; i<m.length; i++) m[i].classList.remove('active'); document.getElementById(id).classList.add('active'); isPaused = true; }
         window.closeModals = function() { var m = document.querySelectorAll('.modal'); for(var i=0; i<m.length; i++) m[i].classList.remove('active'); isPaused = false; };
-        window.cancelAction = function() { pendingAction = null; sfx.click(); closeModals(); };
+        
+        window.cancelAction = function() { 
+            if (pendingAction === 'build' || (pendingC !== null && gridMap[pendingC] && gridMap[pendingC][pendingR] === 4)) {
+                gridMap[pendingC][pendingR] = 0; // 釋放預約鎖定
+                if (isMultiplayer) {
+                    if (isHost) broadcastState();
+                    else sendNetAction({ type: 'UNLOCK_CELL', c: pendingC, r: pendingR });
+                }
+            }
+            pendingAction = null; 
+            sfx.click(); 
+            closeModals(); 
+        };
 
         window.sellTower = function() {
             if(!selectedTower) return;
@@ -1670,7 +1716,7 @@
                     var pool = POOLS[poolType]; 
                     if(pool && pool.length > 0) { 
                         var pick = pool[Math.floor(Math.random() * pool.length)]; 
-                        var isShiny = Math.random() < 0.02;
+                        var isShiny = Math.random() < 0.08; // 提高色違出率
                         if(currentBuildChoices.filter(function(x){ return x.id === pick; }).length === 0) {
                             currentBuildChoices.push({ id: pick, isShiny: isShiny });
                         }
@@ -1697,6 +1743,7 @@
                     container.appendChild(div);
                 })(currentBuildChoices[b]);
             }
+            updateUI();
             showModal('buildModal');
         }
 
@@ -1706,6 +1753,10 @@
                 myCoins -= 15; 
                 if (isMultiplayer && !isHost) sendNetAction({ type: 'CLIENT_ACTION', act: 'reroll' });
                 rerollsThisWave++; currentBuildChoices = []; updateUI(); openBuildModal(); 
+            } else if (rerollsThisWave >= 5) {
+                showWarning("本波刷新次數已達上限！");
+            } else {
+                showWarning("金幣不足 💰15！");
             }
         };
 
@@ -1850,6 +1901,7 @@
             }
         };
 
+        // --- 數學題目系統 ---
         function openMathModal(difficulty) {
             var num1, num2, type, ans, qText, speechQText;
             var isEvolve = (difficulty === 'evolve');
@@ -1989,10 +2041,11 @@
                     if (pendingAction === 'build') { 
                         myCoins -= POKEMON_DATA[pendingPokeId].cost; 
                         var myOwnerRole = isHost ? 'host' : 'client';
-                        towers.push(new Tower(pendingC, pendingR, pendingPokeId, window.pendingIsShiny, myOwnerRole)); 
+                        var isShinyVal = !!window.pendingIsShiny;
+                        towers.push(new Tower(pendingC, pendingR, pendingPokeId, isShinyVal, myOwnerRole)); 
                         currentBuildChoices = []; 
                         if (isMultiplayer && !isHost) {
-                            sendNetAction({ type: 'CLIENT_ACTION', act: 'build', c: pendingC, r: pendingR, pokeId: pendingPokeId, isShiny: window.pendingIsShiny });
+                            sendNetAction({ type: 'CLIENT_ACTION', act: 'build', c: pendingC, r: pendingR, pokeId: pendingPokeId, isShiny: isShinyVal });
                         }
                     } 
                     else if (pendingAction === 'evolve') { 
@@ -2045,6 +2098,14 @@
                 sfx.error(); 
                 comboCount = 0; updateUI();
                 hintText.innerText = "❌ 答錯啦！答案是 " + ansText; hintText.style.color = '#c0392b';
+                // 答錯時釋放預約鎖定
+                if (pendingAction === 'build') {
+                    gridMap[pendingC][pendingR] = 0;
+                    if (isMultiplayer) {
+                        if (isHost) broadcastState();
+                        else sendNetAction({ type: 'UNLOCK_CELL', c: pendingC, r: pendingR });
+                    }
+                }
                 setTimeout(function() { pendingAction = null; closeModals(); }, 1600); 
             }
         };
@@ -2062,7 +2123,6 @@
                 if(teraActiveTimer > 0) { teraActiveTimer--; if(teraActiveTimer===0) updateUI(); }
                 drawMap();
 
-                // 房主主管怪物生成與進程
                 if(!skipUpdate && (!isMultiplayer || isHost)) {
                     if (!isWaveActive) {
                         waveBreakTimer--;
@@ -2093,7 +2153,7 @@
                     }
                 }
 
-                // 房主每 3 幀廣播一次實時狀態
+                // 精準每秒 20 次同步（每 3 幀一次），降低傳輸負擔
                 if (isHost && isMultiplayer) {
                     netSyncTimer++;
                     if (netSyncTimer >= 3) { broadcastState(); netSyncTimer = 0; }
