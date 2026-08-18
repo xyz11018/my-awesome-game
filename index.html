@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>寶可夢：數學防衛戰 V80 雙人即時對戰平衡版</title>
+    <title>寶可夢：數學防衛戰 V84 穩定穿透連線版</title>
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
     
@@ -52,6 +52,7 @@
         .start-btn { font-family:'ZCOOL KuaiLe'; font-size:32px; padding:12px 35px; background:linear-gradient(to bottom, #e74c3c, #c0392b); color:white; border:5px solid white; border-radius:25px; cursor:pointer; box-shadow: 0 8px 0 #922b21, 0 15px 30px rgba(0,0,0,0.8); transition: 0.2s; margin: 8px;}
         .start-btn:hover { transform: translateY(-4px); box-shadow: 0 12px 0 #922b21; }
         .start-btn:active { transform: translateY(6px); box-shadow: none; }
+        .start-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
 
         #gameWrapper { position: relative; border: 8px solid #bdc3c7; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.8), inset 0 0 15px rgba(0,0,0,0.5); background: url('https://www.transparenttextures.com/patterns/dark-matter.png') #78C850; background-blend-mode: multiply; }
         #gameContainer { overflow: hidden; border-radius: 12px 12px 0 0; position: relative;}
@@ -113,8 +114,6 @@
             padding: 8px 16px; font-size: 20px; cursor: pointer; font-family: 'ZCOOL KuaiLe';
             box-shadow: 0 4px 10px rgba(0,0,0,0.5); z-index: 30; transition: 0.1s;
         }
-        #giftBtn:hover { transform: scale(1.05); }
-        #giftBtn:active { transform: scale(0.95); }
 
         #sosBtn {
             display: none; position: absolute; bottom: 140px; right: 20px;
@@ -122,24 +121,19 @@
             border: 4px solid #fff; border-radius: 30px; padding: 10px 24px;
             font-size: 24px; font-family: 'ZCOOL KuaiLe'; color: white;
             box-shadow: 0 0 20px #3498db, 0 6px 0 #1b4f72; cursor: pointer; z-index: 50;
-            animation: popIn 0.3s ease-out;
         }
 
         .coin-anim { animation: coinBounce 0.3s ease-out; color: #f1c40f !important;}
         .tech-box { background: rgba(0,0,0,0.05); padding: 15px; border-radius: 15px; border: 2px dashed #bdc3c7; margin-bottom: 10px; text-align: left; }
 
-        .numpad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 280px; margin: 10px auto 0; }
-        .num-key { background: #34495e; color: white; font-size: 28px; padding: 12px 0; border-radius: 12px; border: 3px solid #2c3e50; cursor: pointer; font-family: 'ZCOOL KuaiLe', sans-serif; box-shadow: 0 5px 0 #1a252f; transition: 0.1s;}
-        .num-key:hover { filter: brightness(1.1); transform: translateY(-2px); }
-        .num-key:active { transform: translateY(3px); box-shadow: none; }
         .voice-btn { background: linear-gradient(to bottom, #9b59b6, #8e44ad); color: white; border: 3px solid #fff; border-radius: 15px; padding: 8px 18px; font-size: 22px; cursor: pointer; font-family: 'ZCOOL KuaiLe'; box-shadow: 0 4px 0 #5e3370; margin-bottom: 5px;}
 
         .math-option-btn {
-            font-size: 28px; padding: 14px 28px;
+            font-size: 32px; padding: 16px 36px;
             background: linear-gradient(to bottom, #2980b9, #1f618d);
             color: #ffffff; border: 4px solid #f1c40f; border-radius: 20px;
             cursor: pointer; box-shadow: 0 6px 0 #154360; font-family: 'ZCOOL KuaiLe';
-            text-shadow: 2px 2px 0 #000; transition: 0.1s;
+            text-shadow: 2px 2px 0 #000; transition: 0.1s; min-width: 130px;
         }
         .math-option-btn:hover { filter: brightness(1.15); transform: translateY(-3px); box-shadow: 0 9px 0 #154360; }
         .math-option-btn:active { transform: translateY(4px); box-shadow: none; }
@@ -184,11 +178,11 @@
         <div id="modeSelectView">
             <p style="font-size: 24px; max-width: 750px; line-height: 1.6; margin: 10px auto;">
                 <strong>【雙人跨平台同心合作版】</strong><br>
-                👦 哥哥在電腦、👶 弟弟在平板，輸入 4 位數房號即可跨設備連線！<br>
-                💰 獨立金幣自由使用，專屬光圈防誤觸，雙人怪物血量全面強化！
+                👦 哥哥、👶 弟弟任一人開房皆可！全題型直覺三選一秒答！<br>
+                💰 獨立金幣自由使用，防禦塔歸屬明確，4 秒連續雙人答對觸發默契合體！
             </p>
             <div style="display:flex; gap: 15px; margin-top: 15px; flex-wrap:wrap; justify-content:center;">
-                <button class="start-btn" style="background:linear-gradient(to bottom, #9b59b6, #8e44ad); box-shadow: 0 8px 0 #5e3370;" onclick="showLobby('host')">🏠 我是房主 (建立房間)</button>
+                <button class="start-btn" style="background:linear-gradient(to bottom, #9b59b6, #8e44ad); box-shadow: 0 8px 0 #5e3370;" onclick="showLobby('host')">🏠 我來建立房間</button>
                 <button class="start-btn" style="background:linear-gradient(to bottom, #3498db, #2980b9); box-shadow: 0 8px 0 #1f618d;" onclick="showLobby('join')">🚀 加入夥伴房間</button>
                 <button class="start-btn" style="background:linear-gradient(to bottom, #2ecc71, #27ae60); box-shadow: 0 8px 0 #1e8449;" onclick="showLobby('single')">🎮 單人遊玩模式</button>
             </div>
@@ -199,7 +193,7 @@
             
             <div id="hostSection" style="display:none; margin: 15px 0;">
                 <div style="font-size: 24px;">📡 你的房間號碼：</div>
-                <div id="hostRoomCode" style="font-size: 54px; color: #f1c40f; letter-spacing: 6px; font-weight: bold; margin: 10px 0;">產生中...</div>
+                <div id="hostRoomCode" style="font-size: 54px; color: #f1c40f; letter-spacing: 6px; font-weight: bold; margin: 10px 0;">正在連線伺服器...</div>
                 <div style="font-size: 20px; color: #bdc3c7;">請另一台設備選擇「加入夥伴房間」並輸入此 4 位數！</div>
             </div>
 
@@ -209,10 +203,10 @@
             </div>
 
             <div style="margin: 20px 0; border-top: 2px dashed #7f8c8d; padding-top: 15px;">
-                <div style="font-size: 24px; margin-bottom: 10px;">請選擇「本台設備」作答的年級難度：</div>
+                <div style="font-size: 24px; margin-bottom: 10px;">請選擇「本台設備」的遊玩角色：</div>
                 <div style="display:flex; justify-content:center; gap: 15px;">
-                    <button class="start-btn" id="btnDiffEasy" style="font-size:24px; background:#2ecc71; box-shadow:0 6px 0 #27ae60;" onclick="selectMyGrade('easy')">👶 幼升小一 (數數/加減/時鐘)</button>
-                    <button class="start-btn" id="btnDiffNormal" style="font-size:24px; background:#e67e22; box-shadow:0 6px 0 #d35400;" onclick="selectMyGrade('normal')">👦 升小三 (乘法/除法/心算)</button>
+                    <button class="start-btn" id="btnDiffEasy" style="font-size:24px; background:#2ecc71; box-shadow:0 6px 0 #27ae60;" onclick="selectMyRole('brother_young')">👶 弟弟 (數數/加減/時鐘)</button>
+                    <button class="start-btn" id="btnDiffNormal" style="font-size:24px; background:#3498db; box-shadow:0 6px 0 #1f618d;" onclick="selectMyRole('brother_old')">👦 哥哥 (九九乘法/速算秒答)</button>
                 </div>
             </div>
 
@@ -229,7 +223,7 @@
         <button class="start-btn" style="background: linear-gradient(to bottom, #3498db, #2980b9); box-shadow: 0 10px 0 #1f618d; font-size: 44px; padding: 20px 50px;" onclick="location.reload()">🔄 時光倒流 (重新開始)</button>
     </div>
 
-    <h1>⚡ 精靈寶可夢：數學防衛戰 V80 ⚡</h1>
+    <h1>⚡ 精靈寶可夢：數學防衛戰 V84 ⚡</h1>
     
     <div id="gameWrapper">
         <div id="gameContainer">
@@ -275,7 +269,10 @@
             <span class="close-btn" onclick="cancelAction()">×</span>
             <div class="modal-body">
                 <h2 id="upgTitle" style="font-size: 44px;">寶可夢</h2>
-                <img id="upgImg" src="" style="width: 130px; filter: drop-shadow(5px 5px 0 rgba(0,0,0,0.3));">
+                <div style="position:relative; display:inline-block;">
+                    <img id="upgImg" src="" style="width: 130px; filter: drop-shadow(5px 5px 0 rgba(0,0,0,0.3));">
+                    <span id="upgShinyBadge" style="display:none; position:absolute; top:-5px; right:-10px; background:#f1c40f; color:#c0392b; font-size:18px; font-weight:bold; padding:2px 8px; border-radius:10px; border:2px solid #fff;">✨色違</span>
+                </div>
                 <div style="font-size: 24px; margin-top: 5px; font-weight: bold; color:#2c3e50;">
                     實際攻擊力: <span id="upgDmg" style="font-size: 36px; color:#e74c3c;"></span>
                     <span id="upgDmgBuff" style="font-size: 20px; color: #2ecc71;"></span>
@@ -352,6 +349,16 @@
     </audio>
 
     <script>
+        // WebRTC 穿透配置 (加入 Google 公開 STUN 伺服器)
+        var PEER_CONFIG = {
+            config: {
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:global.stun.twilio.com:3478' }
+                ]
+            }
+        };
+
         var imageCache = {};
         function getCachedImg(id) {
             if (imageCache[id]) return imageCache[id];
@@ -396,14 +403,18 @@
         var conn = null;
         var isHost = false;
         var isMultiplayer = false;
-        var myGrade = 'normal';
-        var myRoleName = "訓練家";
         var lobbyMode = 'single';
 
+        var myRoleId = 'brother_old';
+        var myRoleName = "👦 哥哥";
+        var partnerRoleName = "👶 弟弟";
         var myCoins = 150; 
         var clientCoins = 150; 
         var sosRescueEnergy = 0; 
+        var synergyCharge = 0; 
         var lastAnswerTime = { host: 0, client: 0 }; 
+        var cellLockTimers = {}; 
+        var isModalOpen = false;
 
         function showLobby(mode) {
             lobbyMode = mode;
@@ -430,25 +441,41 @@
             if (peer) { peer.destroy(); peer = null; }
         }
 
-        function selectMyGrade(grade) {
-            myGrade = grade;
+        function selectMyRole(roleId) {
+            myRoleId = roleId;
             sfx.click();
-            document.getElementById('btnDiffEasy').style.opacity = grade === 'easy' ? '1' : '0.5';
-            document.getElementById('btnDiffNormal').style.opacity = grade === 'normal' ? '1' : '0.5';
-            myRoleName = grade === 'easy' ? '👶 弟弟' : '👦 哥哥';
+            document.getElementById('btnDiffEasy').style.opacity = roleId === 'brother_young' ? '1' : '0.4';
+            document.getElementById('btnDiffNormal').style.opacity = roleId === 'brother_old' ? '1' : '0.4';
+            myRoleName = (roleId === 'brother_young') ? '👶 弟弟' : '👦 哥哥';
         }
 
         function initHostPeer() {
             var code = Math.floor(1000 + Math.random() * 9000).toString();
-            document.getElementById('hostRoomCode').innerText = code;
-            peer = new Peer('pkmn-' + code);
+            var codeEl = document.getElementById('hostRoomCode');
+            codeEl.innerText = "連線中...";
+
+            if (peer) { peer.destroy(); peer = null; }
+            peer = new Peer('pkmn-room-' + code, PEER_CONFIG);
             
-            peer.on('open', function() {
+            peer.on('open', function(id) {
                 isHost = true;
+                codeEl.innerText = code;
             });
+
+            peer.on('error', function(err) {
+                console.error("PeerJS Error:", err);
+                if (err.type === 'unavailable-id') {
+                    // ID 衝突重試
+                    initHostPeer();
+                } else {
+                    showWarning("連線伺服器失敗，請重新建立房間！");
+                }
+            });
+
             peer.on('connection', function(c) {
                 conn = c;
                 setupNetEvents();
+                sendNetAction({ type: 'ROLE_HANDSHAKE', roleId: myRoleId, roleName: myRoleName });
                 floatTexts.push(new FloatingText(canvas.width/2, 100, "🎉 夥伴已成功連線加入！", "#2ecc71", 36));
                 sfx.shiny();
                 document.getElementById('netStatusTag').innerText = "🟢 雙人合作中";
@@ -459,6 +486,7 @@
 
         function confirmLobbyAction() {
             initAudio();
+            var btn = document.getElementById('btnConfirmLobby');
             if (lobbyMode === 'single') {
                 isMultiplayer = false;
                 startGame();
@@ -470,16 +498,48 @@
             } else if (lobbyMode === 'join') {
                 var code = document.getElementById('joinRoomInput').value.trim();
                 if (!code || code.length !== 4) { alert("請輸入正確的 4 位數房號！"); return; }
-                peer = new Peer();
+                
+                btn.disabled = true;
+                btn.innerText = "連線中...";
+
+                if (peer) { peer.destroy(); peer = null; }
+                peer = new Peer(PEER_CONFIG);
+
                 peer.on('open', function() {
-                    conn = peer.connect('pkmn-' + code);
-                    setupNetEvents();
-                    isMultiplayer = true;
-                    isHost = false;
-                    document.getElementById('netStatusTag').innerText = "🟢 雙人合作中";
-                    document.getElementById('netStatusTag').style.background = "#3498db";
-                    document.getElementById('giftBtn').style.display = 'block';
-                    startGame();
+                    conn = peer.connect('pkmn-room-' + code, { reliable: true });
+                    
+                    var connectTimeout = setTimeout(function() {
+                        btn.disabled = false;
+                        btn.innerText = "確認啟動";
+                        alert("連線超時！請確認房號是否正確，以及房主是否在「我是房主」畫面中等待。");
+                    }, 8000);
+
+                    conn.on('open', function() {
+                        clearTimeout(connectTimeout);
+                        btn.disabled = false;
+                        btn.innerText = "確認啟動";
+                        setupNetEvents();
+                        sendNetAction({ type: 'ROLE_HANDSHAKE', roleId: myRoleId, roleName: myRoleName });
+                        isMultiplayer = true;
+                        isHost = false;
+                        document.getElementById('netStatusTag').innerText = "🟢 雙人合作中";
+                        document.getElementById('netStatusTag').style.background = "#3498db";
+                        document.getElementById('giftBtn').style.display = 'block';
+                        startGame();
+                    });
+
+                    conn.on('error', function(err) {
+                        clearTimeout(connectTimeout);
+                        btn.disabled = false;
+                        btn.innerText = "確認啟動";
+                        alert("連線發生錯誤: " + err);
+                    });
+                });
+
+                peer.on('error', function(err) {
+                    btn.disabled = false;
+                    btn.innerText = "確認啟動";
+                    alert("網路連線錯誤: " + err.type);
                 });
             }
         }
@@ -519,6 +579,24 @@
             }
         };
 
+        function checkSynergyCombo(role) {
+            var now = Date.now();
+            if (role.indexOf('哥哥') !== -1) lastAnswerTime.host = now;
+            else lastAnswerTime.client = now;
+
+            if (Math.abs(lastAnswerTime.host - lastAnswerTime.client) < 4000 && lastAnswerTime.host > 0 && lastAnswerTime.client > 0) {
+                synergyCharge++;
+                if (synergyCharge >= 2) {
+                    synergyCharge = 0;
+                    lastAnswerTime.host = 0;
+                    lastAnswerTime.client = 0;
+                    triggerSynergyCombo();
+                } else {
+                    floatTexts.push(new FloatingText(canvas.width/2, 140, "⚡ 默契充能 (1/2)！再答對一題觸發神技！", "#f1c40f", 30));
+                }
+            }
+        }
+
         function triggerSynergyCombo() {
             sfx.tera();
             triggerShake(25);
@@ -527,13 +605,25 @@
             for(var i=0; i<enemies.length; i++) {
                 var en = enemies[i];
                 skillAnims.push(new SkillAnim(canvas.width/2, 0, en.x, en.y, 'dragon', 'aoe', '畫龍點睛'));
-                hitEnemy(en, 400, null, false, true);
+                hitEnemy(en, 450, null, false, true);
             }
         }
 
         function setupNetEvents() {
             conn.on('data', function(data) {
-                if (data.type === 'SYNC_ALL' && !isHost) {
+                if (data.type === 'ROLE_HANDSHAKE') {
+                    partnerRoleName = data.roleName;
+                    if (data.roleId === myRoleId) {
+                        if (isHost) {
+                            myRoleId = 'brother_old';
+                            myRoleName = '👦 哥哥';
+                        } else {
+                            myRoleId = 'brother_young';
+                            myRoleName = '👶 弟弟';
+                        }
+                    }
+                    floatTexts.push(new FloatingText(canvas.width/2, 140, "🤝 夥伴 " + data.roleName + " 準備完畢！", "#3498db", 30));
+                } else if (data.type === 'SYNC_ALL' && !isHost) {
                     health = data.health; wave = data.wave;
                     comboCount = data.comboCount; currentWeather = data.currentWeather;
                     baseLevel = data.baseLevel; teraEnergy = data.teraEnergy; teraActiveTimer = data.teraActiveTimer;
@@ -587,15 +677,15 @@
                         }
                         if(twExisting) {
                             if(twExisting.pokeId !== tData.pokeId) twExisting.setPoke(tData.pokeId);
-                            twExisting.isShiny = tData.isShiny;
-                            twExisting.owner = tData.owner;
+                            twExisting.isShiny = !!tData.isShiny;
+                            twExisting.ownerRoleId = tData.ownerRoleId;
                             twExisting.form = tData.form;
                             twExisting.fixedSkill = tData.fixedSkill;
                             twExisting.exp = tData.exp;
                             twExisting.formTimer = tData.formTimer;
                             updatedTowers.push(twExisting);
                         } else {
-                            var tw = new Tower(tData.c, tData.r, tData.pokeId, tData.isShiny, tData.owner);
+                            var tw = new Tower(tData.c, tData.r, tData.pokeId, tData.isShiny, tData.ownerRoleId);
                             tw.form = tData.form; tw.fixedSkill = tData.fixedSkill; tw.exp = tData.exp;
                             tw.formTimer = tData.formTimer;
                             updatedTowers.push(tw);
@@ -610,22 +700,23 @@
                     updateUI();
                     sfx.upgrade();
                     floatTexts.push(new FloatingText(canvas.width/2, 120, "🔥 " + data.role + " 答對！連擊+" + (comboCount * 2) + "% 攻擊力", "#f1c40f", 34));
-                    
-                    var now = Date.now();
-                    if (data.role.indexOf('哥哥') !== -1 || (isHost && data.role.indexOf('訓練家') !== -1)) lastAnswerTime.host = now;
-                    else lastAnswerTime.client = now;
-
-                    if (Math.abs(lastAnswerTime.host - lastAnswerTime.client) < 10000 && lastAnswerTime.host > 0 && lastAnswerTime.client > 0) {
-                        triggerSynergyCombo();
-                        lastAnswerTime.host = 0;
-                        lastAnswerTime.client = 0;
-                    }
+                    checkSynergyCombo(data.role);
                 } else if (data.type === 'LOCK_CELL' && isHost) {
+                    var key = data.c + '_' + data.r;
                     if (gridMap[data.c][data.r] === 0) {
                         gridMap[data.c][data.r] = 4;
+                        if (cellLockTimers[key]) clearTimeout(cellLockTimers[key]);
+                        cellLockTimers[key] = setTimeout(function() {
+                            if (gridMap[data.c][data.r] === 4) {
+                                gridMap[data.c][data.r] = 0;
+                                broadcastState();
+                            }
+                        }, 25000);
                         broadcastState();
                     }
                 } else if (data.type === 'UNLOCK_CELL' && isHost) {
+                    var key = data.c + '_' + data.r;
+                    if (cellLockTimers[key]) clearTimeout(cellLockTimers[key]);
                     if (gridMap[data.c][data.r] === 4) {
                         gridMap[data.c][data.r] = 0;
                         broadcastState();
@@ -644,7 +735,7 @@
                 } else if (data.type === 'CLIENT_ACTION' && isHost) {
                     if (data.act === 'build') {
                         clientCoins -= POKEMON_DATA[data.pokeId].cost;
-                        towers.push(new Tower(data.c, data.r, data.pokeId, data.isShiny, 'client'));
+                        towers.push(new Tower(data.c, data.r, data.pokeId, data.isShiny, data.builderRoleId));
                     } else if (data.act === 'evolve') {
                         for(var t=0; t<towers.length; t++){
                             if(towers[t].c===data.c && towers[t].r===data.r) {
@@ -688,7 +779,7 @@
                         for(var c=0; c<COLS; c++) { for(var r=0; r<ROWS; r++) { if(gridMap[c][r] === 0) emptyCells.push({c:c, r:r}); } }
                         if(emptyCells.length > 0) {
                             var cell = emptyCells[0];
-                            towers.push(new Tower(cell.c, cell.r, data.bossId, false, 'client'));
+                            towers.push(new Tower(cell.c, cell.r, data.bossId, false, data.builderRoleId));
                         }
                     } else if (data.act === 'chest') {
                         clientCoins += 60;
@@ -716,8 +807,8 @@
             var towerList = [];
             for(var i=0; i<towers.length; i++) {
                 towerList.push({
-                    c: towers[i].c, r: towers[i].r, pokeId: towers[i].pokeId, isShiny: towers[i].isShiny,
-                    owner: towers[i].owner,
+                    c: towers[i].c, r: towers[i].r, pokeId: towers[i].pokeId, isShiny: !!towers[i].isShiny,
+                    ownerRoleId: towers[i].ownerRoleId,
                     form: towers[i].form, fixedSkill: towers[i].fixedSkill, exp: towers[i].exp, formTimer: towers[i].formTimer
                 });
             }
@@ -1051,7 +1142,7 @@
         var spawnTimer = 9999; var enemiesSpawnedThisWave = 0; var totalEnemiesThisWave = 5; 
         var waveBreakTimer = 180; var isWaveActive = false; 
 
-        var pendingAction = null; var pendingC = 0, pendingR = 0; var pendingPokeId = 0; var selectedTower = null; var pendingStoneType = null; var pendingTechType = null; var pendingEvoId = null; var pendingChestX = 0; var pendingChestY = 0;
+        var pendingAction = null; var pendingC = null, pendingR = null; var pendingPokeId = 0; var selectedTower = null; var pendingStoneType = null; var pendingTechType = null; var pendingEvoId = null; var pendingChestX = 0; var pendingChestY = 0;
         var currentMathAnswer = 0; var currentBuildChoices = []; var shakeTime = 0; var hitPause = 0;
 
         function triggerShake(intensity) { shakeTime = intensity; }
@@ -1252,7 +1343,6 @@
             this.visOffsetX = (Math.random() - 0.5) * 24; 
             this.visOffsetY = (Math.random() - 0.5) * 24;
 
-            // 雙人模式怪物血量提升 60% (1.6x)
             var hpMultiplier = Math.pow(1.55, currentWave) * (isMultiplayer ? 1.6 : 1.0); 
             this.maxHp = Math.floor(25 * hpMultiplier); 
             if(this.isBoss) this.maxHp = Math.floor(this.maxHp * (isMultiplayer ? 12 : 10)); 
@@ -1343,10 +1433,10 @@
             }
         }
 
-        function Tower(c, r, pokeId, isShiny, owner) {
+        function Tower(c, r, pokeId, isShiny, ownerRoleId) {
             this.c = c; this.r = r; this.isMythic = (POOLS.mythic.indexOf(pokeId) !== -1);
             this.isShiny = !!isShiny;
-            this.owner = owner || (isHost ? 'host' : 'client');
+            this.ownerRoleId = ownerRoleId || myRoleId;
             this.x = c * GRID_SIZE + GRID_SIZE/2; this.y = r * GRID_SIZE + GRID_SIZE/2;
             gridMap[c][r] = 2; 
             this.exp = 0; this.fireTimer = 0;  
@@ -1434,21 +1524,15 @@
             var yOff = (this.isMythic || this.form !== 'normal') ? -60 : -40;
 
             if (isMultiplayer) {
+                var isBrotherOld = (this.ownerRoleId === 'brother_old');
                 ctx.save();
+                ctx.fillStyle = isBrotherOld ? 'rgba(52, 152, 219, 0.4)' : 'rgba(46, 204, 113, 0.4)';
+                ctx.strokeStyle = isBrotherOld ? '#2980b9' : '#27ae60';
                 ctx.lineWidth = 3;
-                ctx.strokeStyle = (this.owner === 'host') ? '#3498db' : '#2ecc71';
-                ctx.setLineDash([4, 4]);
                 ctx.beginPath();
-                ctx.arc(this.x, this.y + 20, 32, 0, Math.PI * 2);
+                ctx.ellipse(this.x, this.y + 26, 32, 14, 0, 0, Math.PI * 2);
+                ctx.fill();
                 ctx.stroke();
-                ctx.restore();
-            }
-
-            if (this.isShiny) {
-                ctx.save();
-                ctx.shadowColor = '#f1c40f'; ctx.shadowBlur = 25;
-                ctx.strokeStyle = 'gold'; ctx.lineWidth = 4;
-                ctx.beginPath(); ctx.arc(this.x, this.y + 10, 35, 0, Math.PI*2); ctx.stroke();
                 ctx.restore();
             }
 
@@ -1464,10 +1548,22 @@
             }
 
             if (drawImg && drawImg.complete && drawImg.naturalWidth > 0) { 
-                if (this.isShiny) ctx.filter = 'hue-rotate(180deg) brightness(1.2)';
+                if (this.isShiny) ctx.filter = 'hue-rotate(180deg) brightness(1.25) contrast(1.1)';
                 ctx.drawImage(drawImg, this.x - drawSize/2, this.y + yOff + bounce, drawSize, drawSize); 
             }
             ctx.restore();
+
+            if (this.isShiny) {
+                ctx.save();
+                ctx.font = 'bold 16px ZCOOL KuaiLe';
+                ctx.textAlign = 'center';
+                ctx.strokeStyle = '#c0392b';
+                ctx.lineWidth = 3;
+                ctx.strokeText('✨色違', this.x, this.y - 45 + bounce);
+                ctx.fillStyle = '#f1c40f';
+                ctx.fillText('✨色違', this.x, this.y - 45 + bounce);
+                ctx.restore();
+            }
 
             var canEvolve = (this.data.nextId && this.exp >= this.data.maxExp && this.form === 'normal');
             var needsSkill = ((this.data.stage >= 2 || this.isMythic) && !this.fixedSkill && this.form === 'normal');
@@ -1475,7 +1571,7 @@
             if (canEvolve || needsSkill) {
                 ctx.save();
                 var tPulse = Math.sin(Date.now() / 150) * 0.1 + 1;
-                ctx.translate(this.x, this.y);
+                ctx.translate(this.x, this.y - 20); 
                 ctx.scale(tPulse, tPulse);
                 
                 if (canEvolve) {
@@ -1491,8 +1587,23 @@
             }
 
             if(this.data.nextId && this.form === 'normal') {
-                ctx.fillStyle = '#2c3e50'; ctx.beginPath(); ctx.roundRect(this.x - 16, this.y + 33, 32, 6, 3); ctx.fill(); 
-                ctx.fillStyle = '#9b59b6'; ctx.beginPath(); ctx.roundRect(this.x - 15, this.y + 34, 30 * (this.exp / this.data.maxExp), 4, 2); ctx.fill();
+                ctx.fillStyle = '#2c3e50'; ctx.beginPath(); ctx.roundRect(this.x - 16, this.y + 35, 32, 6, 3); ctx.fill(); 
+                ctx.fillStyle = '#9b59b6'; ctx.beginPath(); ctx.roundRect(this.x - 15, this.y + 36, 30 * (this.exp / this.data.maxExp), 4, 2); ctx.fill();
+            }
+
+            if (isMultiplayer) {
+                var isBrotherOld = (this.ownerRoleId === 'brother_old');
+                ctx.save();
+                ctx.fillStyle = isBrotherOld ? '#2980b9' : '#27ae60';
+                ctx.beginPath(); 
+                ctx.roundRect(this.x - 26, this.y + 22, 52, 16, 4); 
+                ctx.fill();
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 12px ZCOOL KuaiLe';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(isBrotherOld ? '👦哥哥' : '👶弟弟', this.x, this.y + 30);
+                ctx.restore();
             }
         }
 
@@ -1613,7 +1724,7 @@
         };
 
         canvas.addEventListener('click', function(e) {
-            initAudio(); if(gameOver || !gameStarted || userPaused) return;
+            initAudio(); if(gameOver || !gameStarted || userPaused || isModalOpen) return;
             
             var rect = canvas.getBoundingClientRect(); 
             var scaleX = canvas.width / rect.width;
@@ -1642,8 +1753,7 @@
             else if (cellType === 2) { 
                 var tower = null; for(var t=0; t<towers.length; t++){ if(towers[t].c === c && towers[t].r === r) tower = towers[t]; }
                 if(tower) {
-                    var myOwnerRole = isHost ? 'host' : 'client';
-                    if (isMultiplayer && tower.owner !== myOwnerRole) {
+                    if (isMultiplayer && tower.ownerRoleId !== myRoleId) {
                         sfx.error();
                         showWarning("這是夥伴的寶可夢喔！不能代替操作！");
                         return;
@@ -1655,27 +1765,39 @@
                 pendingC = c; pendingR = r; 
                 gridMap[c][r] = 4;
                 if (isMultiplayer) {
-                    if (isHost) broadcastState();
-                    else sendNetAction({ type: 'LOCK_CELL', c: c, r: r });
+                    if (isHost) {
+                        var key = c + '_' + r;
+                        if (cellLockTimers[key]) clearTimeout(cellLockTimers[key]);
+                        cellLockTimers[key] = setTimeout(function() {
+                            if (gridMap[c][r] === 4) {
+                                gridMap[c][r] = 0;
+                                broadcastState();
+                            }
+                        }, 25000);
+                        broadcastState();
+                    } else {
+                        sendNetAction({ type: 'LOCK_CELL', c: c, r: r });
+                    }
                 }
                 showModal('buildModal', function() { openBuildModal(); }); 
             }
         });
 
-        // 核心修改：開啟彈窗不暫停主遊戲循環，保持雙方實時運作
         function showModal(id, setupFunc) { 
             if(setupFunc) setupFunc(); 
             var m = document.querySelectorAll('.modal'); 
             for(var i=0; i<m.length; i++) m[i].classList.remove('active'); 
             document.getElementById(id).classList.add('active'); 
+            isModalOpen = true;
         }
         window.closeModals = function() { 
             var m = document.querySelectorAll('.modal'); 
             for(var i=0; i<m.length; i++) m[i].classList.remove('active'); 
+            isModalOpen = false;
         };
         
         window.cancelAction = function() { 
-            if (pendingAction === 'build' || (pendingC !== null && gridMap[pendingC] && gridMap[pendingC][pendingR] === 4)) {
+            if (pendingC !== null && pendingR !== null && gridMap[pendingC] && gridMap[pendingC][pendingR] === 4) {
                 gridMap[pendingC][pendingR] = 0; 
                 if (isMultiplayer) {
                     if (isHost) broadcastState();
@@ -1683,6 +1805,8 @@
                 }
             }
             pendingAction = null; 
+            pendingC = null;
+            pendingR = null;
             sfx.click(); 
             closeModals(); 
         };
@@ -1728,7 +1852,7 @@
                     var pool = POOLS[poolType]; 
                     if(pool && pool.length > 0) { 
                         var pick = pool[Math.floor(Math.random() * pool.length)]; 
-                        var isShiny = Math.random() < 0.08; 
+                        var isShiny = Math.random() < 0.12; 
                         if(currentBuildChoices.filter(function(x){ return x.id === pick; }).length === 0) {
                             currentBuildChoices.push({ id: pick, isShiny: isShiny });
                         }
@@ -1743,12 +1867,12 @@
                     if (choice.isShiny) { div.style.border = '5px solid gold'; div.style.boxShadow = '0 0 20px gold'; }
                     var mainImg = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/" + choice.id + ".png";
                     var shinyTag = choice.isShiny ? '<span style="color:gold;">✨色違 </span>' : '';
-                    div.innerHTML = '<img src="' + mainImg + '" style="' + (choice.isShiny ? 'filter:hue-rotate(180deg);' : '') + '"><div style="font-weight: bold; font-size: 20px;">' + shinyTag + data.name + '</div><div class="cost">💰 ' + data.cost + '</div>';
+                    div.innerHTML = '<img src="' + mainImg + '" style="' + (choice.isShiny ? 'filter:hue-rotate(180deg) brightness(1.2);' : '') + '"><div style="font-weight: bold; font-size: 20px;">' + shinyTag + data.name + '</div><div class="cost">💰 ' + data.cost + '</div>';
                     if(canAfford) { 
                         div.onclick = function() { 
                             if (choice.isShiny) sfx.shiny(); else sfx.click();
                             pendingPokeId = choice.id; 
-                            window.pendingIsShiny = choice.isShiny;
+                            window.pendingIsShiny = !!choice.isShiny;
                             pendingAction = 'build'; closeModals(); showModal('mathModal', function() { openMathModal(1); }); 
                         }; 
                     }
@@ -1776,8 +1900,15 @@
             selectedTower = tower; 
             document.getElementById('upgTitle').innerText = (tower.isShiny ? '✨色違 ' : '') + tower.data.name; 
             document.getElementById('upgImg').src = tower.img ? tower.img.src : getCachedImg(tower.pokeId).src;
-            if (tower.isShiny) document.getElementById('upgImg').style.filter = 'hue-rotate(180deg)';
-            else document.getElementById('upgImg').style.filter = 'none';
+            
+            var badge = document.getElementById('upgShinyBadge');
+            if (tower.isShiny) {
+                document.getElementById('upgImg').style.filter = 'hue-rotate(180deg) brightness(1.25)';
+                if (badge) badge.style.display = 'block';
+            } else {
+                document.getElementById('upgImg').style.filter = 'none';
+                if (badge) badge.style.display = 'none';
+            }
             
             var dmgMult = 1.0;
             if(tower.form === 'mega') dmgMult = 1.6;
@@ -1919,7 +2050,7 @@
             document.getElementById('mathTitle').innerText = isEvolve ? "✨ 等級提升！進化考驗" : "大木博士的考驗";
             var qEl = document.getElementById('questionText');
 
-            if (myGrade === 'easy') {
+            if (myRoleId === 'brother_young') {
                 var randType = Math.random();
                 if (randType < 0.25) {
                     var h = Math.floor(Math.random() * 12) + 1;
@@ -1963,61 +2094,90 @@
                 }
                 qText = num1 + ' ' + type + ' ' + num2 + ' = ?';
                 speechQText = num1 + " " + type + " " + num2 + " 等於多少？";
+                
+                var opt1 = ans + (Math.random() > 0.5 ? 1 : -1);
+                if (opt1 <= 0 || opt1 === ans) opt1 = ans + 2;
+                var opt2 = ans + (Math.random() > 0.5 ? 2 : -2);
+                if (opt2 <= 0 || opt2 === ans || opt2 === opt1) opt2 = ans + 3;
+
+                var options = [ans.toString(), opt1.toString(), opt2.toString()];
+                options.sort(function() { return Math.random() - 0.5; });
+                window.currentMathAnswerStr = ans.toString();
+
+                qEl.innerHTML = qText;
+                var btnsHtml = '<div style="display:flex; gap:16px; justify-content:center; margin-top:15px; flex-wrap:wrap;">';
+                for(var i=0; i<options.length; i++) {
+                    btnsHtml += '<button class="math-option-btn" onclick="checkChoiceStr(\''+options[i]+'\')">'+options[i]+'</button>';
+                }
+                btnsHtml += '</div>';
+                document.getElementById('mathChoices').innerHTML = btnsHtml;
+                document.getElementById('hintText').innerText = "";
+                speakQuestion(speechQText);
+                return;
+
             } else {
-                var mathDiff = isEvolve ? 2 : difficulty;
-                if (mathDiff === 2) {
+                var qMode = Math.random();
+                var opt1, opt2;
+
+                if (qMode < 0.45) {
                     num1 = Math.floor(Math.random() * 8) + 2;
                     num2 = Math.floor(Math.random() * 8) + 2;
                     ans = num1 * num2;
-                    type = '×';
+                    qText = num1 + ' × ' + num2 + ' = ?';
+                    speechQText = num1 + " 乘以 " + num2 + " 等於多少？";
+                    
+                    opt1 = ans + (Math.random() > 0.5 ? num1 : -num1);
+                    if (opt1 <= 0 || opt1 === ans) opt1 = ans + 2;
+                    opt2 = ans + (Math.random() > 0.5 ? 4 : -4);
+                    if (opt2 <= 0 || opt2 === ans || opt2 === opt1) opt2 = ans + 6;
+                } else if (qMode < 0.75) {
+                    num1 = Math.floor(Math.random() * 7) + 3;
+                    ans = Math.floor(Math.random() * 7) + 3;
+                    var product = num1 * ans;
+                    qText = num1 + ' × ( ? ) = ' + product;
+                    speechQText = num1 + " 乘以多少等於 " + product + "？";
+
+                    opt1 = ans + (Math.random() > 0.5 ? 1 : -1);
+                    if (opt1 <= 0 || opt1 === ans) opt1 = ans + 2;
+                    opt2 = ans + (Math.random() > 0.5 ? 2 : -2);
+                    if (opt2 <= 0 || opt2 === ans || opt2 === opt1) opt2 = ans + 3;
                 } else {
-                    type = Math.random() > 0.5 ? '+' : '-';
-                    if(type === '+') { num1 = Math.floor(Math.random()*40)+15; num2 = Math.floor(Math.random()*40)+15; ans = num1 + num2; } 
-                    else { num1 = Math.floor(Math.random()*50)+45; num2 = Math.floor(Math.random()*30)+15; ans = num1 - num2; }
+                    var tensA = (Math.floor(Math.random() * 5) + 1) * 10;
+                    var tensB = (Math.floor(Math.random() * 4) + 1) * 10;
+                    var isPlus = Math.random() > 0.5;
+                    if (isPlus) {
+                        ans = tensA + tensB;
+                        qText = tensA + ' + ' + tensB + ' = ?';
+                        speechQText = tensA + " 加 " + tensB + " 等於多少？";
+                    } else {
+                        var bigTens = Math.max(tensA, tensB) + 30;
+                        ans = bigTens - tensB;
+                        qText = bigTens + ' - ' + tensB + ' = ?';
+                        speechQText = bigTens + " 減 " + tensB + " 等於多少？";
+                    }
+                    opt1 = ans + 10;
+                    opt2 = Math.max(10, ans - 10);
                 }
-                qText = num1 + ' ' + type + ' ' + num2 + ' = ?';
-                speechQText = num1 + " " + type + " " + num2 + " 等於多少？";
+
+                currentMathAnswer = ans;
+                window.currentMathAnswerStr = ans.toString();
+                qEl.innerHTML = qText;
+
+                var options = [ans.toString(), opt1.toString(), opt2.toString()];
+                options.sort(function() { return Math.random() - 0.5; });
+
+                var btnsHtml = '<div style="display:flex; gap:16px; justify-content:center; margin-top:15px; flex-wrap:wrap;">';
+                for (var i = 0; i < options.length; i++) {
+                    btnsHtml += '<button class="math-option-btn" onclick="checkChoiceStr(\'' + options[i] + '\')">' + options[i] + '</button>';
+                }
+                btnsHtml += '</div>';
+
+                document.getElementById('mathChoices').innerHTML = btnsHtml;
+                document.getElementById('hintText').innerText = "";
+                speakQuestion(speechQText);
+                return;
             }
-
-            currentMathAnswer = ans; 
-            qEl.innerHTML = qText;
-            renderNumpad();
-            document.getElementById('hintText').innerText = ""; 
-            speakQuestion(speechQText);
         }
-
-        function renderNumpad() {
-            var choiceBox = document.getElementById('mathChoices');
-            var html = '<div id="calcDisplay" style="font-size: 38px; background: white; color:#2c3e50; border-radius: 12px; padding: 4px 20px; width: 200px; border: 4px solid #3498db; margin-bottom: 8px; font-weight: bold;">?</div>';
-            html += '<div class="numpad-grid">';
-            for (var i = 1; i <= 9; i++) { html += '<button class="num-key" onclick="pressNum(' + i + ')">' + i + '</button>'; }
-            html += '<button class="num-key" style="background:#e74c3c; border-color:#c0392b;" onclick="clearNum()">⌫</button>';
-            html += '<button class="num-key" onclick="pressNum(0)">0</button>';
-            html += '<button class="num-key" style="background:#2ecc71; border-color:#27ae60;" onclick="submitMathVal()">OK</button>';
-            html += '</div>';
-            choiceBox.innerHTML = html;
-            window.currentInputStr = "";
-        }
-
-        window.pressNum = function(n) {
-            if (window.currentInputStr.length < 4) {
-                window.currentInputStr += n;
-                document.getElementById('calcDisplay').innerText = window.currentInputStr;
-                sfx.click();
-            }
-        };
-
-        window.clearNum = function() {
-            window.currentInputStr = window.currentInputStr.slice(0, -1);
-            document.getElementById('calcDisplay').innerText = window.currentInputStr || '?';
-            sfx.click();
-        };
-
-        window.submitMathVal = function() {
-            if (!window.currentInputStr) return;
-            var val = parseInt(window.currentInputStr, 10);
-            handleAnswerResult(val === currentMathAnswer, currentMathAnswer);
-        };
 
         window.checkChoiceStr = function(valStr) {
             handleAnswerResult(valStr === window.currentMathAnswerStr, window.currentMathAnswerStr);
@@ -2032,17 +2192,10 @@
                 if (sosRescueEnergy < 3) sosRescueEnergy++;
                 updateUI();
                 
-                var now = Date.now();
-                if (isHost) lastAnswerTime.host = now; else lastAnswerTime.client = now;
+                checkSynergyCombo(myRoleName);
 
                 if (isMultiplayer) {
                     sendNetAction({ type: 'CORRECT_ANSWER', role: myRoleName });
-                }
-
-                if (Math.abs(lastAnswerTime.host - lastAnswerTime.client) < 10000 && lastAnswerTime.host > 0 && lastAnswerTime.client > 0) {
-                    triggerSynergyCombo();
-                    lastAnswerTime.host = 0;
-                    lastAnswerTime.client = 0;
                 }
 
                 floatTexts.push(new FloatingText(canvas.width/2, 100, "🔥 " + myRoleName + " 答對！(+" + (comboCount * 2) + "% 攻擊力)", "#f1c40f", 34));
@@ -2051,12 +2204,11 @@
                 setTimeout(function() {
                     if (pendingAction === 'build') { 
                         myCoins -= POKEMON_DATA[pendingPokeId].cost; 
-                        var myOwnerRole = isHost ? 'host' : 'client';
                         var isShinyVal = !!window.pendingIsShiny;
-                        towers.push(new Tower(pendingC, pendingR, pendingPokeId, isShinyVal, myOwnerRole)); 
+                        towers.push(new Tower(pendingC, pendingR, pendingPokeId, isShinyVal, myRoleId)); 
                         currentBuildChoices = []; 
                         if (isMultiplayer && !isHost) {
-                            sendNetAction({ type: 'CLIENT_ACTION', act: 'build', c: pendingC, r: pendingR, pokeId: pendingPokeId, isShiny: isShinyVal });
+                            sendNetAction({ type: 'CLIENT_ACTION', act: 'build', c: pendingC, r: pendingR, pokeId: pendingPokeId, isShiny: isShinyVal, builderRoleId: myRoleId });
                         }
                     } 
                     else if (pendingAction === 'evolve') { 
@@ -2070,13 +2222,12 @@
                         for(var c=0; c<COLS; c++) { for(var r=0; r<ROWS; r++) { if(gridMap[c][r] === 0) emptyCells.push({c:c, r:r}); } }
                         if(emptyCells.length > 0) {
                             var cell = emptyCells[0];
-                            var myOwnerRole = isHost ? 'host' : 'client';
-                            towers.push(new Tower(cell.c, cell.r, pendingCatchEnemyId, false, myOwnerRole));
+                            towers.push(new Tower(cell.c, cell.r, pendingCatchEnemyId, false, myRoleId));
                             floatTexts.push(new FloatingText(cell.c*GRID_SIZE+40, cell.r*GRID_SIZE+40, "🎉 " + myRoleName + " 成功收服神獸！", "#f1c40f", 36));
                             sfx.shiny();
                         }
                         if (isMultiplayer && !isHost) {
-                            sendNetAction({ type: 'CLIENT_ACTION', act: 'catchBoss', bossId: pendingCatchEnemyId });
+                            sendNetAction({ type: 'CLIENT_ACTION', act: 'catchBoss', bossId: pendingCatchEnemyId, builderRoleId: myRoleId });
                         }
                     } 
                     else if (pendingAction === 'techUpgrade') { 
@@ -2102,21 +2253,33 @@
                             sendNetAction({ type: 'CLIENT_ACTION', act: 'chest', x: pendingChestX, y: pendingChestY });
                         }
                     } 
-                    pendingAction = null; updateUI(); closeModals();
+                    pendingAction = null; 
+                    pendingC = null; 
+                    pendingR = null;
+                    updateUI(); 
+                    closeModals();
                     if (isHost) broadcastState();
                 }, 500); 
             } else {
                 sfx.error(); 
-                comboCount = 0; updateUI();
+                comboCount = 0; 
+                synergyCharge = 0; 
+                updateUI();
                 hintText.innerText = "❌ 答錯啦！答案是 " + ansText; hintText.style.color = '#c0392b';
-                if (pendingAction === 'build') {
+                
+                if (pendingAction === 'build' && pendingC !== null && pendingR !== null) {
                     gridMap[pendingC][pendingR] = 0;
                     if (isMultiplayer) {
                         if (isHost) broadcastState();
                         else sendNetAction({ type: 'UNLOCK_CELL', c: pendingC, r: pendingR });
                     }
                 }
-                setTimeout(function() { pendingAction = null; closeModals(); }, 1600); 
+                setTimeout(function() { 
+                    pendingAction = null; 
+                    pendingC = null;
+                    pendingR = null;
+                    closeModals(); 
+                }, 1600); 
             }
         };
 
