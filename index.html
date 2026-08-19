@@ -2,8 +2,8 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>寶可夢：數學防衛戰 V84 穩定穿透連線版</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>寶可夢：數學防衛戰 V115 終極無錯版</title>
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
     
@@ -15,137 +15,140 @@
     </script>
 
     <style>
-        body { 
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { 
             margin: 0; padding: 0; background: #080c10; 
             display: flex; justify-content: center; align-items: center; 
             font-family: 'ZCOOL KuaiLe', sans-serif; color: white; user-select: none; 
             overflow: hidden; height: 100vh; width: 100vw;
+            touch-action: none;
         }
         
         #main-wrap {
-            width: 1000px;
-            height: 850px;
+            width: 1080px;
+            height: 980px;
             transform-origin: center center;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: flex-start;
             position: relative;
             background: radial-gradient(circle, #1a252f 0%, #000000 100%);
             box-shadow: 0 0 30px rgba(0,0,0,0.8);
-            padding-top: 15px;
-            box-sizing: border-box;
+            padding: 8px 15px;
+            flex-shrink: 0;
         }
 
-        h1 { margin: 0 0 10px 0; color: #f1c40f; font-size: 36px; letter-spacing: 2px; text-shadow: 3px 3px 0 #e74c3c, -2px -2px 0 #e74c3c, 2px -2px 0 #e74c3c, -2px 2px 0 #e74c3c, 0px 6px 10px rgba(0,0,0,0.8); animation: titleBounce 2s infinite ease-in-out; }
+        #baseDamageVignette {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            box-shadow: inset 0 0 80px rgba(255, 0, 0, 0.9);
+            pointer-events: none; opacity: 0; transition: opacity 0.1s ease-out; z-index: 90;
+        }
+
+        h1 { margin: 0 0 6px 0; color: #f1c40f; font-size: 30px; letter-spacing: 2px; text-shadow: 3px 3px 0 #e74c3c, -2px -2px 0 #e74c3c, 2px -2px 0 #e74c3c, -2px 2px 0 #e74c3c, 0px 6px 10px rgba(0,0,0,0.8); animation: titleBounce 2s infinite ease-in-out; }
         @keyframes titleBounce { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-3px) scale(1.02); } }
         @keyframes popIn { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } 70% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
         @keyframes coinBounce { 0% { transform: scale(1); } 50% { transform: scale(1.4); text-shadow: 0 0 20px #f1c40f; } 100% { transform: scale(1); } }
-        @keyframes gameOverPulse { 0% { background: rgba(139,0,0,0.8); } 50% { background: rgba(255,0,0,0.9); transform: scale(1.05); } 100% { background: rgba(139,0,0,0.8); } }
+        @keyframes gameOverPulse { 0% { background: rgba(139,0,0,0.85); } 50% { background: rgba(255,0,0,0.95); transform: scale(1.02); } 100% { background: rgba(139,0,0,0.85); } }
         @keyframes heavyShake { 0%, 100% { transform: translate(0, 0) rotate(0); } 20% { transform: translate(-10px, 5px) rotate(-3deg); } 40% { transform: translate(10px, -5px) rotate(3deg); } 60% { transform: translate(-10px, -5px) rotate(-3deg); } 80% { transform: translate(10px, 5px) rotate(3deg); } }
         @keyframes rainbowGlow { 0% { filter: hue-rotate(0deg) drop-shadow(0 0 10px gold); } 100% { filter: hue-rotate(360deg) drop-shadow(0 0 10px cyan); } }
+        @keyframes rocketPulse { 0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px #e74c3c); } 50% { transform: scale(1.05); filter: drop-shadow(0 0 25px #f1c40f); } }
 
         #startOverlay { position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.92); z-index:999; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align: center; }
-        #gameOverOverlay { position:absolute; top:0; left:0; width:100%; height:100%; background:radial-gradient(circle, #8b0000 0%, #000000 100%); z-index:999; display:none; flex-direction:column; justify-content:center; align-items:center; animation: gameOverPulse 2s infinite; }
-        .game-over-title { font-size: 110px; color: #ff0000; text-shadow: 0 0 40px #fff, 6px 6px 0 #000, -6px -6px 0 #000; animation: heavyShake 0.5s infinite; margin-bottom: 20px; line-height: 1.1; text-align: center; font-weight: 900;}
-        .game-over-subtitle { font-size: 40px; color: #f1c40f; text-shadow: 4px 4px 0 #000; margin-bottom: 40px; }
+        #gameOverOverlay { position:absolute; top:0; left:0; width:100%; height:100%; background:radial-gradient(circle, #8b0000 0%, #000000 100%); z-index:1000; display:none; flex-direction:column; justify-content:center; align-items:center; animation: gameOverPulse 2s infinite; }
+        .game-over-title { font-size: 80px; color: #ff0000; text-shadow: 0 0 40px #fff, 6px 6px 0 #000, -6px -6px 0 #000; animation: heavyShake 0.5s infinite; margin-bottom: 15px; line-height: 1.1; text-align: center; font-weight: 900;}
+        .game-over-subtitle { font-size: 30px; color: #f1c40f; text-shadow: 3px 3px 0 #000; margin-bottom: 30px; }
 
-        .start-btn { font-family:'ZCOOL KuaiLe'; font-size:32px; padding:12px 35px; background:linear-gradient(to bottom, #e74c3c, #c0392b); color:white; border:5px solid white; border-radius:25px; cursor:pointer; box-shadow: 0 8px 0 #922b21, 0 15px 30px rgba(0,0,0,0.8); transition: 0.2s; margin: 8px;}
-        .start-btn:hover { transform: translateY(-4px); box-shadow: 0 12px 0 #922b21; }
-        .start-btn:active { transform: translateY(6px); box-shadow: none; }
+        .start-btn { font-family:'ZCOOL KuaiLe'; font-size:26px; padding:10px 26px; background:linear-gradient(to bottom, #e74c3c, #c0392b); color:white; border:4px solid white; border-radius:22px; cursor:pointer; box-shadow: 0 7px 0 #922b21, 0 15px 25px rgba(0,0,0,0.8); transition: 0.2s; margin: 6px;}
+        .start-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 0 #922b21; }
+        .start-btn:active { transform: translateY(5px); box-shadow: none; }
         .start-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
 
-        #gameWrapper { position: relative; border: 8px solid #bdc3c7; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.8), inset 0 0 15px rgba(0,0,0,0.5); background: url('https://www.transparenttextures.com/patterns/dark-matter.png') #78C850; background-blend-mode: multiply; }
-        #gameContainer { overflow: hidden; border-radius: 12px 12px 0 0; position: relative;}
-        canvas { display: block; cursor: default; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges; }
+        #gameWrapper { width: 1040px; position: relative; border: 8px solid #bdc3c7; border-radius: 20px; box-shadow: 0 15px 30px rgba(0,0,0,0.8), inset 0 0 15px rgba(0,0,0,0.5); background: url('https://www.transparenttextures.com/patterns/dark-matter.png') #78C850; background-blend-mode: multiply; overflow: hidden; display: flex; flex-direction: column;}
+        #gameContainer { width: 100%; height: 720px; position: relative;}
+        canvas { display: block; cursor: default; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges; width: 1040px; height: 720px;}
         
-        #ui { width: 960px; display: flex; justify-content: space-between; align-items: center; padding: 10px 25px; background: linear-gradient(to bottom, #34495e, #2c3e50); box-sizing: border-box; border-radius: 0 0 12px 12px; border-top: 5px solid #1a252f; font-size: 20px; box-shadow: inset 0 -4px 8px rgba(0,0,0,0.3); }
-        .ui-group { display: flex; align-items: center; gap: 12px; }
+        #gameControls { width: 100%; display: flex; justify-content: space-between; align-items: center; background: #2c3e50; padding: 6px 14px; box-sizing: border-box; border-top: 4px solid #34495e; border-bottom: 4px solid #1a252f; gap: 6px; flex-wrap: wrap;}
+        .control-btn { color: white; border: 2.5px solid white; border-radius: 14px; padding: 5px 12px; font-size: 16px; cursor: pointer; font-family: 'ZCOOL KuaiLe'; box-shadow: 0 4px 6px rgba(0,0,0,0.4); transition: 0.1s; }
+        .control-btn:hover { transform: scale(1.04); filter: brightness(1.1); }
+        .control-btn:active { transform: scale(0.96); }
+        .circle-btn { background: rgba(0,0,0,0.4); color: white; border: 2.5px solid white; font-size: 18px; border-radius: 50%; width: 38px; height: 38px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.4); transition: 0.1s; display: flex; align-items: center; justify-content: center;}
+
+        #ui { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 6px 18px; background: linear-gradient(to bottom, #34495e, #1a252f); box-sizing: border-box; font-size: 18px; box-shadow: inset 0 -4px 8px rgba(0,0,0,0.3); }
+        .ui-group { display: flex; align-items: center; gap: 10px; }
         
-        .stone-counters { display: flex; gap: 12px; font-size: 17px; background: #2c3e50; padding: 6px 16px; border-radius: 30px; border: 2px solid #1a252f; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5); color: #f1c40f;}
+        .stone-counters { display: flex; gap: 10px; font-size: 15px; background: #2c3e50; padding: 4px 12px; border-radius: 30px; border: 2px solid #1a252f; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5); color: #f1c40f;}
         .stone-counters span { display: flex; align-items: center; text-shadow: 1px 1px 0px #000;}
-        
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, #ffffff, #f1f2f6); color: #2c3e50; border-radius: 25px; border: 8px solid #34495e; box-shadow: 0 25px 50px rgba(0,0,0,0.6), inset 0 0 0 6px #ecf0f1; z-index: 100; text-align: center; width: 680px; padding: 15px;}
+
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, #ffffff, #f1f2f6); color: #2c3e50; border-radius: 25px; border: 8px solid #34495e; box-shadow: 0 25px 50px rgba(0,0,0,0.6), inset 0 0 0 6px #ecf0f1; z-index: 2000; text-align: center; width: 680px; padding: 15px;}
         .modal.active { display: block; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .modal-body { max-height: 85vh; overflow-y: auto; overflow-x: hidden; padding: 10px; }
         .modal-body::-webkit-scrollbar { width: 8px; }
         .modal-body::-webkit-scrollbar-thumb { background: #bdc3c7; border-radius: 4px; }
-        .modal h2 { margin-top: 0; color: #e74c3c; text-shadow: 2px 2px 0 rgba(0,0,0,0.1); font-size: 38px; }
+        .modal h2 { margin-top: 0; color: #e74c3c; text-shadow: 2px 2px 0 rgba(0,0,0,0.1); font-size: 36px; }
         
-        .close-btn { position: absolute; top: 10px; right: 15px; cursor: pointer; font-size: 32px; font-weight: bold; color: white; background: #e74c3c; border: 4px solid #fff; border-radius: 50%; width: 45px; height: 45px; line-height: 35px; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.4); text-align: center; z-index: 101;}
+        .close-btn { position: absolute; top: 10px; right: 15px; cursor: pointer; font-size: 30px; font-weight: bold; color: white; background: #e74c3c; border: 4px solid #fff; border-radius: 50%; width: 42px; height: 42px; line-height: 32px; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.4); text-align: center; z-index: 2001;}
         .close-btn:hover { background: #c0392b; transform: scale(1.1) rotate(10deg); }
         
-        .choices-container { display: flex; justify-content: space-around; margin-top: 15px; gap: 10px; flex-wrap: wrap;}
-        .choice-card { border: 5px solid #bdc3c7; border-radius: 20px; padding: 10px 5px; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; background-color: #ffffff; flex: 1; position: relative; box-shadow: 0 8px 0 #95a5a6; margin-bottom: 10px; min-width: 130px; }
-        .choice-card:hover { border-color: #3498db; background-color: #ebf5fb; transform: translateY(-8px); box-shadow: 0 16px 0 #2980b9, 0 20px 20px rgba(0,0,0,0.2); }
-        .choice-card:active { transform: translateY(4px); box-shadow: 0 4px 0 #2980b9; }
+        .choices-container { display: flex; justify-content: space-around; margin-top: 15px; gap: 12px; flex-wrap: wrap;}
+        .choice-card { border: 5px solid #bdc3c7; border-radius: 20px; padding: 12px 8px; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; background-color: #ffffff; flex: 1; position: relative; box-shadow: 0 8px 0 #95a5a6; margin-bottom: 10px; min-width: 140px; }
+        .choice-card:hover { border-color: #3498db; background-color: #ebf5fb; transform: translateY(-6px); box-shadow: 0 14px 0 #2980b9; }
         .choice-card img { width: 90px; height: 90px; filter: drop-shadow(4px 4px 0px rgba(0,0,0,0.3)); }
-        .cost { color: #d35400; font-size: 26px; margin-top: 8px; text-shadow: 2px 2px 0px rgba(0,0,0,0.1);}
+        .cost { color: #d35400; font-size: 22px; margin-top: 6px; font-weight: bold;}
 
-        .exp-bar-container { width: 100%; height: 26px; background-color: #ecf0f1; border-radius: 15px; margin: 15px 0; overflow: hidden; border: 4px solid #bdc3c7; box-shadow: inset 0 5px 5px rgba(0,0,0,0.2);}
-        .exp-bar { height: 100%; background: linear-gradient(90deg, #9b59b6, #8e44ad); width: 0%; transition: width 0.4s; box-shadow: inset 0 -5px 0 rgba(0,0,0,0.2);}
+        .rarity-tag { font-size: 13px; font-weight: bold; padding: 2px 8px; border-radius: 10px; color: #fff; margin-bottom: 4px; text-shadow: 1px 1px 0 #000; }
+        .rarity-common { background: #27ae60; }
+        .rarity-rare { background: #2980b9; }
+        .rarity-epic { background: #8e44ad; }
+        .rarity-legendary { background: #f39c12; }
+        .rarity-mythic { background: #d35400; animation: rainbowGlow 3s infinite linear; }
+
+        .exp-bar-container { width: 100%; height: 24px; background-color: #ecf0f1; border-radius: 15px; margin: 15px 0; overflow: hidden; border: 4px solid #bdc3c7; }
+        .exp-bar { height: 100%; background: linear-gradient(90deg, #9b59b6, #8e44ad); width: 0%; transition: width 0.4s; }
         
-        .action-btn { background: linear-gradient(to bottom, #f1c40f, #f39c12); color: #c0392b; border: 4px solid #fff; padding: 12px 25px; font-size: 24px; border-radius: 20px; cursor: pointer; margin-top: 10px; font-family: 'ZCOOL KuaiLe', sans-serif; box-shadow: 0 8px 0 #d35400; transition: 0.1s; text-shadow: 1px 1px 0 rgba(255,255,255,0.5); }
-        .action-btn:hover { filter: brightness(1.1); transform: translateY(-4px); box-shadow: 0 12px 0 #d35400; }
-        .action-btn:active { transform: translateY(8px); box-shadow: 0 0 0 #d35400; }
+        .action-btn { background: linear-gradient(to bottom, #f1c40f, #f39c12); color: #c0392b; border: 4px solid #fff; padding: 10px 22px; font-size: 22px; border-radius: 18px; cursor: pointer; margin-top: 8px; font-family: 'ZCOOL KuaiLe', sans-serif; box-shadow: 0 6px 0 #d35400; transition: 0.1s; }
+        .action-btn:hover { filter: brightness(1.1); transform: translateY(-3px); }
 
-        .stone-btn { font-size: 20px; padding: 10px 16px; margin: 5px; background: linear-gradient(to bottom, #3498db, #2980b9); color: white; box-shadow: 0 5px 0 #1abc9c; border: 3px solid white; border-radius: 15px; cursor: pointer; font-family: 'ZCOOL KuaiLe';}
-        .stone-btn.mega { background: linear-gradient(to bottom, #9b59b6, #8e44ad); box-shadow: 0 5px 0 #2c3e50; }
-        .stone-btn.dyna { background: linear-gradient(to bottom, #e74c3c, #c0392b); box-shadow: 0 5px 0 #8e44ad; }
+        .stone-btn { font-size: 18px; padding: 8px 14px; margin: 4px; background: linear-gradient(to bottom, #3498db, #2980b9); color: white; box-shadow: 0 4px 0 #1abc9c; border: 3px solid white; border-radius: 14px; cursor: pointer; font-family: 'ZCOOL KuaiLe';}
+        .stone-btn.mega { background: linear-gradient(to bottom, #9b59b6, #8e44ad); box-shadow: 0 4px 0 #2c3e50; }
+        .stone-btn.dyna { background: linear-gradient(to bottom, #e74c3c, #c0392b); box-shadow: 0 4px 0 #8e44ad; }
         
         .skill-card {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: #34495e; color: white; border: 4px solid #2c3e50; border-radius: 18px;
-            padding: 12px 10px; margin: 6px; flex: 1; min-width: 180px; cursor: pointer;
-            box-shadow: 0 6px 0 #1a252f; transition: 0.2s; font-family: 'ZCOOL KuaiLe';
+            background: #34495e; color: white; border: 4px solid #2c3e50; border-radius: 16px;
+            padding: 10px; margin: 5px; flex: 1; min-width: 170px; cursor: pointer;
+            box-shadow: 0 5px 0 #1a252f; transition: 0.2s; font-family: 'ZCOOL KuaiLe';
         }
-        .skill-card:hover { transform: translateY(-4px); filter: brightness(1.1); }
-        .skill-card:active { transform: translateY(4px); box-shadow: none; }
-        .skill-card.active-skill { background: #27ae60; border-color: #2ecc71; box-shadow: 0 6px 0 #1e8449; }
+        .skill-card.active-skill { background: #27ae60; border-color: #2ecc71; }
         
-        #warningMsg { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); background: #e74c3c; border: 5px solid #fff; color: white; padding: 15px 40px; border-radius: 25px; font-size: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); pointer-events: none; opacity: 0; transition: opacity 0.2s; z-index: 5;}
+        #warningMsg { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: #e74c3c; border: 4px solid #fff; color: white; padding: 10px 30px; border-radius: 25px; font-size: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); pointer-events: none; opacity: 0; transition: opacity 0.2s; z-index: 5;}
         
-        #musicToggle { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6); color: white; border: 3px solid white; font-size: 24px; border-radius: 50%; width: 50px; height: 50px; cursor: pointer; z-index: 30; box-shadow: 0 4px 10px rgba(0,0,0,0.5);}
-        #pauseToggleBtn { position: absolute; top: 15px; right: 75px; background: rgba(0,0,0,0.6); color: white; border: 3px solid white; font-size: 24px; border-radius: 50%; width: 50px; height: 50px; cursor: pointer; z-index: 30; box-shadow: 0 4px 10px rgba(0,0,0,0.5);}
-        
-        #giftBtn {
-            display: none; position: absolute; top: 15px; left: 15px;
-            background: linear-gradient(135deg, #f39c12, #e67e22);
-            color: white; border: 3px solid white; border-radius: 20px;
-            padding: 8px 16px; font-size: 20px; cursor: pointer; font-family: 'ZCOOL KuaiLe';
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5); z-index: 30; transition: 0.1s;
-        }
-
-        #sosBtn {
-            display: none; position: absolute; bottom: 140px; right: 20px;
-            background: linear-gradient(135deg, #3498db, #2980b9);
-            border: 4px solid #fff; border-radius: 30px; padding: 10px 24px;
-            font-size: 24px; font-family: 'ZCOOL KuaiLe'; color: white;
-            box-shadow: 0 0 20px #3498db, 0 6px 0 #1b4f72; cursor: pointer; z-index: 50;
-        }
-
         .coin-anim { animation: coinBounce 0.3s ease-out; color: #f1c40f !important;}
-        .tech-box { background: rgba(0,0,0,0.05); padding: 15px; border-radius: 15px; border: 2px dashed #bdc3c7; margin-bottom: 10px; text-align: left; }
-
-        .voice-btn { background: linear-gradient(to bottom, #9b59b6, #8e44ad); color: white; border: 3px solid #fff; border-radius: 15px; padding: 8px 18px; font-size: 22px; cursor: pointer; font-family: 'ZCOOL KuaiLe'; box-shadow: 0 4px 0 #5e3370; margin-bottom: 5px;}
+        .tech-box { background: rgba(0,0,0,0.05); padding: 12px; border-radius: 15px; border: 2px dashed #bdc3c7; margin-bottom: 10px; text-align: left; }
+        .voice-btn { background: linear-gradient(to bottom, #9b59b6, #8e44ad); color: white; border: 3px solid #fff; border-radius: 14px; padding: 6px 16px; font-size: 20px; cursor: pointer; font-family: 'ZCOOL KuaiLe'; box-shadow: 0 4px 0 #5e3370; margin-bottom: 5px;}
+        .sos-ask-btn { background: linear-gradient(to bottom, #e67e22, #d35400); color: white; border: 3px solid #fff; border-radius: 14px; padding: 6px 16px; font-size: 20px; cursor: pointer; font-family: 'ZCOOL KuaiLe'; box-shadow: 0 4px 0 #a04000; margin-bottom: 5px; margin-left: 8px;}
 
         .math-option-btn {
-            font-size: 32px; padding: 16px 36px;
+            font-size: 26px; padding: 10px 22px;
             background: linear-gradient(to bottom, #2980b9, #1f618d);
-            color: #ffffff; border: 4px solid #f1c40f; border-radius: 20px;
-            cursor: pointer; box-shadow: 0 6px 0 #154360; font-family: 'ZCOOL KuaiLe';
-            text-shadow: 2px 2px 0 #000; transition: 0.1s; min-width: 130px;
+            color: #ffffff; border: 4px solid #f1c40f; border-radius: 18px;
+            cursor: pointer; box-shadow: 0 5px 0 #154360; font-family: 'ZCOOL KuaiLe';
+            text-shadow: 2px 2px 0 #000; transition: 0.1s; min-width: 110px; margin: 4px;
         }
-        .math-option-btn:hover { filter: brightness(1.15); transform: translateY(-3px); box-shadow: 0 9px 0 #154360; }
-        .math-option-btn:active { transform: translateY(4px); box-shadow: none; }
+        .math-option-btn:hover { filter: brightness(1.15); transform: translateY(-3px); }
+        .math-option-btn.disabled-btn {
+            background: #7f8c8d !important;
+            border-color: #95a5a6 !important;
+            color: #bdc3c7 !important;
+            box-shadow: none !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
 
-        #teraBtn {
-            display: none; position: absolute; bottom: 80px; right: 20px;
-            background: linear-gradient(135deg, #00cec9, #6c5ce7, #fd79a8);
-            border: 4px solid #fff; border-radius: 30px; padding: 10px 24px;
-            font-size: 26px; font-family: 'ZCOOL KuaiLe'; color: white;
-            box-shadow: 0 0 20px #00cec9, 0 6px 0 #2d3436; cursor: pointer; z-index: 50;
-            animation: rainbowGlow 3s infinite linear;
-        }
+        #mathTimerWrap { width: 100%; height: 16px; background: #bdc3c7; border-radius: 10px; overflow: hidden; margin-bottom: 8px; border: 2px solid #2c3e50; }
+        #mathTimerBar { width: 100%; height: 100%; background: linear-gradient(90deg, #2ecc71, #f1c40f, #e74c3c); transition: width 0.08s linear; }
 
         .lobby-box {
             background: rgba(44, 62, 80, 0.95);
@@ -158,61 +161,71 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.6);
         }
         .room-input {
-            font-size: 32px;
-            padding: 8px 15px;
-            width: 160px;
-            text-align: center;
-            border-radius: 12px;
-            border: 4px solid #3498db;
-            font-family: 'ZCOOL KuaiLe';
-            margin: 0 10px;
+            font-size: 32px; padding: 8px 15px; width: 160px; text-align: center;
+            border-radius: 12px; border: 4px solid #3498db; font-family: 'ZCOOL KuaiLe'; margin: 0 10px;
+        }
+
+        .dex-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 10px; padding: 10px; }
+        .dex-card { background: #fff; border: 3px solid #bdc3c7; border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 4px; color: #2c3e50; }
+        .dex-card.locked { background: #34495e; color: #7f8c8d; border-color: #2c3e50; }
+        .dex-card.locked img { filter: brightness(0); opacity: 0.25; }
+
+        #rocketAlertBar {
+            position: absolute; top: 12px; width: 92%; background: linear-gradient(90deg, #c0392b, #8e44ad);
+            border: 4px solid #f1c40f; border-radius: 25px; padding: 8px 18px; display: none; justify-content: space-around;
+            align-items: center; z-index: 50; animation: rocketPulse 1s infinite;
         }
     </style>
 </head>
 <body>
 
 <div id="main-wrap">
+    <div id="baseDamageVignette"></div>
+
+    <div id="rocketAlertBar">
+        <span style="font-size: 22px; color:#fff;">🚨 火箭隊突襲封鎖中央！剩餘 <strong id="rocketTimerText" style="color:#f1c40f; font-size:28px;">15</strong> 秒！</span>
+        <button class="start-btn" style="font-size: 18px; padding: 5px 16px; background: #f1c40f; color:#c0392b; box-shadow: 0 4px 0 #d35400; margin: 0;" onclick="triggerRocketDefeat()">👊 擊飛火箭隊！</button>
+    </div>
+
     <div id="startOverlay">
-        <h1 style="font-size: 52px;">⚡ 寶可夢：數學防衛戰 ⚡</h1>
+        <h1 style="font-size: 48px; margin-bottom: 25px;">⚡ 寶可夢：數學防衛戰 ⚡</h1>
         
         <div id="modeSelectView">
-            <p style="font-size: 24px; max-width: 750px; line-height: 1.6; margin: 10px auto;">
-                <strong>【雙人跨平台同心合作版】</strong><br>
-                👦 哥哥、👶 弟弟任一人開房皆可！全題型直覺三選一秒答！<br>
-                💰 獨立金幣自由使用，防禦塔歸屬明確，4 秒連續雙人答對觸發默契合體！
-            </p>
-            <div style="display:flex; gap: 15px; margin-top: 15px; flex-wrap:wrap; justify-content:center;">
-                <button class="start-btn" style="background:linear-gradient(to bottom, #9b59b6, #8e44ad); box-shadow: 0 8px 0 #5e3370;" onclick="showLobby('host')">🏠 我來建立房間</button>
-                <button class="start-btn" style="background:linear-gradient(to bottom, #3498db, #2980b9); box-shadow: 0 8px 0 #1f618d;" onclick="showLobby('join')">🚀 加入夥伴房間</button>
-                <button class="start-btn" style="background:linear-gradient(to bottom, #2ecc71, #27ae60); box-shadow: 0 8px 0 #1e8449;" onclick="showLobby('single')">🎮 單人遊玩模式</button>
+            <div style="display:flex; flex-direction:column; gap: 15px; align-items:center; justify-content:center;">
+                <div style="display:flex; gap: 15px; flex-wrap:wrap; justify-content:center;">
+                    <button class="start-btn" style="background:linear-gradient(to bottom, #9b59b6, #8e44ad); box-shadow: 0 7px 0 #5e3370;" onclick="showLobby('host')">🏠 我來建立房間</button>
+                    <button class="start-btn" style="background:linear-gradient(to bottom, #3498db, #2980b9); box-shadow: 0 7px 0 #1f618d;" onclick="showLobby('join')">🚀 加入夥伴房間</button>
+                    <button class="start-btn" style="background:linear-gradient(to bottom, #2ecc71, #27ae60); box-shadow: 0 7px 0 #1e8449;" onclick="showLobby('single')">🎮 單人遊玩模式</button>
+                </div>
+                <button class="start-btn" style="background:linear-gradient(to bottom, #f39c12, #e67e22); box-shadow: 0 7px 0 #b9770e; width: 300px;" onclick="openPokedexModal()">📖 寶可夢圖鑑</button>
             </div>
         </div>
 
         <div id="lobbyView" class="lobby-box" style="display:none;">
-            <h2 id="lobbyTitle" style="color:#f1c40f; margin-top:0; font-size:36px;">連線大廳</h2>
+            <h2 id="lobbyTitle" style="color:#f1c40f; margin-top:0; font-size:34px;">連線大廳</h2>
             
             <div id="hostSection" style="display:none; margin: 15px 0;">
-                <div style="font-size: 24px;">📡 你的房間號碼：</div>
-                <div id="hostRoomCode" style="font-size: 54px; color: #f1c40f; letter-spacing: 6px; font-weight: bold; margin: 10px 0;">正在連線伺服器...</div>
-                <div style="font-size: 20px; color: #bdc3c7;">請另一台設備選擇「加入夥伴房間」並輸入此 4 位數！</div>
+                <div style="font-size: 22px;">📡 你的房間號碼：</div>
+                <div id="hostRoomCode" style="font-size: 50px; color: #f1c40f; letter-spacing: 6px; font-weight: bold; margin: 10px 0;">正在連線伺服器...</div>
+                <div style="font-size: 18px; color: #bdc3c7;">請另一台設備選擇「加入夥伴房間」並輸入此 4 位數！</div>
             </div>
 
             <div id="joinSection" style="display:none; margin: 15px 0;">
-                <div style="font-size: 24px; margin-bottom: 10px;">請輸入房主螢幕上的 4 位數代碼：</div>
+                <div style="font-size: 22px; margin-bottom: 10px;">請輸入房主螢幕上的 4 位數代碼：</div>
                 <input type="number" id="joinRoomInput" class="room-input" placeholder="例: 1234">
             </div>
 
             <div style="margin: 20px 0; border-top: 2px dashed #7f8c8d; padding-top: 15px;">
-                <div style="font-size: 24px; margin-bottom: 10px;">請選擇「本台設備」的遊玩角色：</div>
+                <div style="font-size: 22px; margin-bottom: 10px;">請選擇「本台設備」的遊玩角色與領地：</div>
                 <div style="display:flex; justify-content:center; gap: 15px;">
-                    <button class="start-btn" id="btnDiffEasy" style="font-size:24px; background:#2ecc71; box-shadow:0 6px 0 #27ae60;" onclick="selectMyRole('brother_young')">👶 弟弟 (數數/加減/時鐘)</button>
-                    <button class="start-btn" id="btnDiffNormal" style="font-size:24px; background:#3498db; box-shadow:0 6px 0 #1f618d;" onclick="selectMyRole('brother_old')">👦 哥哥 (九九乘法/速算秒答)</button>
+                    <button class="start-btn" id="btnDiffEasy" style="font-size:20px; background:#2ecc71; box-shadow:0 5px 0 #27ae60;" onclick="selectMyRole('brother_young')">👶 弟弟 (下半場領地 / 數數加減/時鐘錢幣)</button>
+                    <button class="start-btn" id="btnDiffNormal" style="font-size:20px; background:#3498db; box-shadow:0 5px 0 #1f618d;" onclick="selectMyRole('brother_old')">👦 哥哥 (上半場領地 / 乘法/單位換算/分數)</button>
                 </div>
             </div>
 
             <div style="display:flex; justify-content:center; gap: 15px; margin-top: 15px;">
-                <button class="start-btn" id="btnConfirmLobby" style="background:#f1c40f; color:#c0392b; box-shadow:0 6px 0 #d35400; font-size:28px;" onclick="confirmLobbyAction()">確認啟動</button>
-                <button class="start-btn" style="background:#7f8c8d; box-shadow:0 6px 0 #34495e; font-size:24px;" onclick="backToModeSelect()">返回</button>
+                <button class="start-btn" id="btnConfirmLobby" style="background:#f1c40f; color:#c0392b; box-shadow:0 5px 0 #d35400; font-size:26px;" onclick="confirmLobbyAction()">確認啟動</button>
+                <button class="start-btn" style="background:#7f8c8d; box-shadow:0 5px 0 #34495e; font-size:22px;" onclick="backToModeSelect()">返回</button>
             </div>
         </div>
     </div>
@@ -220,76 +233,99 @@
     <div id="gameOverOverlay">
         <h1 class="game-over-title">💥防線崩潰💥<br>宇宙毀滅！</h1>
         <p class="game-over-subtitle" id="finalWaveText">大木博士的研究所被夷為平地了！</p>
-        <button class="start-btn" style="background: linear-gradient(to bottom, #3498db, #2980b9); box-shadow: 0 10px 0 #1f618d; font-size: 44px; padding: 20px 50px;" onclick="location.reload()">🔄 時光倒流 (重新開始)</button>
+        <button class="start-btn" style="background: linear-gradient(to bottom, #3498db, #2980b9); box-shadow: 0 8px 0 #1f618d; font-size: 34px; padding: 14px 40px;" onclick="location.reload()">🔄 時光倒流 (重新開始)</button>
     </div>
 
-    <h1>⚡ 精靈寶可夢：數學防衛戰 V84 ⚡</h1>
+    <h1>⚡ 精靈寶可夢：數學防衛戰 (兄弟交錯互助版) ⚡</h1>
     
     <div id="gameWrapper">
         <div id="gameContainer">
-            <button id="giftBtn" onclick="giftCoinsToPartner()">🎁 贊助夥伴 💰50</button>
-            <button id="musicToggle" onclick="toggleMusic()">🔊</button>
-            <button id="pauseToggleBtn" onclick="toggleUserPause()">⏸️</button>
-            <button id="sosBtn" onclick="triggerSosRescue()">🤝 同心急凍！</button>
-            <button id="teraBtn" onclick="activateTera()">💎 太晶爆發！</button>
-            
             <div id="warningMsg">哎呀！這裡不能建造喔！</div>
-            <canvas id="gameCanvas" width="960" height="640"></canvas>
+            <canvas id="gameCanvas" width="1040" height="720"></canvas>
         </div>
-        
-        <div id="ui">
-            <div class="ui-group" style="gap:15px;">
-                <div id="coinBox" style="font-size: 32px; font-weight: bold; color: #f1c40f; text-shadow: 2px 2px 0 #000;">💰 <span id="coinDisplay">150</span></div>
-                <div class="stone-counters">
-                    <span>🔮 超進:<strong id="uiStoneM" style="font-size: 22px; margin-left: 4px;">0</strong></span>
-                    <span>🌠 極巨:<strong id="uiStoneD" style="font-size: 22px; margin-left: 4px;">0</strong></span>
-                </div>
-                <div id="comboDisplay" style="font-size: 20px; font-weight: bold; color: #ff7675; text-shadow: 1px 1px 0 #000;">
-                    🔥 連擊: <span id="comboCount">0</span> <span id="comboBuffText" style="color:#2ecc71; font-size:16px;">(+0%)</span>
-                </div>
-                <div id="weatherDisplay" style="font-size: 22px; font-weight: bold; text-shadow: 1px 1px 0 #000;">☀️ 晴天</div>
-                <div id="netStatusTag" style="font-size: 16px; background:#2ecc71; padding:3px 8px; border-radius:8px;">單人模式</div>
+
+        <div id="gameControls">
+            <div class="ui-group">
+                <button id="nextWaveBtn" class="control-btn" style="background: linear-gradient(135deg, #e67e22, #d35400);" onclick="forceNextWave()">⚡ 快進出怪</button>
+                <button id="gachaBtn" class="control-btn" style="background: linear-gradient(135deg, #fd79a8, #e84393);" onclick="playGacha()">🎰 扭蛋 (💰80)</button>
+                <button id="itemCandyBtn" class="control-btn" style="background: linear-gradient(135deg, #00b894, #00cec9);" onclick="buyCandy()">🍬 糖果 (💰45)</button>
+                <button id="itemFreezeBtn" class="control-btn" style="background: linear-gradient(135deg, #0984e3, #74b9ff);" onclick="buyFreeze()">⚡ 電網 (💰60)</button>
+                <button id="itemDoubleBtn" class="control-btn" style="background: linear-gradient(135deg, #f1c40f, #e67e22);" onclick="buyDoubleCoins()">💰 雙倍卡 (💰35)</button>
+                <button id="bossSummonBtn" class="control-btn" style="background: linear-gradient(135deg, #e74c3c, #9b59b6); animation: rainbowGlow 2.5s infinite linear; display:none;" onclick="triggerBossSummon()">🌟 召喚神獸！</button>
             </div>
             <div class="ui-group">
-                <div style="font-size: 26px; font-weight: bold; color: #e74c3c; text-shadow: 2px 2px 0 #000;">❤️ <span id="healthDisplay">10</span></div>
-                <div style="font-size: 26px; font-weight: bold; color: #3498db; text-shadow: 2px 2px 0 #000;">🌊 第 <span id="waveDisplay">1</span> 波</div>
+                <button id="giftBtn" class="control-btn" style="background: linear-gradient(135deg, #f39c12, #e67e22); display:none;" onclick="giftCoinsToPartner()">🎁 贊助</button>
+                <button id="sosBtn" class="control-btn" style="background: linear-gradient(135deg, #3498db, #2980b9); display:none;" onclick="triggerSosRescue()">🤝 急凍</button>
+                <button id="teraBtn" class="control-btn" style="background: linear-gradient(135deg, #00cec9, #6c5ce7, #fd79a8); display:none;" onclick="activateTera()">💎 太晶</button>
+                <button class="control-btn" style="background: linear-gradient(135deg, #636e72, #2d3436);" onclick="openPokedexModal()">📖 圖鑑</button>
+                <button id="pauseToggleBtn" class="circle-btn" onclick="toggleUserPause()">⏸️</button>
+                <button id="musicToggle" class="circle-btn" onclick="toggleMusic()">🔊</button>
             </div>
         </div>
 
-        <div id="buildModal" class="modal" style="width: 700px;">
+        <div id="ui">
+            <div class="ui-group">
+                <div id="coinBox" style="font-size: 26px; font-weight: bold; color: #f1c40f; text-shadow: 2px 2px 0 #000;">💰 <span id="coinDisplay">150</span></div>
+                <div class="stone-counters">
+                    <span>🔮 超進:<strong id="uiStoneM" style="font-size: 16px; margin-left: 4px;">0</strong></span>
+                    <span>🌠 極巨:<strong id="uiStoneD" style="font-size: 16px; margin-left: 4px;">0</strong></span>
+                </div>
+                <div id="comboDisplay" style="font-size: 16px; font-weight: bold; color: #ff7675; text-shadow: 1px 1px 0 #000;">
+                    🔥 連擊: <span id="comboCount">0</span> <span id="comboBuffText" style="color:#2ecc71; font-size:14px;">(+0%)</span>
+                </div>
+                <div id="weatherDisplay" style="font-size: 17px; font-weight: bold; text-shadow: 1px 1px 0 #000;">☀️ 晴天</div>
+                <div id="netStatusTag" style="font-size: 14px; background:#2ecc71; padding:3px 8px; border-radius:8px;">單人模式</div>
+            </div>
+            
+            <div class="ui-group">
+                <div style="font-size: 22px; font-weight: bold; color: #e74c3c; text-shadow: 2px 2px 0 #000;">❤️ <span id="healthDisplay">10</span></div>
+                <div style="font-size: 22px; font-weight: bold; color: #3498db; text-shadow: 2px 2px 0 #000;">🌊 第 <span id="waveDisplay">1</span> 波</div>
+            </div>
+        </div>
+
+        <div id="pokedexModal" class="modal" style="width: 780px;">
+            <span class="close-btn" onclick="closeModals()">×</span>
+            <div class="modal-body">
+                <h2 style="color: #e67e22; font-size: 38px; margin-bottom: 5px;">📖 寶可夢大圖鑑</h2>
+                <div style="font-size: 20px; color:#7f8c8d; margin-bottom: 12px;">已解鎖：<span id="dexUnlockedCount" style="color:#e74c3c; font-weight:bold;">0</span> / <span id="dexTotalCount">0</span> 隻寶可夢</div>
+                <div class="dex-grid" id="dexGrid"></div>
+            </div>
+        </div>
+
+        <div id="buildModal" class="modal" style="width: 740px;">
             <span class="close-btn" onclick="cancelAction()">×</span>
             <div class="modal-body">
-                <h2 style="font-size: 40px;">選擇防守夥伴！</h2>
+                <h2 style="font-size: 38px;">選擇防守夥伴！</h2>
                 <div class="choices-container" id="buildChoices"></div>
-                <button id="rerollBtn" class="action-btn" onclick="rerollShop()" style="margin-top: 15px; font-size: 22px; background: linear-gradient(to bottom, #9b59b6, #8e44ad); box-shadow: 0 8px 0 #5e3370; color: white;">🔄 刷新商店 (💰 15) [剩餘 5 次]</button>
+                <button id="rerollBtn" class="action-btn" onclick="rerollShop()" style="margin-top: 15px; font-size: 20px; background: linear-gradient(to bottom, #9b59b6, #8e44ad); box-shadow: 0 6px 0 #5e3370; color: white;">🔄 刷新商店 (💰 15) [剩餘 5 次]</button>
             </div>
         </div>
 
         <div id="upgradeModal" class="modal">
             <span class="close-btn" onclick="cancelAction()">×</span>
             <div class="modal-body">
-                <h2 id="upgTitle" style="font-size: 44px;">寶可夢</h2>
+                <h2 id="upgTitle" style="font-size: 40px;">寶可夢</h2>
                 <div style="position:relative; display:inline-block;">
-                    <img id="upgImg" src="" style="width: 130px; filter: drop-shadow(5px 5px 0 rgba(0,0,0,0.3));">
-                    <span id="upgShinyBadge" style="display:none; position:absolute; top:-5px; right:-10px; background:#f1c40f; color:#c0392b; font-size:18px; font-weight:bold; padding:2px 8px; border-radius:10px; border:2px solid #fff;">✨色違</span>
+                    <img id="upgImg" src="" style="width: 120px; filter: drop-shadow(5px 5px 0 rgba(0,0,0,0.3));">
+                    <span id="upgShinyBadge" style="display:none; position:absolute; top:-5px; right:-10px; background:#f1c40f; color:#c0392b; font-size:16px; font-weight:bold; padding:2px 8px; border-radius:10px; border:2px solid #fff;">✨色違</span>
                 </div>
-                <div style="font-size: 24px; margin-top: 5px; font-weight: bold; color:#2c3e50;">
-                    實際攻擊力: <span id="upgDmg" style="font-size: 36px; color:#e74c3c;"></span>
-                    <span id="upgDmgBuff" style="font-size: 20px; color: #2ecc71;"></span>
+                <div style="font-size: 22px; margin-top: 5px; font-weight: bold; color:#2c3e50;">
+                    實際攻擊力: <span id="upgDmg" style="font-size: 34px; color:#e74c3c;"></span>
+                    <span id="upgDmgBuff" style="font-size: 18px; color: #2ecc71;"></span>
                 </div>
                 
                 <div id="skillSelectBox" style="display: none; margin: 15px 0; background: rgba(0,0,0,0.05); padding: 12px; border-radius: 20px; border: 3px dashed #bdc3c7;">
-                    <div id="skillSelectTitle" style="font-size: 22px; margin-bottom: 8px; font-weight: bold; color: #34495e;">⚡ 選擇專屬技能流派 (三選一)：</div>
+                    <div id="skillSelectTitle" style="font-size: 20px; margin-bottom: 8px; font-weight: bold; color: #34495e;">⚡ 選擇專屬技能流派 (三選一)：</div>
                     <div id="skillBtns" style="display: flex; justify-content: space-around; flex-wrap: wrap;"></div>
                 </div>
 
                 <div class="exp-bar-container" id="expBarWrap"><div class="exp-bar" id="upgExpBar"></div></div>
-                <div id="upgExpText" style="font-size: 22px; color: #7f8c8d; font-weight: bold;">EXP: 0 / 100</div>
+                <div id="upgExpText" style="font-size: 20px; color: #7f8c8d; font-weight: bold;">EXP: 0 / 100</div>
                 
                 <div id="inlineEvoChoices" class="choices-container" style="display: none; margin-top: 15px; border-top: 2px dashed #bdc3c7; padding-top: 15px;"></div>
                 
                 <div id="stoneBtns" style="display: none; margin-top: 15px; background: rgba(0,0,0,0.05); padding: 15px; border-radius: 20px; border: 3px dashed #bdc3c7;">
-                    <div style="font-size: 22px; color: #8e44ad; margin-bottom: 10px; font-weight: bold;">💎 消耗進化石：覺醒極限力量 (限時30秒)</div>
+                    <div style="font-size: 20px; color: #8e44ad; margin-bottom: 10px; font-weight: bold;">💎 消耗進化石：覺醒極限力量 (限時30秒)</div>
                     <button id="btnM" class="stone-btn mega" onclick="prepareStone('mega')">🔮 超級進化 (<span id="txtStoneM">0</span>)</button>
                     <button id="btnX" class="stone-btn" onclick="prepareStone('megaX')">🔵 超級X石 (<span id="txtStoneX">0</span>)</button>
                     <button id="btnY" class="stone-btn" onclick="prepareStone('megaY')">🔴 超級Y石 (<span id="txtStoneY">0</span>)</button>
@@ -297,7 +333,7 @@
                 </div>
 
                 <div style="display: flex; justify-content: center; gap: 15px; margin-top: 15px;">
-                    <button id="sellBtn" class="action-btn" onclick="sellTower()" style="background: linear-gradient(to bottom, #e74c3c, #c0392b); box-shadow: 0 8px 0 #922b21; font-size: 24px;">💰 拆除返還</button>
+                    <button id="sellBtn" class="action-btn" onclick="sellTower()" style="background: linear-gradient(to bottom, #e74c3c, #c0392b); box-shadow: 0 6px 0 #922b21; font-size: 22px;">💰 拆除返還</button>
                 </div>
             </div>
         </div>
@@ -305,11 +341,11 @@
         <div id="baseModal" class="modal" style="width: 650px;">
             <span class="close-btn" onclick="cancelAction()">×</span>
             <div class="modal-body">
-                <h2 style="color: #e67e22; font-size: 44px;">大木博士研究所</h2>
+                <h2 style="color: #e67e22; font-size: 40px;">大木博士研究所</h2>
                 <div class="tech-box">
                     <h3 style="color: #2c3e50; margin-top: 0;">🏰 主城等級 (Lv.<span id="baseLvText">1</span>)</h3>
-                    <div style="font-size: 18px; color: #34495e; margin-bottom: 10px;">主城會隨波次<strong style="color:#e74c3c">自動升級</strong>！等級越高，高階招募率越高！</div>
-                    <div style="font-size: 18px; background: #fff; padding: 8px; border-radius: 10px; display: inline-block;">
+                    <div style="font-size: 17px; color: #34495e; margin-bottom: 10px;">主城會隨波次<strong style="color:#e74c3c">自動升級</strong>！等級越高，高階招募率越高！</div>
+                    <div style="font-size: 17px; background: #fff; padding: 8px; border-radius: 10px; display: inline-block;">
                         🟢 一般: <span id="rateCommon" style="font-weight: bold;"></span> | 
                         🔵 稀有: <span id="rateRare" style="font-weight: bold;"></span> | 
                         🟣 史詩: <span id="rateEpic" style="font-weight: bold;"></span> | <br>
@@ -320,10 +356,10 @@
                 <div class="tech-box">
                     <h3 style="color: #2c3e50; margin-top: 0;">🌍 全域科技升級</h3>
                     <div style="text-align: center;">
-                        <button class="action-btn" onclick="triggerTechUpgrade('dmg')" style="font-size: 20px; background: linear-gradient(to bottom, #e74c3c, #c0392b); box-shadow: 0 6px 0 #922b21; color: white;">
+                        <button class="action-btn" onclick="triggerTechUpgrade('dmg')" style="font-size: 19px; background: linear-gradient(to bottom, #e74c3c, #c0392b); box-shadow: 0 5px 0 #922b21; color: white;">
                             ⚔️ 攻擊力 +20% (💰 <span id="costDmg">300</span>)
                         </button>
-                        <button class="action-btn" onclick="triggerTechUpgrade('rate')" style="font-size: 20px; background: linear-gradient(to bottom, #3498db, #2980b9); box-shadow: 0 6px 0 #1f618d; color: white;">
+                        <button class="action-btn" onclick="triggerTechUpgrade('rate')" style="font-size: 19px; background: linear-gradient(to bottom, #3498db, #2980b9); box-shadow: 0 5px 0 #1f618d; color: white;">
                             ⚡ 攻擊速度 +15% (💰 <span id="costRate">300</span>)
                         </button>
                     </div>
@@ -331,14 +367,21 @@
             </div>
         </div>
 
-        <div id="mathModal" class="modal" style="width: 620px;">
+        <div id="mathModal" class="modal" style="width: 640px;">
             <span class="close-btn" onclick="cancelAction()">×</span>
             <div class="modal-body">
-                <h2 id="mathTitle" style="font-size: 44px;">大木博士的考驗</h2>
-                <button class="voice-btn" onclick="speakCurrentQuestion()">📢 聽題目</button>
-                <div id="questionText" style="font-size: 54px; color: #2c3e50; text-shadow: 3px 3px 0px rgba(0,0,0,0.1); margin: 15px 0; background: #ecf0f1; padding: 15px; border-radius: 20px; border: 5px dashed #bdc3c7;">8 × 7 = ?</div>
-                <div id="mathChoices" style="display:flex; flex-direction:column; align-items:center; gap:5px; margin-top:10px;"></div>
-                <div id="hintText" style="font-size: 26px; margin-top: 15px; min-height: 35px; font-weight: bold;"></div>
+                <h2 id="mathTitle" style="font-size: 34px; margin-bottom: 6px;">大木博士的考驗</h2>
+                
+                <div id="mathTimerWrap"><div id="mathTimerBar"></div></div>
+
+                <div style="display:flex; justify-content:center; align-items:center; margin-bottom:6px;">
+                    <button class="voice-btn" onclick="speakCurrentQuestion()">📢 聽題目</button>
+                    <button id="sosAskBtn" class="sos-ask-btn" style="display:none;" onclick="requestPartnerHelp()">🤝 呼叫夥伴求助！</button>
+                </div>
+                
+                <div id="questionText" style="font-size: 34px; color: #2c3e50; text-shadow: 2px 2px 0px rgba(0,0,0,0.1); margin: 10px 0; background: #ecf0f1; padding: 12px; border-radius: 20px; border: 5px dashed #bdc3c7;">8 × 7 = ?</div>
+                <div id="mathChoices" style="display:flex; flex-direction:column; align-items:center; gap:5px; margin-top:8px;"></div>
+                <div id="hintText" style="font-size: 22px; margin-top: 10px; min-height: 30px; font-weight: bold;"></div>
             </div>
         </div>
     </div>
@@ -349,7 +392,6 @@
     </audio>
 
     <script>
-        // WebRTC 穿透配置 (加入 Google 公開 STUN 伺服器)
         var PEER_CONFIG = {
             config: {
                 iceServers: [
@@ -393,10 +435,13 @@
 
         function resizeApp() {
             var wrap = document.getElementById('main-wrap');
-            var scale = Math.min(window.innerWidth / 1000, window.innerHeight / 850);
+            var baseW = 1080;
+            var baseH = 980;
+            var scale = Math.min((window.innerWidth - 10) / baseW, (window.innerHeight - 10) / baseH);
             wrap.style.transform = 'scale(' + scale + ')';
         }
         window.addEventListener('resize', resizeApp);
+        window.addEventListener('orientationchange', function() { setTimeout(resizeApp, 100); });
         document.addEventListener("DOMContentLoaded", resizeApp);
 
         var peer = null;
@@ -415,6 +460,128 @@
         var lastAnswerTime = { host: 0, client: 0 }; 
         var cellLockTimers = {}; 
         var isModalOpen = false;
+        var previewTower = null; 
+
+        var summonedBossBadge = null; 
+        var activeBossSummonTimer = 0; 
+        var stones = { mega: 0, dynamax: 0 };
+
+        var isDoubleCoinsActive = false;
+        var rocketEventActive = false;
+        var rocketTimer = 0;
+        var rocketInterval = null;
+        var confettiParticles = [];
+
+        var mangaCutinTimer = 0;
+        var mangaPokeId = 384;
+        var speedLinesTimer = 0;
+        var flyawayEnemies = []; 
+
+        var mathTotalTime = 8000; 
+        var mathStartTime = 0;
+        var mathTimerInterval = null;
+        var isPerfectHit = false;
+
+        var unlockedPokedex = {};
+        try {
+            var saved = localStorage.getItem('pkmn_pokedex_save');
+            if (saved) unlockedPokedex = JSON.parse(saved);
+        } catch(e) {}
+
+        function unlockPokemon(pokeId) {
+            if (!pokeId) return;
+            if (!unlockedPokedex[pokeId]) {
+                unlockedPokedex[pokeId] = true;
+                try { localStorage.setItem('pkmn_pokedex_save', JSON.stringify(unlockedPokedex)); } catch(e){}
+                floatTexts.push(new FloatingText(canvas.width/2, 160, "📖 圖鑑已登錄新夥伴！", "#2ecc71", 28));
+            }
+        }
+
+        function triggerMangaCutin(pokeId) {
+            mangaPokeId = pokeId || 384;
+            mangaCutinTimer = 90; 
+            speedLinesTimer = 100;
+            triggerShake(20);
+            sfx.shiny();
+        }
+
+        function spawnConfetti(x, y) {
+            var colors = ['#f1c40f', '#e74c3c', '#3498db', '#2ecc71', '#9b59b6', '#fd79a8'];
+            for(var i=0; i<40; i++) {
+                confettiParticles.push({
+                    x: x || canvas.width/2,
+                    y: y || canvas.height/2,
+                    vx: (Math.random() - 0.5) * 16,
+                    vy: -8 - Math.random() * 10,
+                    size: Math.random() * 8 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    life: 60,
+                    maxLife: 60
+                });
+            }
+        }
+
+        function spawnFlyawayEnemy(enemy) {
+            var angle = Math.random() * Math.PI - Math.PI;
+            var speed = 25 + Math.random() * 15;
+            flyawayEnemies.push({
+                x: enemy.x,
+                y: enemy.y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                rot: 0,
+                rotSpeed: (Math.random() - 0.5) * 0.8,
+                img: enemy.img,
+                life: 45
+            });
+        }
+
+        function flashBaseDamageAlert() {
+            var el = document.getElementById('baseDamageVignette');
+            if (el) {
+                el.style.opacity = '1';
+                setTimeout(function() { el.style.opacity = '0'; }, 350);
+            }
+            if (bgmPlayer) {
+                bgmPlayer.playbackRate = 0.75;
+                setTimeout(function() { if(bgmPlayer) bgmPlayer.playbackRate = 1.0; }, 2500);
+            }
+        }
+
+        function triggerGameOverState() {
+            gameOver = true;
+            closeModals();
+            if (rocketInterval) clearInterval(rocketInterval);
+            document.getElementById('rocketAlertBar').style.display = 'none';
+            document.getElementById('finalWaveText').innerText = "大木博士的研究所被夷為平地了！(最終抵擋了 " + wave + " 波攻擊)";
+            document.getElementById('gameOverOverlay').style.display = 'flex';
+        }
+
+        window.openPokedexModal = function() {
+            var grid = document.getElementById('dexGrid');
+            grid.innerHTML = '';
+            var allIds = Object.keys(POKEMON_DATA).map(Number);
+            var total = allIds.length;
+            var unlocked = 0;
+
+            for(var i=0; i<allIds.length; i++) {
+                var pId = allIds[i];
+                var pData = POKEMON_DATA[pId];
+                var isUnlocked = !!unlockedPokedex[pId];
+                if (isUnlocked) unlocked++;
+
+                var div = document.createElement('div');
+                div.className = 'dex-card ' + (isUnlocked ? '' : 'locked');
+                var imgUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/" + pId + ".png";
+                div.innerHTML = '<img src="' + imgUrl + '" style="width:70px; height:70px;">' +
+                                '<div style="font-size:15px; font-weight:bold; margin-top:4px;">' + (isUnlocked ? pData.name : '???') + '</div>';
+                grid.appendChild(div);
+            }
+
+            document.getElementById('dexUnlockedCount').innerText = unlocked;
+            document.getElementById('dexTotalCount').innerText = total;
+            showModal('pokedexModal');
+        };
 
         function showLobby(mode) {
             lobbyMode = mode;
@@ -463,9 +630,7 @@
             });
 
             peer.on('error', function(err) {
-                console.error("PeerJS Error:", err);
                 if (err.type === 'unavailable-id') {
-                    // ID 衝突重試
                     initHostPeer();
                 } else {
                     showWarning("連線伺服器失敗，請重新建立房間！");
@@ -478,9 +643,9 @@
                 sendNetAction({ type: 'ROLE_HANDSHAKE', roleId: myRoleId, roleName: myRoleName });
                 floatTexts.push(new FloatingText(canvas.width/2, 100, "🎉 夥伴已成功連線加入！", "#2ecc71", 36));
                 sfx.shiny();
-                document.getElementById('netStatusTag').innerText = "🟢 雙人合作中";
+                document.getElementById('netStatusTag').innerText = "雙人合作";
                 document.getElementById('netStatusTag').style.background = "#3498db";
-                document.getElementById('giftBtn').style.display = 'block';
+                document.getElementById('giftBtn').style.display = 'inline-block';
             });
         }
 
@@ -493,7 +658,7 @@
             } else if (lobbyMode === 'host') {
                 isMultiplayer = true;
                 isHost = true;
-                document.getElementById('giftBtn').style.display = 'block';
+                document.getElementById('giftBtn').style.display = 'inline-block';
                 startGame();
             } else if (lobbyMode === 'join') {
                 var code = document.getElementById('joinRoomInput').value.trim();
@@ -511,7 +676,7 @@
                     var connectTimeout = setTimeout(function() {
                         btn.disabled = false;
                         btn.innerText = "確認啟動";
-                        alert("連線超時！請確認房號是否正確，以及房主是否在「我是房主」畫面中等待。");
+                        alert("連線超時！請確認房號是否正確，以及房主是否在等待。");
                     }, 8000);
 
                     conn.on('open', function() {
@@ -522,9 +687,9 @@
                         sendNetAction({ type: 'ROLE_HANDSHAKE', roleId: myRoleId, roleName: myRoleName });
                         isMultiplayer = true;
                         isHost = false;
-                        document.getElementById('netStatusTag').innerText = "🟢 雙人合作中";
+                        document.getElementById('netStatusTag').innerText = "雙人合作";
                         document.getElementById('netStatusTag').style.background = "#3498db";
-                        document.getElementById('giftBtn').style.display = 'block';
+                        document.getElementById('giftBtn').style.display = 'inline-block';
                         startGame();
                     });
 
@@ -543,6 +708,156 @@
                 });
             }
         }
+
+        window.playGacha = function() {
+            if (myCoins < 80) {
+                sfx.error();
+                showWarning("金幣不足 💰80，無法扭蛋喔！");
+                return;
+            }
+            myCoins -= 80;
+            sfx.shiny();
+            spawnConfetti();
+
+            var prizeRnd = Math.random();
+            if (prizeRnd < 0.25) {
+                for(var t=0; t<towers.length; t++) towers[t].gainExp(250);
+                floatTexts.push(new FloatingText(canvas.width/2, 100, "🎰 扭蛋大獎：神奇糖果雨！全員經驗暴漲！", "#2ecc71", 34));
+            } else if (prizeRnd < 0.50) {
+                stones.mega += 1; stones.dynamax += 1;
+                floatTexts.push(new FloatingText(canvas.width/2, 100, "🎰 扭蛋大獎：超級石 + 極巨石 各獲得 1 顆！", "#9b59b6", 34));
+            } else if (prizeRnd < 0.75) {
+                for(var i=0; i<enemies.length; i++) enemies[i].statuses.slow = 300;
+                floatTexts.push(new FloatingText(canvas.width/2, 100, "🎰 扭蛋大獎：急凍暴風雪！全場定身 5 秒！", "#3498db", 34));
+            } else {
+                summonedBossBadge = { id: 384, name: '✨色違烈空坐', type: 'dragon' };
+                triggerMangaCutin(384);
+                floatTexts.push(new FloatingText(canvas.width/2, 100, "🌟 傳奇大獎！獲得【✨色違烈空坐】大招！", "#f1c40f", 36));
+            }
+            updateUI();
+            if (isHost && isMultiplayer) broadcastState();
+        };
+
+        window.buyCandy = function() {
+            if (myCoins < 45) { sfx.error(); showWarning("金幣不足 💰45！"); return; }
+            if (towers.length === 0) { sfx.error(); showWarning("場上還沒有寶可夢可以餵食喔！"); return; }
+
+            var eligibleTowers = [];
+            for (var t = 0; t < towers.length; t++) {
+                var tw = towers[t];
+                if (tw.data.nextId && tw.exp < tw.data.maxExp && tw.form === 'normal') {
+                    eligibleTowers.push(tw);
+                }
+            }
+
+            if (eligibleTowers.length === 0) {
+                sfx.error();
+                showWarning("場上的寶可夢已經全都達到最大經驗或最高型態囉！");
+                return;
+            }
+
+            myCoins -= 45;
+            sfx.upgrade();
+            var targetTower = eligibleTowers[Math.floor(Math.random() * eligibleTowers.length)];
+            targetTower.gainExp(300);
+            floatTexts.push(new FloatingText(targetTower.x, targetTower.y - 20, "🍬 吃了美味糖果！EXP +300", "#2ecc71", 26));
+            updateUI();
+        };
+
+        window.buyFreeze = function() {
+            if (myCoins < 60) { sfx.error(); showWarning("金幣不足 💰60！"); return; }
+            myCoins -= 60;
+            sfx.freeze();
+            for(var i=0; i<enemies.length; i++) enemies[i].statuses.slow = 210;
+            floatTexts.push(new FloatingText(canvas.width/2, 120, "⚡ 皮卡丘電網！全場敵人觸電麻痺！", "#f1c40f", 34));
+            updateUI();
+        };
+
+        window.buyDoubleCoins = function() {
+            if (myCoins < 35) { sfx.error(); showWarning("金幣不足 💰35！"); return; }
+            myCoins -= 35;
+            isDoubleCoinsActive = true;
+            sfx.coin();
+            floatTexts.push(new FloatingText(canvas.width/2, 120, "💰 啟動雙倍金幣卡！下一波獎勵翻倍！", "#f1c40f", 34));
+            updateUI();
+        };
+
+        function checkRocketEventTrigger() {
+            if (wave > 0 && wave % 4 === 0 && !rocketEventActive) {
+                rocketEventActive = true;
+                rocketTimer = 15;
+                document.getElementById('rocketAlertBar').style.display = 'flex';
+                document.getElementById('rocketTimerText').innerText = rocketTimer;
+                sfx.error();
+
+                if (rocketInterval) clearInterval(rocketInterval);
+                rocketInterval = setInterval(function() {
+                    rocketTimer--;
+                    document.getElementById('rocketTimerText').innerText = rocketTimer;
+                    if (rocketTimer <= 0) {
+                        clearInterval(rocketInterval);
+                        if (rocketEventActive) {
+                            rocketEventActive = false;
+                            document.getElementById('rocketAlertBar').style.display = 'none';
+                            health -= 2;
+                            flashBaseDamageAlert();
+                            sfx.error();
+                            triggerShake(15);
+                            showWarning("💥 火箭隊搶走了研究所 2 點生命！");
+                            updateUI();
+                            if (health <= 0) triggerGameOverState();
+                        }
+                    }
+                }, 1000);
+            }
+        }
+
+        window.triggerRocketDefeat = function() {
+            pendingAction = 'rocketDefeat';
+            closeModals();
+            showModal('mathModal', function() { openMathModal(3); });
+            document.getElementById('mathTitle').innerText = "👊 擊敗火箭隊解鎖防線！";
+        };
+
+        window.forceNextWave = function() {
+            if (!gameStarted || gameOver) return;
+            sfx.shiny();
+            wave++;
+            enemiesSpawnedThisWave = 0;
+            spawnTimer = 9999;
+            isWaveActive = true;
+            waveBreakTimer = 0;
+
+            var extraCoins = isDoubleCoinsActive ? 40 : 20;
+            myCoins += extraCoins;
+            if (isHost && isMultiplayer) clientCoins += extraCoins;
+            floatTexts.push(new FloatingText(canvas.width/2, 120, "⚡ 快進出怪！獲得額外 💰" + extraCoins + " 金幣！", "#f1c40f", 34));
+            updateUI();
+
+            if (isMultiplayer) {
+                if (isHost) broadcastState();
+                else sendNetAction({ type: 'CLIENT_ACTION', act: 'forceNextWave' });
+            }
+        };
+
+        window.triggerBossSummon = function() {
+            if (!summonedBossBadge) return;
+            activeBossSummonTimer = 900; 
+            triggerMangaCutin(summonedBossBadge.id);
+            sfx.tera();
+            triggerShake(20);
+            floatTexts.push(new FloatingText(canvas.width/2, 100, "🌟 神獸【" + summonedBossBadge.name + "】降臨戰場 15 秒！", "#fd79a8", 40));
+            
+            for(var i=0; i<enemies.length; i++) {
+                hitEnemy(enemies[i], 350, null, false, true, summonedBossBadge.type);
+            }
+            summonedBossBadge = null; 
+            updateUI();
+
+            if (isMultiplayer) {
+                sendNetAction({ type: 'TRIGGER_BOSS_SUMMON' });
+            }
+        };
 
         window.giftCoinsToPartner = function() {
             if (myCoins < 50) {
@@ -579,6 +894,22 @@
             }
         };
 
+        window.requestPartnerHelp = function() {
+            if (!isMultiplayer || !conn || !conn.open) {
+                showWarning("單人模式下無法發送連線求助喔！");
+                return;
+            }
+            sendNetAction({
+                type: 'REQUEST_HELP',
+                from: myRoleName,
+                qText: document.getElementById('questionText').innerHTML,
+                ansStr: window.currentMathAnswerStr,
+                speechQ: currentSpeechText
+            });
+            sfx.combo();
+            floatTexts.push(new FloatingText(canvas.width/2, 120, "📢 已向夥伴發送求助信號！", "#3498db", 32));
+        };
+
         function checkSynergyCombo(role) {
             var now = Date.now();
             if (role.indexOf('哥哥') !== -1) lastAnswerTime.host = now;
@@ -598,14 +929,16 @@
         }
 
         function triggerSynergyCombo() {
+            triggerMangaCutin(384);
             sfx.tera();
             triggerShake(25);
+            spawnConfetti();
             floatTexts.push(new FloatingText(canvas.width/2, 100, "✨ 雙人默契大爆發！天降神龍彗星雨！", "#fd79a8", 42));
 
             for(var i=0; i<enemies.length; i++) {
                 var en = enemies[i];
                 skillAnims.push(new SkillAnim(canvas.width/2, 0, en.x, en.y, 'dragon', 'aoe', '畫龍點睛'));
-                hitEnemy(en, 450, null, false, true);
+                hitEnemy(en, 450, null, false, true, 'dragon');
             }
         }
 
@@ -646,9 +979,11 @@
                             existing.maxHp = eData.maxHp;
                             existing.statuses = eData.statuses;
                             existing.flash = eData.flash;
+                            existing.affix = eData.affix;
+                            existing.shieldType = eData.shieldType;
                             updatedEnemies.push(existing);
                         } else {
-                            var en = new Enemy(eData.isBoss, wave);
+                            var en = new Enemy(eData.isBoss, wave, eData.pathType);
                             en.uid = eData.uid;
                             en.id = eData.id;
                             en.type = eData.type;
@@ -662,6 +997,8 @@
                             en.maxHp = eData.maxHp;
                             en.statuses = eData.statuses;
                             en.flash = eData.flash;
+                            en.affix = eData.affix;
+                            en.shieldType = eData.shieldType;
                             en.img = getCachedImg(en.id);
                             updatedEnemies.push(en);
                         }
@@ -699,8 +1036,27 @@
                     if (sosRescueEnergy < 3) sosRescueEnergy++;
                     updateUI();
                     sfx.upgrade();
+                    spawnConfetti();
                     floatTexts.push(new FloatingText(canvas.width/2, 120, "🔥 " + data.role + " 答對！連擊+" + (comboCount * 2) + "% 攻擊力", "#f1c40f", 34));
                     checkSynergyCombo(data.role);
+                } else if (data.type === 'REQUEST_HELP') {
+                    sfx.shiny();
+                    floatTexts.push(new FloatingText(canvas.width/2, 120, "🆘 收到來自 " + data.from + " 的緊急求助！", "#f1c40f", 36));
+                    showModal('mathModal', function() {
+                        document.getElementById('mathTitle').innerText = "🆘 夥伴求助：支援解題！";
+                        document.getElementById('questionText').innerHTML = data.qText;
+                        window.currentMathAnswerStr = data.ansStr;
+                        var dummy1 = "答案 A", dummy2 = "答案 B";
+                        var optList = [data.ansStr, dummy1, dummy2].sort(function(){ return Math.random() - 0.5; });
+                        var btnsHtml = '<div style="display:flex; gap:8px; justify-content:center; margin-top:10px; flex-wrap:wrap;">';
+                        for (var i = 0; i < optList.length; i++) {
+                            btnsHtml += '<button class="math-option-btn" onclick="checkChoiceStr(\'' + optList[i] + '\', this)">' + optList[i] + '</button>';
+                        }
+                        btnsHtml += '</div>';
+                        document.getElementById('mathChoices').innerHTML = btnsHtml;
+                        document.getElementById('hintText').innerText = "幫忙夥伴答對，雙方金幣翻倍獎勵！";
+                        speakQuestion("夥伴發來求助！" + (data.speechQ || ""));
+                    });
                 } else if (data.type === 'LOCK_CELL' && isHost) {
                     var key = data.c + '_' + data.r;
                     if (gridMap[data.c][data.r] === 0) {
@@ -732,6 +1088,11 @@
                     triggerShake(10);
                     floatTexts.push(new FloatingText(canvas.width/2, 120, "🤝 夥伴發動同心援護！全場強效急凍 4 秒！", "#3498db", 38));
                     for(var i=0; i<enemies.length; i++) enemies[i].statuses.slow = 240;
+                } else if (data.type === 'TRIGGER_BOSS_SUMMON') {
+                    activeBossSummonTimer = 900;
+                    triggerMangaCutin(384);
+                    sfx.tera();
+                    triggerShake(20);
                 } else if (data.type === 'CLIENT_ACTION' && isHost) {
                     if (data.act === 'build') {
                         clientCoins -= POKEMON_DATA[data.pokeId].cost;
@@ -743,6 +1104,8 @@
                                 towers[t].exp=0;
                             }
                         }
+                    } else if (data.act === 'forceNextWave') {
+                        forceNextWave();
                     } else if (data.act === 'techUpgrade') {
                         var cost = 300 + (data.techType === 'dmg' ? globalDmgLevel : globalRateLevel) * 300;
                         clientCoins -= cost;
@@ -774,13 +1137,6 @@
                                 towers[t].formTimer = towers[t].maxFormTimer;
                             }
                         }
-                    } else if (data.act === 'catchBoss') {
-                        var emptyCells = [];
-                        for(var c=0; c<COLS; c++) { for(var r=0; r<ROWS; r++) { if(gridMap[c][r] === 0) emptyCells.push({c:c, r:r}); } }
-                        if(emptyCells.length > 0) {
-                            var cell = emptyCells[0];
-                            towers.push(new Tower(cell.c, cell.r, data.bossId, false, data.builderRoleId));
-                        }
                     } else if (data.act === 'chest') {
                         clientCoins += 60;
                         for(var i = 0; i < 10; i++) visualCoins.push(new VisualCoin(data.x, data.y));
@@ -800,8 +1156,10 @@
             for(var i=0; i<enemies.length; i++) {
                 enemyList.push({
                     uid: enemies[i].uid, id: enemies[i].id, type: enemies[i].type, x: enemies[i].x, y: enemies[i].y, 
+                    pathType: enemies[i].pathType,
                     visOffsetX: enemies[i].visOffsetX, visOffsetY: enemies[i].visOffsetY,
-                    hp: enemies[i].hp, maxHp: enemies[i].maxHp, isBoss: enemies[i].isBoss, statuses: enemies[i].statuses, customName: enemies[i].customName, flash: enemies[i].flash
+                    hp: enemies[i].hp, maxHp: enemies[i].maxHp, isBoss: enemies[i].isBoss, statuses: enemies[i].statuses, customName: enemies[i].customName, flash: enemies[i].flash,
+                    affix: enemies[i].affix, shieldType: enemies[i].shieldType
                 });
             }
             var towerList = [];
@@ -877,6 +1235,7 @@
             upgrade: function() { playTone(400, 600, 'square', 0.1, 0.05); setTimeout(function(){playTone(600, 800, 'square', 0.2, 0.05);}, 100); },
             shiny: function() { playTone(1000, 2500, 'sine', 0.3, 0.1); setTimeout(function(){ playTone(1500, 3000, 'sine', 0.4, 0.1); }, 100); },
             tera: function() { playTone(500, 1500, 'sawtooth', 0.6, 0.1); },
+            combo: function() { playTone(600, 1400, 'triangle', 0.3, 0.08); setTimeout(function(){ playNoise(0.3, 0.08, 1500); }, 80); },
             skill: function(type) {
                 if(type==='fire' || type==='fighting' || type==='ground' || type==='dragon') playNoise(0.6, 0.1, 2000);
                 else if(type==='water' || type==='ice') playNoise(0.5, 0.05, 600);
@@ -984,11 +1343,11 @@
         var POOLS = { common: [], rare: [], epic: [], legendary: [], mythic: [] };
 
         function getRarityBaseStats(rarity) {
-            if(rarity === 'common') return {c:15, d:6, r:180, rt:140};
-            else if(rarity === 'rare') return {c:30, d:12, r:180, rt:130};
-            else if(rarity === 'epic') return {c:60, d:25, r:190, rt:120};
-            else if(rarity === 'legendary') return {c:150, d:80, r:240, rt:100};
-            else return {c:300, d:180, r:280, rt:90}; 
+            if(rarity === 'common') return {c:15, d:6, r:360, rt:140};
+            else if(rarity === 'rare') return {c:30, d:12, r:400, rt:130};
+            else if(rarity === 'epic') return {c:60, d:25, r:440, rt:120};
+            else if(rarity === 'legendary') return {c:150, d:80, r:500, rt:100};
+            else return {c:300, d:180, r:580, rt:90}; 
         }
 
         function setupCuratedData() {
@@ -1016,7 +1375,13 @@
                 [[[813,'炎兔兒'], [814,'騰蹴小將'], [815,'閃焰王牌', {gmax: 10211}]], 'fire', 'common'],
                 [[[816,'淚眼蜥'], [817,'變澀蜥'], [818,'千面避役', {gmax: 10212}]], 'water', 'common'],
                 [[[885,'多龍梅西亞'], [886,'多龍奇'], [887,'多龍巴魯托']], 'dragon', 'epic'],
-                [[[957,'小鍛匠'], [958,'巧鍛匠'], [959,'巨鍛匠', {sName:'巨力錘'}]], 'fairy', 'rare']
+                [[[957,'小鍛匠'], [958,'巧鍛匠'], [959,'巨鍛匠', {sName:'巨力錘'}]], 'fairy', 'rare'],
+                [[[906,'新葉喵'], [907,'蒂蕾喵'], [908,'魔幻假面喵', {sName:'千變萬花'}]], 'grass', 'common'],
+                [[[909,'呆火鱷'], [910,'炙燙鱷'], [911,'骨紋巨聲鱷', {sName:'閃焰之歌'}]], 'fire', 'common'],
+                [[[912,'潤水鴨'], [913,'湧躍鴨'], [914,'狂歡浪舞鴨', {sName:'流水旋舞'}]], 'water', 'common'],
+                [[[129,'鯉魚王'], [130,'暴鯉龍', {m: 10041, sName:'破壞死光'}]], 'water', 'rare'],
+                [[[246,'幼基拉斯'], [247,'沙基拉斯'], [248,'班基拉斯', {m: 10045}]], 'rock', 'epic'],
+                [[[175,'波克比'], [176,'波克基古'], [468,'波克基斯']], 'fairy', 'rare']
             ];
 
             for (var k = 0; k < EVO_LINES.length; k++) {
@@ -1027,8 +1392,8 @@
                     var id = st[i][0]; var isF = (i === st.length - 1); var opt = st[i][2];
                     POKEMON_DATA[id] = {
                         name: st[i][1], cost: (i===0 ? stats.c : 0), dmg: Math.floor(stats.d * Math.pow(2.2, i)), 
-                        range: stats.r + (i*20), rate: stats.rt - (i*10), nextId: isF ? null : st[i+1][0], 
-                        maxExp: isF ? 9999 : (i===0 ? 120 : 300), type: ty, stage: i+1
+                        range: stats.r + (i*30), rate: stats.rt - (i*10), nextId: isF ? null : st[i+1][0], 
+                        maxExp: isF ? 9999 : (i===0 ? 350 : 850), type: ty, stage: i+1, rarity: rarity
                     };
                     if (isF && opt) {
                         if(opt.m) POKEMON_DATA[id].megaId = opt.m; 
@@ -1041,25 +1406,26 @@
                 POOLS[rarity].push(st[0][0]);
             }
 
-            POKEMON_DATA[280] = { name: '拉魯拉絲', cost: 30, dmg: 12, range: 180, rate: 130, nextId: 281, maxExp: 120, type: 'psychic', stage: 1 };
-            POKEMON_DATA[281] = { name: '奇魯莉安', cost: 0, dmg: 26, range: 200, rate: 120, nextId: [282, 475], maxExp: 300, type: 'psychic', stage: 2 };
-            POKEMON_DATA[282] = { name: '沙奈朵 (♀)', cost: 0, dmg: 60, range: 220, rate: 110, nextId: null, maxExp: 9999, type: 'fairy', stage: 3, megaId: 10051 };
-            POKEMON_DATA[475] = { name: '艾路雷朵 (♂)', cost: 0, dmg: 65, range: 200, rate: 100, nextId: null, maxExp: 9999, type: 'fighting', stage: 3, megaId: 10052 };
+            POKEMON_DATA[280] = { name: '拉魯拉絲', cost: 30, dmg: 12, range: 400, rate: 130, nextId: 281, maxExp: 350, type: 'psychic', stage: 1, rarity: 'rare' };
+            POKEMON_DATA[281] = { name: '奇魯莉安', cost: 0, dmg: 26, range: 440, rate: 120, nextId: [282, 475], maxExp: 850, type: 'psychic', stage: 2, rarity: 'rare' };
+            POKEMON_DATA[282] = { name: '沙奈朵 (♀)', cost: 0, dmg: 60, range: 480, rate: 110, nextId: null, maxExp: 9999, type: 'fairy', stage: 3, megaId: 10051, rarity: 'rare' };
+            POKEMON_DATA[475] = { name: '艾路雷朵 (♂)', cost: 0, dmg: 65, range: 460, rate: 100, nextId: null, maxExp: 9999, type: 'fighting', stage: 3, megaId: 10052, rarity: 'rare' };
             POOLS.rare.push(280);
 
-            POKEMON_DATA[133] = { name: '伊布', cost: 15, dmg: 6, range: 170, rate: 130, nextId: [134,135,136,196,197,470,471,700], maxExp: 150, type: 'normal', stage: 1 };
+            POKEMON_DATA[133] = { name: '伊布', cost: 15, dmg: 6, range: 360, rate: 130, nextId: [134,135,136,196,197,470,471,700], maxExp: 400, type: 'normal', stage: 1, rarity: 'common' };
             POOLS.common.push(133);
-            POKEMON_DATA[134] = { name: '水伊布', cost: 0, dmg: 40, range: 200, rate: 110, nextId: null, maxExp: 9999, type: 'water', stage: 3 };
-            POKEMON_DATA[135] = { name: '雷伊布', cost: 0, dmg: 40, range: 200, rate: 110, nextId: null, maxExp: 9999, type: 'electric', stage: 3 };
-            POKEMON_DATA[136] = { name: '火伊布', cost: 0, dmg: 40, range: 200, rate: 110, nextId: null, maxExp: 9999, type: 'fire', stage: 3 };
-            POKEMON_DATA[196] = { name: '太陽伊布', cost: 0, dmg: 45, range: 210, rate: 110, nextId: null, maxExp: 9999, type: 'psychic', stage: 3 };
-            POKEMON_DATA[197] = { name: '月亮伊布', cost: 0, dmg: 42, range: 190, rate: 110, nextId: null, maxExp: 9999, type: 'dark', stage: 3 };
-            POKEMON_DATA[470] = { name: '葉伊布', cost: 0, dmg: 42, range: 190, rate: 110, nextId: null, maxExp: 9999, type: 'grass', stage: 3 };
-            POKEMON_DATA[471] = { name: '冰伊布', cost: 0, dmg: 44, range: 200, rate: 110, nextId: null, maxExp: 9999, type: 'ice', stage: 3 };
-            POKEMON_DATA[700] = { name: '仙子伊布', cost: 0, dmg: 48, range: 210, rate: 105, nextId: null, maxExp: 9999, type: 'fairy', stage: 3 };
+            POKEMON_DATA[134] = { name: '水伊布', cost: 0, dmg: 40, range: 440, rate: 110, nextId: null, maxExp: 9999, type: 'water', stage: 3, rarity: 'common' };
+            POKEMON_DATA[135] = { name: '雷伊布', cost: 0, dmg: 40, range: 440, rate: 110, nextId: null, maxExp: 9999, type: 'electric', stage: 3, rarity: 'common' };
+            POKEMON_DATA[136] = { name: '火伊布', cost: 0, dmg: 40, range: 440, rate: 110, nextId: null, maxExp: 9999, type: 'fire', stage: 3, rarity: 'common' };
+            POKEMON_DATA[196] = { name: '太陽伊布', cost: 0, dmg: 45, range: 460, rate: 110, nextId: null, maxExp: 9999, type: 'psychic', stage: 3, rarity: 'common' };
+            POKEMON_DATA[197] = { name: '月亮伊布', cost: 0, dmg: 42, range: 440, rate: 110, nextId: null, maxExp: 9999, type: 'dark', stage: 3, rarity: 'common' };
+            POKEMON_DATA[470] = { name: '葉伊布', cost: 0, dmg: 42, range: 440, rate: 110, nextId: null, maxExp: 9999, type: 'grass', stage: 3, rarity: 'common' };
+            POKEMON_DATA[471] = { name: '冰伊布', cost: 0, dmg: 44, range: 460, rate: 110, nextId: null, maxExp: 9999, type: 'ice', stage: 3, rarity: 'common' };
+            POKEMON_DATA[700] = { name: '仙子伊布', cost: 0, dmg: 48, range: 480, rate: 105, nextId: null, maxExp: 9999, type: 'fairy', stage: 3, rarity: 'common' };
 
             var LEGENDS = [
                 [150, '超夢', 'psychic', 'mythic', {mx:10043, my:10044, sName:'精神擊破'}],
+                [151, '夢幻', 'psychic', 'mythic', {sName:'精神擊破'}],
                 [249, '洛奇亞', 'flying', 'mythic', {sName:'氣旋攻擊'}],
                 [250, '鳳王', 'fire', 'mythic', {sName:'神聖之火'}],
                 [382, '蓋歐卡', 'water', 'mythic', {m: 10077, sName:'根源波動'}],
@@ -1068,6 +1434,7 @@
                 [483, '帝牙盧卡', 'steel', 'mythic', {sName:'時光咆哮'}],
                 [484, '帕路奇亞', 'water', 'mythic', {sName:'亞空裂斬'}],
                 [487, '騎拉帝納', 'ghost', 'mythic', {sName:'暗影潛襲'}],
+                [493, '阿爾宙斯', 'normal', 'mythic', {sName:'制裁光礫'}],
                 [643, '萊希拉姆', 'dragon', 'mythic', {sName:'交錯火焰'}],
                 [644, '捷克羅姆', 'dragon', 'mythic', {sName:'交錯閃電'}],
                 [716, '哲爾尼亞斯', 'fairy', 'mythic', {sName:'大地掌控'}],
@@ -1083,13 +1450,13 @@
                 var sInfo = LEGENDS[j];
                 var sId = sInfo[0]; var sName = sInfo[1]; var sType = sInfo[2]; var sRarity = sInfo[3]; var sOpt = sInfo[4];
                 var sStats = getRarityBaseStats(sRarity);
-                POKEMON_DATA[sId] = { name: sName, cost: sStats.c, dmg: sStats.d, range: sStats.r, rate: sStats.rt, nextId: null, maxExp: 9999, type: sType, stage: 3 };
+                POKEMON_DATA[sId] = { name: sName, cost: sStats.c, dmg: sStats.d, range: sStats.r, rate: sStats.rt, nextId: null, maxExp: 9999, type: sType, stage: 3, rarity: sRarity };
                 if(sOpt) {
                     if(sOpt.m) POKEMON_DATA[sId].megaId = sOpt.m; 
                     if(sOpt.mx) POKEMON_DATA[sId].megaXId = sOpt.mx; 
                     if(sOpt.my) POKEMON_DATA[sId].megaYId = sOpt.my;
                     if(sOpt.gmax) POKEMON_DATA[sId].gmaxId = sOpt.gmax;
-                    if(sOpt.sName) POKEMON_DATA[sId].sName = opt.sName;
+                    if(sOpt.sName) POKEMON_DATA[sId].sName = sOpt.sName;
                 }
                 POOLS[sRarity].push(sId);
             }
@@ -1107,7 +1474,7 @@
         var canvas = document.getElementById('gameCanvas'); var ctx = canvas.getContext('2d');
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
-        var GRID_SIZE = 80; var COLS = 12; var ROWS = 8;
+        var GRID_SIZE = 80; var COLS = 13; var ROWS = 9;
         
         var gridMap = [];
         for(var cc=0; cc<COLS; cc++){
@@ -1116,17 +1483,56 @@
             gridMap.push(col);
         }
         
-        var pathCells = [
-            [0,1], [1,1], [2,1], [2,2], [2,3], [2,4], [2,5], [2,6], [3,6], [4,6],
-            [5,6], [5,5], [5,4], [5,3], [5,2], [5,1], [6,1], [7,1], [8,1], [8,2],
-            [8,3], [8,4], [8,5], [8,6], [9,6], [10,6], [11,6]
+        var pixelPathA = [
+            { x: -40,               y: 1.5 * GRID_SIZE },
+            { x: 2.5 * GRID_SIZE,   y: 1.5 * GRID_SIZE },
+            { x: 2.5 * GRID_SIZE,   y: 6.5 * GRID_SIZE },
+            { x: 6.5 * GRID_SIZE,   y: 6.5 * GRID_SIZE },
+            { x: 6.5 * GRID_SIZE,   y: 1.5 * GRID_SIZE },
+            { x: 9.5 * GRID_SIZE,   y: 1.5 * GRID_SIZE },
+            { x: 9.5 * GRID_SIZE,   y: 4.5 * GRID_SIZE },
+            { x: 1100,              y: 4.5 * GRID_SIZE }
         ];
-        for(var i=0; i<pathCells.length; i++) { gridMap[pathCells[i][0]][pathCells[i][1]] = 1; }
-        gridMap[10][5] = 3; gridMap[11][5] = 3; 
 
-        var pixelPath = [{x: -50, y: 1.5 * GRID_SIZE}]; 
-        for(var i=0; i<pathCells.length; i++) { pixelPath.push({x: pathCells[i][0] * GRID_SIZE + GRID_SIZE/2, y: pathCells[i][1] * GRID_SIZE + GRID_SIZE/2}); }
-        pixelPath.push({x: 1000, y: 6.5 * GRID_SIZE});
+        var pixelPathB = [
+            { x: -40,               y: 7.5 * GRID_SIZE },
+            { x: 2.5 * GRID_SIZE,   y: 7.5 * GRID_SIZE },
+            { x: 2.5 * GRID_SIZE,   y: 2.5 * GRID_SIZE },
+            { x: 6.5 * GRID_SIZE,   y: 2.5 * GRID_SIZE },
+            { x: 6.5 * GRID_SIZE,   y: 7.5 * GRID_SIZE },
+            { x: 9.5 * GRID_SIZE,   y: 7.5 * GRID_SIZE },
+            { x: 9.5 * GRID_SIZE,   y: 4.5 * GRID_SIZE },
+            { x: 1100,              y: 4.5 * GRID_SIZE }
+        ];
+
+        function markPathCells(path) {
+            for (var i = 0; i < path.length - 1; i++) {
+                var p1 = path[i];
+                var p2 = path[i+1];
+                var c1 = Math.max(0, Math.min(COLS - 1, Math.floor(p1.x / GRID_SIZE)));
+                var r1 = Math.max(0, Math.min(ROWS - 1, Math.floor(p1.y / GRID_SIZE)));
+                var c2 = Math.max(0, Math.min(COLS - 1, Math.floor(p2.x / GRID_SIZE)));
+                var r2 = Math.max(0, Math.min(ROWS - 1, Math.floor(p2.y / GRID_SIZE)));
+
+                var minC = Math.min(c1, c2), maxC = Math.max(c1, c2);
+                var minR = Math.min(r1, r2), maxR = Math.max(r1, r2);
+
+                for (var c = minC; c <= maxC; c++) {
+                    for (var r = minR; r <= maxR; r++) {
+                        gridMap[c][r] = 1;
+                    }
+                }
+            }
+        }
+
+        markPathCells(pixelPathA);
+        markPathCells(pixelPathB);
+
+        for(var c = 0; c < COLS; c++) {
+            if (gridMap[c][4] === 0) gridMap[c][4] = 5; 
+        }
+
+        gridMap[11][4] = 3; gridMap[12][4] = 3; 
 
         var health = 10; var wave = 0; var baseLevel = 1; var rerollsThisWave = 0; 
         var globalDmgLevel = 0; var globalRateLevel = 0; var comboCount = 0;
@@ -1137,7 +1543,6 @@
         var teraActiveTimer = 0; 
         var pendingCatchEnemyId = 0; 
 
-        var stones = { mega: 0, dynamax: 0 };
         var enemies = []; var towers = []; var bullets = []; var skillAnims = []; var floatTexts = []; var droppedItems = []; var chests = []; var visualCoins = [];
         var spawnTimer = 9999; var enemiesSpawnedThisWave = 0; var totalEnemiesThisWave = 5; 
         var waveBreakTimer = 180; var isWaveActive = false; 
@@ -1149,9 +1554,17 @@
 
         function FloatingText(x, y, text, color, size) { 
             this.x = x; this.y = y; this.text = text; this.color = color; this.size = size || 26; 
-            this.life = 45; this.maxLife = 45; this.vx = (Math.random() - 0.5) * 1.5; this.vy = -2 - Math.random(); 
+            this.life = 100; this.maxLife = 100; 
+            this.vx = (Math.random() - 0.5) * 1.5; 
+            this.vy = -2.5 - Math.random(); 
         }
-        FloatingText.prototype.update = function() { this.x += this.vx; this.y += this.vy; this.vy += 0.15; this.life--; }
+        FloatingText.prototype.update = function() { 
+            this.x += this.vx; 
+            this.y += this.vy; 
+            this.vx *= 0.92; 
+            this.vy *= 0.92; 
+            this.life--; 
+        }
         FloatingText.prototype.draw = function(ctx) { ctx.save(); ctx.globalAlpha = Math.max(0, this.life / this.maxLife); ctx.fillStyle = this.color; ctx.font = this.size + "px 'ZCOOL KuaiLe'"; ctx.strokeStyle = 'black'; ctx.lineWidth = 4; ctx.strokeText(this.text, this.x - ctx.measureText(this.text).width/2, this.y); ctx.fillText(this.text, this.x - ctx.measureText(this.text).width/2, this.y); ctx.restore(); }
 
         function VisualCoin(x, y) { 
@@ -1197,16 +1610,61 @@
         function applyStatusEffect(enemy, type) {
             var dur = (currentWeather === 'snow' && type === 'ice') ? 250 : 140;
             if (type === 'electric') { enemy.statuses.paralyze = 70; floatTexts.push(new FloatingText(enemy.x, enemy.y-20, "麻痺!", "#f1c40f", 20)); }
-            else if (type === 'water' || type === 'ice') { enemy.statuses.slow = dur; floatTexts.push(new FloatingText(enemy.x, enemy.y-20, "冰凍緩速!", "#3498db", 20)); }
+            else if (type === 'water' || type === 'ice') { enemy.statuses.slow = dur; floatTexts.push(new FloatingText(enemy.x, enemy.y-20, "潮濕減速!", "#3498db", 20)); }
             else if (type === 'fire') { enemy.statuses.burn = 140; floatTexts.push(new FloatingText(enemy.x, enemy.y-20, "灼熱燃燒!", "#e74c3c", 20)); }
-            else if (type === 'poison') { enemy.statuses.poison = 160; floatTexts.push(new FloatingText(enemy.x, enemy.y-20, "猛烈中毒!", "#8e44ad", 20)); }
+            else if (type === 'grass' || type === 'poison') { enemy.statuses.poison = 160; floatTexts.push(new FloatingText(enemy.x, enemy.y-20, "猛烈中毒/寄生!", "#2ecc71", 20)); }
             else { enemy.statuses.slow = 100; floatTexts.push(new FloatingText(enemy.x, enemy.y-20, "催眠定身!", "#fd79a8", 20)); }
         }
 
-        function hitEnemy(enemy, damage, tower, isDoT, isSkill) {
+        function hitEnemy(enemy, damage, tower, isDoT, isSkill, attackType) {
             if (enemy.hp <= 0) return; 
+            var atkType = attackType || (tower ? tower.data.type : 'normal');
             var multiplier = 1.0;
-            if (isSkill && tower && TYPE_CHART[tower.data.type] && TYPE_CHART[tower.data.type][enemy.type] !== undefined) multiplier = TYPE_CHART[tower.data.type][enemy.type];
+            var isComboReaction = false;
+
+            if (enemy.shieldType && enemy.shieldType !== 'none') {
+                if (enemy.shieldType === atkType) {
+                    floatTexts.push(new FloatingText(enemy.x, enemy.y - 30, "🛡️ 護盾抵抗！", "#bdc3c7", 22));
+                    return;
+                } else if (TYPE_CHART[atkType] && TYPE_CHART[atkType][enemy.shieldType] >= 2) {
+                    enemy.shieldType = 'none';
+                    multiplier *= 2.5;
+                    sfx.combo();
+                    floatTexts.push(new FloatingText(enemy.x, enemy.y - 45, "💥 屬性破盾！", "#f1c40f", 36));
+                }
+            }
+
+            if (atkType === 'electric' && enemy.statuses.slow > 0) {
+                multiplier *= 2.0;
+                isComboReaction = true;
+                sfx.combo();
+                floatTexts.push(new FloatingText(enemy.x, enemy.y - 40, "⚡ 感電超導！", "#f1c40f", 34));
+                for(var e=0; e<enemies.length; e++) {
+                    if (enemies[e] !== enemy && getDist(enemies[e].x, enemies[e].y, enemy.x, enemy.y) < 140) {
+                        enemies[e].hp -= Math.floor(damage * 0.9);
+                        enemies[e].flash = 6;
+                    }
+                }
+            }
+            else if (atkType === 'fire' && enemy.statuses.poison > 0) {
+                multiplier *= 2.2;
+                isComboReaction = true;
+                sfx.combo();
+                enemy.statuses.poison = 0;
+                floatTexts.push(new FloatingText(enemy.x, enemy.y - 40, "💥 烈焰引燃！", "#e67e22", 34));
+                skillAnims.push(new SkillAnim(enemy.x, enemy.y, enemy.x, enemy.y, 'fire', 'aoe', '噴煙'));
+            }
+            else if ((atkType === 'fighting' || atkType === 'ground') && enemy.statuses.slow > 120) {
+                multiplier *= 1.6;
+                damage += 160;
+                isComboReaction = true;
+                sfx.combo();
+                floatTexts.push(new FloatingText(enemy.x, enemy.y - 40, "❄️ 碎冰暴擊！", "#3498db", 34));
+            }
+
+            if (isSkill && tower && TYPE_CHART[tower.data.type] && TYPE_CHART[tower.data.type][enemy.type] !== undefined) {
+                multiplier *= TYPE_CHART[tower.data.type][enemy.type];
+            }
             
             if (tower) {
                 if (currentWeather === 'sunny' && (tower.data.type === 'fire' || tower.data.type === 'grass')) multiplier *= 1.4;
@@ -1219,22 +1677,40 @@
             var finalDamage = Math.floor(damage * multiplier);
             enemy.hp -= finalDamage;
 
+            if (finalDamage >= 1000 && mangaCutinTimer <= 0) {
+                triggerMangaCutin(tower ? tower.pokeId : 384);
+            }
+
             if(!isDoT) {
-                var clr = isSkill ? "#f1c40f" : "#ecf0f1";
-                floatTexts.push(new FloatingText(enemy.x, enemy.y - 10, "-" + finalDamage, clr, isSkill ? 32 : 20));
-                if (isSkill && multiplier >= 2) {
-                    floatTexts.push(new FloatingText(enemy.x, enemy.y - 35, "超有效!", "#f1c40f", 24));
-                }
+                var clr = isComboReaction ? "#fd79a8" : (isSkill ? "#f1c40f" : "#ecf0f1");
+                floatTexts.push(new FloatingText(enemy.x, enemy.y - 10, "-" + finalDamage, clr, (isComboReaction || isSkill) ? 32 : 20));
                 enemy.flash = 6; enemy.hitScale = 1.2; if(!isSkill) sfx.hit();
                 if(finalDamage >= 80) hitPause = 2; 
-            } else { floatTexts.push(new FloatingText(enemy.x, enemy.y, "-" + finalDamage, "#e67e22", 18)); }
+            } else { 
+                floatTexts.push(new FloatingText(enemy.x, enemy.y, "-" + finalDamage, "#e67e22", 18)); 
+            }
 
             if(tower && !isDoT) tower.gainExp(2); 
 
             if (enemy.hp <= 0) { 
                 if(tower) tower.gainExp(10); 
                 var reward = enemy.isBoss ? (20 + wave*5) : (2 + Math.floor(wave/2)); 
+                if (isDoubleCoinsActive) reward *= 2;
                 
+                if (!enemy.isBoss) spawnFlyawayEnemy(enemy);
+
+                if (enemy.affix === 'smog') {
+                    for(var t=0; t<towers.length; t++) {
+                        if (getDist(towers[t].x, towers[t].y, enemy.x, enemy.y) < 180) {
+                            towers[t].frozen = true;
+                            (function(targetTower){
+                                setTimeout(function(){ targetTower.frozen = false; }, 2500);
+                            })(towers[t]);
+                        }
+                    }
+                    floatTexts.push(new FloatingText(enemy.x, enemy.y - 20, "💨 自爆煙霧！周圍防禦塔癱瘓 2.5 秒", "#bdc3c7", 26));
+                }
+
                 myCoins += reward;
                 if (isHost && isMultiplayer) clientCoins += reward;
 
@@ -1247,7 +1723,7 @@
                         pendingAction = 'catchBoss';
                         closeModals();
                         showModal('mathModal', function() { openMathModal(3); });
-                        document.getElementById('mathTitle').innerText = "🎯 投擲精靈球收服神獸！";
+                        document.getElementById('mathTitle').innerText = "🎯 投擲精靈球獲得神獸大招！";
                     }, 800);
                 }
                 triggerShake(enemy.isBoss ? 15 : 4); updateUI();
@@ -1335,13 +1811,15 @@
         }
 
         var nextEnemyUid = 1;
-        function Enemy(isBoss, currentWave) {
+        function Enemy(isBoss, currentWave, pathType) {
             this.uid = isHost ? (nextEnemyUid++) : 0;
-            this.x = pixelPath[0].x; this.y = pixelPath[0].y; 
+            this.pathType = pathType || (Math.random() > 0.5 ? 'A' : 'B');
+            var startPath = this.pathType === 'A' ? pixelPathA : pixelPathB;
+            this.x = startPath[0].x; this.y = startPath[0].y; 
             this.targetX = this.x; this.targetY = this.y;
             this.pathIndex = 1; this.isBoss = isBoss;
-            this.visOffsetX = (Math.random() - 0.5) * 24; 
-            this.visOffsetY = (Math.random() - 0.5) * 24;
+            this.visOffsetX = (Math.random() - 0.5) * 20; 
+            this.visOffsetY = (Math.random() - 0.5) * 20;
 
             var hpMultiplier = Math.pow(1.55, currentWave) * (isMultiplayer ? 1.6 : 1.0); 
             this.maxHp = Math.floor(25 * hpMultiplier); 
@@ -1353,6 +1831,22 @@
             this.speed = this.baseSpeed;
             this.flash = 0; this.hitScale = 1.0; this.statuses = { slow: 0, paralyze: 0, burn: 0, poison: 0 };
             
+            this.affix = 'none';
+            this.shieldType = 'none';
+
+            if (!this.isBoss && currentWave >= 2) {
+                var rndAffix = Math.random();
+                if (rndAffix < 0.25) {
+                    this.affix = 'swift';
+                    this.baseSpeed *= 1.5;
+                } else if (rndAffix < 0.45) {
+                    this.affix = 'smog';
+                } else if (rndAffix < 0.75) {
+                    var sTypes = ['fire', 'water', 'electric', 'grass'];
+                    this.shieldType = sTypes[Math.floor(Math.random() * sTypes.length)];
+                }
+            }
+
             var currentTeam = getCurrentTeam(currentWave + 1);
             this.teamInfo = currentTeam;
 
@@ -1371,8 +1865,8 @@
         }
         Enemy.prototype.update = function() {
             if(this.flash > 0) this.flash--; if(this.hitScale > 1.0) this.hitScale -= 0.05;
-            if(this.statuses.burn > 0) { this.statuses.burn--; if(this.statuses.burn % 30 === 0) hitEnemy(this, 6 + wave, null, true, false); }
-            if(this.statuses.poison > 0) { this.statuses.poison--; if(this.statuses.poison % 25 === 0) hitEnemy(this, 4 + wave, null, true, false); }
+            if(this.statuses.burn > 0) { this.statuses.burn--; if(this.statuses.burn % 30 === 0) hitEnemy(this, 6 + wave, null, true, false, 'fire'); }
+            if(this.statuses.poison > 0) { this.statuses.poison--; if(this.statuses.poison % 25 === 0) hitEnemy(this, 4 + wave, null, true, false, 'poison'); }
             if(this.statuses.paralyze > 0) { this.statuses.paralyze--; return; }
 
             if (isMultiplayer && !isHost) {
@@ -1384,13 +1878,20 @@
             this.speed = this.statuses.slow > 0 ? this.baseSpeed * 0.5 : this.baseSpeed;
             if(this.statuses.slow > 0) this.statuses.slow--;
 
-            var target = pixelPath[this.pathIndex]; if (!target) return;
+            var currentActivePath = this.pathType === 'A' ? pixelPathA : pixelPathB;
+            var target = currentActivePath[this.pathIndex]; if (!target) return;
             var dist = getDist(this.x, this.y, target.x, target.y);
             if (dist < this.speed) {
                 this.x = target.x; this.y = target.y; this.pathIndex++;
-                if (this.pathIndex >= pixelPath.length) { 
-                    health -= this.isBoss ? 5 : 1; sfx.error(); updateUI(); this.hp = 0; triggerShake(15); hitPause = 4;
-                    if(health <= 0) gameOver = true; 
+                if (this.pathIndex >= currentActivePath.length) { 
+                    health -= this.isBoss ? 5 : 1; 
+                    flashBaseDamageAlert();
+                    sfx.error(); 
+                    updateUI(); 
+                    this.hp = 0; 
+                    triggerShake(15); 
+                    hitPause = 4;
+                    if(health <= 0) triggerGameOverState(); 
                 }
             } else { 
                 var dx = target.x - this.x; var dy = target.y - this.y; 
@@ -1402,12 +1903,38 @@
             var baseSize = this.isBoss ? 140 : 75; var drawSize = baseSize * this.hitScale; var offset = drawSize / 2;
             var drawX = this.x - offset + this.visOffsetX; var drawY = this.y - offset + bounce + this.visOffsetY;
 
+            if (this.shieldType && this.shieldType !== 'none') {
+                ctx.save();
+                ctx.strokeStyle = getTypeColor(this.shieldType);
+                ctx.lineWidth = 4;
+                ctx.shadowColor = getTypeColor(this.shieldType);
+                ctx.shadowBlur = 12;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y + bounce, 36, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.restore();
+            }
+
             ctx.save();
             if (this.img && this.img.complete && this.img.naturalWidth > 0) { 
                 if(this.flash > 0) ctx.filter = 'brightness(200%)'; 
                 ctx.drawImage(this.img, drawX, drawY, drawSize, drawSize); ctx.filter = 'none';
             }
             ctx.restore();
+
+            if (this.affix === 'swift') {
+                ctx.save();
+                ctx.fillStyle = '#f1c40f';
+                ctx.font = 'bold 14px ZCOOL KuaiLe';
+                ctx.fillText("⚡疾跑", drawX + offset - 18, drawY - 14);
+                ctx.restore();
+            } else if (this.affix === 'smog') {
+                ctx.save();
+                ctx.fillStyle = '#bdc3c7';
+                ctx.font = 'bold 14px ZCOOL KuaiLe';
+                ctx.fillText("💨自爆", drawX + offset - 18, drawY - 14);
+                ctx.restore();
+            }
 
             var barW = this.isBoss ? 110 : 50;
             var barX = drawX + offset; var barY = drawY - 5;
@@ -1449,6 +1976,7 @@
             this.data = POKEMON_DATA[pokeId] || POKEMON_DATA[1]; 
             this.img = getCachedImg(pokeId);
             this.fixedSkill = null;
+            unlockPokemon(pokeId);
         }
         Tower.prototype.gainExp = function(amount) { if (this.data.nextId && this.exp < this.data.maxExp && this.form === 'normal') { this.exp += amount; if (this.exp > this.data.maxExp) this.exp = this.data.maxExp; } }
         Tower.prototype.update = function() {
@@ -1465,6 +1993,10 @@
             if(this.form === 'mega') dmgMult = 1.6;
             else if(this.form === 'dynamax') dmgMult = 2.6;
             if(this.isShiny) dmgMult *= 1.5;
+
+            if (currentWeather === 'rain' && gridMap[this.c][this.r] === 6 && (this.data.type !== 'water' && this.data.type !== 'grass')) {
+                rateMult *= 1.4; 
+            }
 
             var comboDmgMult = 1.0 + (comboCount * 0.02);
             var techDmgMult = 1.0 + (globalDmgLevel * 0.20); 
@@ -1493,20 +2025,20 @@
 
                         if (this.fixedSkill === 'single') {
                             var skillDmg = Math.floor(effectiveDmg * 2.5);
-                            hitEnemy(target, skillDmg, this, false, true);
+                            hitEnemy(target, skillDmg, this, false, true, this.data.type);
                             skillAnims.push(new SkillAnim(this.x, this.y, target.x, target.y, this.data.type, 'single', skObj.n));
                         } else if (this.fixedSkill === 'aoe') {
                             var skillDmg = Math.floor(effectiveDmg * 1.5);
                             var splashRange = 160;
                             for (var e = 0; e < enemies.length; e++) {
                                 if (getDist(enemies[e].x, enemies[e].y, target.x, target.y) <= splashRange) {
-                                    hitEnemy(enemies[e], skillDmg, this, false, true);
+                                    hitEnemy(enemies[e], skillDmg, this, false, true, this.data.type);
                                 }
                             }
                             skillAnims.push(new SkillAnim(this.x, this.y, target.x, target.y, this.data.type, 'aoe', skObj.n));
                         } else if (this.fixedSkill === 'status') {
                             var skillDmg = Math.floor(effectiveDmg * 1.0);
-                            hitEnemy(target, skillDmg, this, false, true);
+                            hitEnemy(target, skillDmg, this, false, true, this.data.type);
                             applyStatusEffect(target, this.data.type);
                             skillAnims.push(new SkillAnim(this.x, this.y, target.x, target.y, this.data.type, 'status', skObj.n));
                         }
@@ -1522,6 +2054,19 @@
             var bounce = Math.sin(Date.now() / 300 + this.x) * 4; 
             var drawSize = (this.isMythic || this.form !== 'normal') ? 120 : 80; 
             var yOff = (this.isMythic || this.form !== 'normal') ? -60 : -40;
+
+            if (previewTower === this) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.data.range, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(241, 196, 15, 0.15)';
+                ctx.fill();
+                ctx.strokeStyle = '#f1c40f';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([6, 6]);
+                ctx.stroke();
+                ctx.restore();
+            }
 
             if (isMultiplayer) {
                 var isBrotherOld = (this.ownerRoleId === 'brother_old');
@@ -1541,9 +2086,9 @@
             if (this.form !== 'normal') {
                 var tid = this.pokeId;
                 if (this.form === 'mega' && this.data.megaId) tid = this.data.megaId;
-                if (this.form === 'megaX' && this.data.megaXId) tid = this.data.megaXId;
-                if (this.form === 'megaY' && this.data.megaYId) tid = this.data.megaYId;
-                if (this.form === 'dynamax' && this.data.gmaxId) tid = this.data.gmaxId;
+                else if (this.form === 'megaX' && this.data.megaXId) tid = this.data.megaXId;
+                else if (this.form === 'megaY' && this.data.megaYId) tid = this.data.megaYId;
+                else if (this.form === 'dynamax' && this.data.gmaxId) tid = this.data.gmaxId;
                 drawImg = getCachedImg(tid);
             }
 
@@ -1615,7 +2160,7 @@
             if(this.target.hp <= 0) { this.active = false; return; }
             var dist = getDist(this.x, this.y, this.target.x, this.target.y);
             if (dist < this.speed) {
-                hitEnemy(this.target, this.damage, this.ownerTower, false, false);
+                hitEnemy(this.target, this.damage, this.ownerTower, false, false, this.type);
                 this.active = false;
             } else { 
                 var dx = this.target.x - this.x; var dy = this.target.y - this.y; 
@@ -1630,81 +2175,208 @@
         }
 
         function updateUI() {
-            document.getElementById('coinDisplay').innerText = myCoins; 
-            document.getElementById('healthDisplay').innerText = health; 
-            document.getElementById('waveDisplay').innerText = Math.max(1, wave);
-            document.getElementById('uiStoneM').innerText = stones.mega; 
-            document.getElementById('uiStoneD').innerText = stones.dynamax;
-            document.getElementById('comboCount').innerText = comboCount;
-            document.getElementById('comboBuffText').innerText = '(+' + (comboCount * 2) + '% 攻擊力)';
+            var cEl = document.getElementById('coinDisplay'); if (cEl) cEl.innerText = myCoins;
+            var hEl = document.getElementById('healthDisplay'); if (hEl) hEl.innerText = health;
+            var wEl = document.getElementById('waveDisplay'); if (wEl) wEl.innerText = Math.max(1, wave);
+            var smEl = document.getElementById('uiStoneM'); if (smEl) smEl.innerText = stones.mega;
+            var sdEl = document.getElementById('uiStoneD'); if (sdEl) sdEl.innerText = stones.dynamax;
+            var cbEl = document.getElementById('comboCount'); if (cbEl) cbEl.innerText = comboCount;
+            var cbfEl = document.getElementById('comboBuffText'); if (cbfEl) cbfEl.innerText = '(+' + (comboCount * 2) + '% 攻擊力)';
 
-            var wMap = { sunny: '☀️ 晴天', rain: '🌧️ 暴雨', snow: '❄️ 降雪' };
-            document.getElementById('weatherDisplay').innerText = wMap[currentWeather];
+            var wMap = { sunny: '☀️ 晴天', rain: '🌧️ 暴雨(泥濘)', snow: '❄️ 冰雪(冰封)' };
+            var wtEl = document.getElementById('weatherDisplay'); if (wtEl) wtEl.innerText = wMap[currentWeather];
 
             var tBtn = document.getElementById('teraBtn');
-            if (teraEnergy >= 5 && teraActiveTimer <= 0) {
-                tBtn.style.display = 'block';
-            } else {
-                tBtn.style.display = 'none';
-            }
+            if (tBtn) tBtn.style.display = (teraEnergy >= 5 && teraActiveTimer <= 0) ? 'inline-block' : 'none';
 
             var sBtn = document.getElementById('sosBtn');
-            if (isMultiplayer && sosRescueEnergy >= 3) {
-                sBtn.style.display = 'block';
-            } else {
-                sBtn.style.display = 'none';
+            if (sBtn) sBtn.style.display = (isMultiplayer && sosRescueEnergy >= 3) ? 'inline-block' : 'none';
+
+            var bBtn = document.getElementById('bossSummonBtn');
+            if (bBtn) {
+                bBtn.style.display = summonedBossBadge ? 'inline-block' : 'none';
+                if (summonedBossBadge) bBtn.innerText = '🌟 召喚：' + summonedBossBadge.name + '！';
             }
 
             var rBtn = document.getElementById('rerollBtn');
             if (rBtn) {
                 rBtn.innerText = '🔄 刷新商店 (💰 15) [剩餘 ' + (5 - rerollsThisWave) + ' 次]';
             }
+
+            var askSosBtn = document.getElementById('sosAskBtn');
+            if (askSosBtn) {
+                askSosBtn.style.display = isMultiplayer ? 'inline-block' : 'none';
+            }
         }
 
-        window.activateTera = function() {
-            teraEnergy = 0;
-            teraActiveTimer = 900; 
-            sfx.tera();
-            triggerShake(15);
-            floatTexts.push(new FloatingText(canvas.width/2, 100, "💎 全員太晶化爆發！傷害翻倍！", "#00cec9", 40));
-            updateUI();
-        };
+        function applyWeatherTerrain() {
+            for(var c=0; c<COLS; c++) {
+                for(var r=0; r<ROWS; r++) {
+                    if(gridMap[c][r] === 6 || gridMap[c][r] === 7) gridMap[c][r] = 0;
+                }
+            }
+            if (currentWeather === 'rain') {
+                var count = 0;
+                while(count < 2) {
+                    var rc = Math.floor(Math.random() * COLS);
+                    var rr = Math.floor(Math.random() * ROWS);
+                    if (gridMap[rc][rr] === 0) { gridMap[rc][rr] = 6; count++; }
+                }
+            } else if (currentWeather === 'snow') {
+                var count = 0;
+                while(count < 2) {
+                    var rc = Math.floor(Math.random() * COLS);
+                    var rr = Math.floor(Math.random() * ROWS);
+                    if (gridMap[rc][rr] === 0) { gridMap[rc][rr] = 7; count++; }
+                }
+            }
+        }
 
         function drawMap() {
             ctx.fillStyle = currentWeather === 'snow' ? '#dff9fb' : (currentWeather === 'rain' ? '#576574' : '#78C850'); 
             ctx.fillRect(0, 0, canvas.width, canvas.height); 
 
+            ctx.fillStyle = 'rgba(52, 152, 219, 0.08)';
+            ctx.fillRect(0, 0, canvas.width, 4 * GRID_SIZE);
+            ctx.fillStyle = 'rgba(46, 204, 113, 0.08)';
+            ctx.fillRect(0, 5 * GRID_SIZE, canvas.width, 4 * GRID_SIZE);
+
+            ctx.fillStyle = rocketEventActive ? 'rgba(231, 76, 60, 0.25)' : 'rgba(0, 206, 201, 0.12)';
+            ctx.fillRect(0, 4 * GRID_SIZE, canvas.width, GRID_SIZE);
+
+            ctx.strokeStyle = rocketEventActive ? '#e74c3c' : 'rgba(0, 206, 201, 0.4)';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([8, 8]);
+            ctx.beginPath();
+            ctx.moveTo(0, 4 * GRID_SIZE);
+            ctx.lineTo(canvas.width, 4 * GRID_SIZE);
+            ctx.moveTo(0, 5 * GRID_SIZE);
+            ctx.lineTo(canvas.width, 5 * GRID_SIZE);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
             ctx.fillStyle = currentWeather === 'snow' ? '#c7ecee' : (currentWeather === 'rain' ? '#485460' : '#71BF4A');
             for(var c = 0; c < COLS; c++) { for(var r = 0; r < ROWS; r++) { if ((c + r) % 2 === 0) { ctx.fillRect(c * GRID_SIZE, r * GRID_SIZE, GRID_SIZE, GRID_SIZE); } } }
             
             ctx.strokeStyle = '#5c3a21'; ctx.lineWidth = 56; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-            ctx.beginPath(); ctx.moveTo(pixelPath[0].x, pixelPath[0].y); for(var i = 1; i < pixelPath.length; i++) { ctx.lineTo(pixelPath[i].x, pixelPath[i].y); } ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(pixelPathA[0].x, pixelPathA[0].y); 
+            for(var i = 1; i < pixelPathA.length; i++) ctx.lineTo(pixelPathA[i].x, pixelPathA[i].y); 
+            ctx.stroke();
             ctx.strokeStyle = '#D2B48C'; ctx.lineWidth = 44;
-            ctx.beginPath(); ctx.moveTo(pixelPath[0].x, pixelPath[0].y); for(var i = 1; i < pixelPath.length; i++) { ctx.lineTo(pixelPath[i].x, pixelPath[i].y); } ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(pixelPathA[0].x, pixelPathA[0].y); 
+            for(var i = 1; i < pixelPathA.length; i++) ctx.lineTo(pixelPathA[i].x, pixelPathA[i].y); 
+            ctx.stroke();
+
+            ctx.strokeStyle = '#5c3a21'; ctx.lineWidth = 56; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.moveTo(pixelPathB[0].x, pixelPathB[0].y); 
+            for(var i = 1; i < pixelPathB.length; i++) ctx.lineTo(pixelPathB[i].x, pixelPathB[i].y); 
+            ctx.stroke();
+            ctx.strokeStyle = '#D2B48C'; ctx.lineWidth = 44;
+            ctx.beginPath(); ctx.moveTo(pixelPathB[0].x, pixelPathB[0].y); 
+            for(var i = 1; i < pixelPathB.length; i++) ctx.lineTo(pixelPathB[i].x, pixelPathB[i].y); 
+            ctx.stroke();
 
             for(var c = 0; c < COLS; c++) {
                 for(var r = 0; r < ROWS; r++) {
                     var cellVal = gridMap[c][r];
+                    var x = c * GRID_SIZE + 4; var y = r * GRID_SIZE + 4;
+
                     if (cellVal === 0) { 
-                        var x = c * GRID_SIZE + 4; var y = r * GRID_SIZE + 4;
                         ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)'; ctx.lineWidth = 2; ctx.setLineDash([6, 6]);
                         ctx.beginPath(); ctx.roundRect(x, y, GRID_SIZE - 8, GRID_SIZE - 8, 10); ctx.stroke(); ctx.setLineDash([]);
                     } else if (cellVal === 4) {
-                        var x = c * GRID_SIZE + 4; var y = r * GRID_SIZE + 4;
                         ctx.fillStyle = 'rgba(230, 126, 34, 0.3)';
                         ctx.beginPath(); ctx.roundRect(x, y, GRID_SIZE - 8, GRID_SIZE - 8, 10); ctx.fill();
                         ctx.strokeStyle = '#e67e22'; ctx.lineWidth = 3; ctx.setLineDash([4, 4]);
                         ctx.stroke(); ctx.setLineDash([]);
+                    } else if (cellVal === 5) {
+                        ctx.fillStyle = 'rgba(0, 206, 201, 0.15)';
+                        ctx.beginPath(); ctx.roundRect(x, y, GRID_SIZE - 8, GRID_SIZE - 8, 10); ctx.fill();
+                        ctx.strokeStyle = 'rgba(0, 206, 201, 0.6)'; ctx.lineWidth = 2;
+                        ctx.stroke();
+                        ctx.beginPath(); ctx.moveTo(x + 12, y + 12); ctx.lineTo(x + GRID_SIZE - 20, y + GRID_SIZE - 20); ctx.stroke();
+                    } else if (cellVal === 6) { 
+                        ctx.fillStyle = 'rgba(109, 76, 65, 0.5)';
+                        ctx.beginPath(); ctx.roundRect(x, y, GRID_SIZE - 8, GRID_SIZE - 8, 10); ctx.fill();
+                        ctx.fillStyle = '#f1c40f'; ctx.font = '14px ZCOOL KuaiLe'; ctx.fillText("泥濘", x+15, y+20);
+                    } else if (cellVal === 7) { 
+                        ctx.fillStyle = 'rgba(116, 185, 255, 0.7)';
+                        ctx.beginPath(); ctx.roundRect(x, y, GRID_SIZE - 8, GRID_SIZE - 8, 10); ctx.fill();
+                        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 3; ctx.stroke();
+                        ctx.fillStyle = '#2c3e50'; ctx.font = 'bold 16px ZCOOL KuaiLe'; ctx.fillText("❄️點擊解凍", x+6, y+45);
                     }
                 }
             }
 
-            var bx = 10 * GRID_SIZE; var by = 5 * GRID_SIZE; var cx = bx + GRID_SIZE, cy = by + GRID_SIZE;
-            ctx.fillStyle = '#e74c3c'; ctx.beginPath(); ctx.arc(cx, cy+10, 60, Math.PI, 0); ctx.fill();
-            ctx.fillStyle = 'white'; ctx.beginPath(); ctx.arc(cx, cy+10, 60, 0, Math.PI); ctx.fill();
-            ctx.strokeStyle = '#2c3e50'; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(cx, cy+10, 60, 0, Math.PI * 2); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(cx - 60, cy+10); ctx.lineTo(cx + 60, cy+10); ctx.stroke();
-            ctx.fillStyle = 'white'; ctx.beginPath(); ctx.arc(cx, cy+10, 18, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            var bx = 11 * GRID_SIZE; var by = 3.5 * GRID_SIZE; var cx = bx + GRID_SIZE/2, cy = by + GRID_SIZE;
+            ctx.fillStyle = '#e74c3c'; ctx.beginPath(); ctx.arc(cx, cy, 60, Math.PI, 0); ctx.fill();
+            ctx.fillStyle = 'white'; ctx.beginPath(); ctx.arc(cx, cy, 60, 0, Math.PI); ctx.fill();
+            ctx.strokeStyle = '#2c3e50'; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(cx, cy, 60, 0, Math.PI * 2); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 60, cy); ctx.lineTo(cx + 60, cy); ctx.stroke();
+            ctx.fillStyle = 'white'; ctx.beginPath(); ctx.arc(cx, cy, 18, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+            if (speedLinesTimer > 0) {
+                speedLinesTimer--;
+                ctx.save();
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+                ctx.lineWidth = 3;
+                var scx = canvas.width / 2, scy = canvas.height / 2;
+                for (var i = 0; i < 28; i++) {
+                    var ang = (i / 28) * Math.PI * 2 + Math.random() * 0.1;
+                    var r1 = 280 + Math.random() * 80;
+                    var r2 = 650;
+                    ctx.beginPath();
+                    ctx.moveTo(scx + Math.cos(ang) * r2, scy + Math.sin(ang) * r2);
+                    ctx.lineTo(scx + Math.cos(ang) * r1, scy + Math.sin(ang) * r1);
+                    ctx.stroke();
+                }
+                ctx.restore();
+            }
+
+            if (mangaCutinTimer > 0) {
+                mangaCutinTimer--;
+                ctx.save();
+                var mw = canvas.width, mh = 220;
+                var my = (canvas.height - mh) / 2;
+                
+                ctx.fillStyle = '#111';
+                ctx.beginPath();
+                ctx.moveTo(0, my - 20);
+                ctx.lineTo(mw, my + 20);
+                ctx.lineTo(mw, my + mh + 20);
+                ctx.lineTo(0, my + mh - 20);
+                ctx.closePath();
+                ctx.fill();
+                ctx.strokeStyle = '#f1c40f';
+                ctx.lineWidth = 6;
+                ctx.stroke();
+
+                var mImg = getCachedImg(mangaPokeId);
+                if (mImg && mImg.complete) {
+                    ctx.drawImage(mImg, mw / 2 - 110, my - 10, 240, 240);
+                }
+
+                ctx.fillStyle = '#f1c40f';
+                ctx.font = '900 48px "ZCOOL KuaiLe"';
+                ctx.textAlign = 'center';
+                ctx.shadowColor = '#e74c3c';
+                ctx.shadowBlur = 20;
+                ctx.fillText("⚡ 奧義・極限爆發 ⚡", mw / 2, my + mh - 30);
+                ctx.restore();
+            }
+
+            if (activeBossSummonTimer > 0) {
+                ctx.save();
+                var sPulse = Math.sin(Date.now() / 80) * 0.2 + 1.0;
+                ctx.strokeStyle = '#fd79a8';
+                ctx.lineWidth = 6;
+                ctx.shadowColor = '#fd79a8';
+                ctx.shadowBlur = 25;
+                ctx.beginPath();
+                ctx.arc(canvas.width / 2, canvas.height / 2, 220 * sPulse, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.restore();
+            }
         }
 
         function startGame() { 
@@ -1723,14 +2395,14 @@
             document.getElementById('pauseToggleBtn').innerText = userPaused ? '▶️' : '⏸️';
         };
 
-        canvas.addEventListener('click', function(e) {
+        function handleBoardInput(clientX, clientY) {
             initAudio(); if(gameOver || !gameStarted || userPaused || isModalOpen) return;
             
             var rect = canvas.getBoundingClientRect(); 
             var scaleX = canvas.width / rect.width;
             var scaleY = canvas.height / rect.height;
-            var clickX = (e.clientX - rect.left) * scaleX; 
-            var clickY = (e.clientY - rect.top) * scaleY;
+            var clickX = (clientX - rect.left) * scaleX; 
+            var clickY = (clientY - rect.top) * scaleY;
             
             for(var i = chests.length - 1; i >= 0; i--) {
                 if(chests[i].checkClick(clickX, clickY)) { sfx.click(); pendingAction = 'chest'; pendingChestX = chests[i].x; pendingChestY = chests[i].y; closeModals(); showModal('mathModal', function() { openMathModal(3); }); chests.splice(i, 1); return; }
@@ -1746,13 +2418,36 @@
             var c = Math.floor(clickX / GRID_SIZE); var r = Math.floor(clickY / GRID_SIZE);
             if (c < 0 || c >= COLS || r < 0 || r >= ROWS) return;
             var cellType = gridMap[c][r]; sfx.click();
-            if (cellType === 3) showModal('baseModal', function() { openBaseModal(); });
+            
+            if (cellType === 7) {
+                pendingC = c; pendingR = r;
+                pendingAction = 'unfreezeCell';
+                closeModals();
+                showModal('mathModal', function() { openMathModal(2); });
+                document.getElementById('mathTitle').innerText = "🔥 解凍火花：回答題目融化寒冰！";
+                return;
+            }
+
+            if (cellType === 3) {
+                previewTower = null;
+                showModal('baseModal', function() { openBaseModal(); });
+            }
+            else if (cellType === 1) {
+                previewTower = null;
+                showWarning("哎呀！這裡是怪物行走的道路，不能建造喔！");
+            }
             else if (cellType === 4) {
+                previewTower = null;
                 showWarning("⚠️ 夥伴正在這格答題建造中喔！");
+            }
+            else if (cellType === 5) {
+                previewTower = null;
+                showWarning("🛡️ 這裡是中立的能量隔離帶，禁止建造！");
             }
             else if (cellType === 2) { 
                 var tower = null; for(var t=0; t<towers.length; t++){ if(towers[t].c === c && towers[t].r === r) tower = towers[t]; }
                 if(tower) {
+                    previewTower = tower;
                     if (isMultiplayer && tower.ownerRoleId !== myRoleId) {
                         sfx.error();
                         showWarning("這是夥伴的寶可夢喔！不能代替操作！");
@@ -1761,7 +2456,21 @@
                     showModal('upgradeModal', function() { openUpgradeModal(tower); });
                 }
             }
-            else if (cellType === 0) { 
+            else if (cellType === 0 || cellType === 6) { 
+                previewTower = null;
+                if (isMultiplayer) {
+                    if (myRoleId === 'brother_old' && r > 3) {
+                        sfx.error();
+                        showWarning("🚫 這是弟弟的下半場領地喔！");
+                        return;
+                    }
+                    if (myRoleId === 'brother_young' && r < 5) {
+                        sfx.error();
+                        showWarning("🚫 這是哥哥的上半場領地喔！");
+                        return;
+                    }
+                }
+
                 pendingC = c; pendingR = r; 
                 gridMap[c][r] = 4;
                 if (isMultiplayer) {
@@ -1781,7 +2490,15 @@
                 }
                 showModal('buildModal', function() { openBuildModal(); }); 
             }
-        });
+        }
+
+        canvas.addEventListener('click', function(e) { handleBoardInput(e.clientX, e.clientY); });
+        canvas.addEventListener('touchstart', function(e) {
+            if (e.touches && e.touches.length > 0) {
+                handleBoardInput(e.touches[0].clientX, e.touches[0].clientY);
+                e.preventDefault();
+            }
+        }, { passive: false });
 
         function showModal(id, setupFunc) { 
             if(setupFunc) setupFunc(); 
@@ -1794,6 +2511,7 @@
             var m = document.querySelectorAll('.modal'); 
             for(var i=0; i<m.length; i++) m[i].classList.remove('active'); 
             isModalOpen = false;
+            if (mathTimerInterval) clearInterval(mathTimerInterval);
         };
         
         window.cancelAction = function() { 
@@ -1805,7 +2523,7 @@
                 }
             }
             pendingAction = null; 
-            pendingC = null;
+            pendingC = null; 
             pendingR = null;
             sfx.click(); 
             closeModals(); 
@@ -1820,6 +2538,7 @@
             var idx = towers.indexOf(selectedTower);
             if(idx !== -1) towers.splice(idx, 1);
             gridMap[targetC][targetR] = 0;
+            previewTower = null;
 
             if (isMultiplayer && !isHost) {
                 sendNetAction({ type: 'CLIENT_ACTION', act: 'sellTower', c: targetC, r: targetR, refund: refund });
@@ -1852,14 +2571,16 @@
                     var pool = POOLS[poolType]; 
                     if(pool && pool.length > 0) { 
                         var pick = pool[Math.floor(Math.random() * pool.length)]; 
-                        var isShiny = Math.random() < 0.12; 
+                        var isShiny = Math.random() < 0.03; 
                         if(currentBuildChoices.filter(function(x){ return x.id === pick; }).length === 0) {
-                            currentBuildChoices.push({ id: pick, isShiny: isShiny });
+                            currentBuildChoices.push({ id: pick, isShiny: isShiny, rarity: poolType });
                         }
                     }
                 }
             }
             
+            var rarityNames = { common: '🟢 一般', rare: '🔵 稀有', epic: '🟣 史詩', legendary: '🟡 傳說', mythic: '🟠 神話' };
+
             for(var b=0; b<currentBuildChoices.length; b++) {
                 (function(choice) {
                     var data = POKEMON_DATA[choice.id]; var canAfford = myCoins >= data.cost;
@@ -1867,7 +2588,14 @@
                     if (choice.isShiny) { div.style.border = '5px solid gold'; div.style.boxShadow = '0 0 20px gold'; }
                     var mainImg = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/" + choice.id + ".png";
                     var shinyTag = choice.isShiny ? '<span style="color:gold;">✨色違 </span>' : '';
-                    div.innerHTML = '<img src="' + mainImg + '" style="' + (choice.isShiny ? 'filter:hue-rotate(180deg) brightness(1.2);' : '') + '"><div style="font-weight: bold; font-size: 20px;">' + shinyTag + data.name + '</div><div class="cost">💰 ' + data.cost + '</div>';
+                    var rText = rarityNames[data.rarity] || '🟢 一般';
+                    var rClass = 'rarity-' + (data.rarity || 'common');
+
+                    div.innerHTML = '<span class="rarity-tag ' + rClass + '">' + rText + '</span>' +
+                                    '<img src="' + mainImg + '" style="' + (choice.isShiny ? 'filter:hue-rotate(180deg) brightness(1.2);' : '') + '">' +
+                                    '<div style="font-weight: bold; font-size: 20px;">' + shinyTag + data.name + '</div>' +
+                                    '<div class="cost">💰 ' + data.cost + '</div>';
+
                     if(canAfford) { 
                         div.onclick = function() { 
                             if (choice.isShiny) sfx.shiny(); else sfx.click();
@@ -1916,7 +2644,7 @@
             if(tower.isShiny) dmgMult *= 1.5;
 
             var comboDmgMult = 1.0 + (comboCount * 0.02);
-            var techDmgMult = 1.0 + (globalDmgLevel * 0.20);
+            var techDmgMult = 1.0 + (globalDmgLevel * 0.20); 
             var actualDmg = Math.floor(tower.data.dmg * dmgMult * techDmgMult * comboDmgMult);
             var bonusDmg = actualDmg - tower.data.dmg;
 
@@ -1948,10 +2676,10 @@
                         var tagText = sk.t === 'single' ? '【單體爆發】' : (sk.t === 'aoe' ? '【範圍清場】' : '【強力控場】');
                         var costInfo = isSelected ? '<span style="color:#f1c40f;">(使用中)</span>' : (tower.fixedSkill === null ? '<span style="color:#2ecc71;">(免費)</span>' : '<span style="color:#e74c3c;">(💰50)</span>');
 
-                        card.innerHTML = '<div style="font-size:18px; color:#f1c40f; font-weight:bold;">' + tagText + '</div>' +
-                                         '<div style="font-size:26px; font-weight:bold; margin:5px 0;">' + (isSelected ? '✅ ' : '') + sk.n + '</div>' +
-                                         '<div style="font-size:18px; line-height:1.3; opacity:0.95;">' + sk.d + '</div>' +
-                                         '<div style="font-size:16px; margin-top:6px; font-weight:bold;">' + costInfo + '</div>';
+                        card.innerHTML = '<div style="font-size:17px; color:#f1c40f; font-weight:bold;">' + tagText + '</div>' +
+                                         '<div style="font-size:24px; font-weight:bold; margin:5px 0;">' + (isSelected ? '✅ ' : '') + sk.n + '</div>' +
+                                         '<div style="font-size:16px; line-height:1.3; opacity:0.95;">' + sk.d + '</div>' +
+                                         '<div style="font-size:15px; margin-top:6px; font-weight:bold;">' + costInfo + '</div>';
 
                         card.onclick = function() {
                             if (tower.fixedSkill === sk.t) return;
@@ -1984,7 +2712,7 @@
             if (hasNext && isMaxExp && tower.form === 'normal') {
                 document.getElementById('expBarWrap').style.display = 'none';
                 inlineEvo.style.display = 'flex';
-                inlineEvo.innerHTML = '<div style="width:100%; color:#8e44ad; font-weight:bold; margin-bottom:10px; font-size:24px;">🌟 選擇進化型態！</div>';
+                inlineEvo.innerHTML = '<div style="width:100%; color:#8e44ad; font-weight:bold; margin-bottom:10px; font-size:22px;">🌟 選擇進化型態！</div>';
                 
                 var nIds = Object.prototype.toString.call(tower.data.nextId) === '[object Array]' ? tower.data.nextId : [tower.data.nextId];
                 for(var oi=0; oi<nIds.length; oi++) {
@@ -1992,7 +2720,7 @@
                         var pData = POKEMON_DATA[id];
                         var div = document.createElement('div'); div.className = 'choice-card';
                         var mainImg = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/" + id + ".png";
-                        div.innerHTML = '<img src="' + mainImg + '"><div style="font-weight:bold; font-size:20px;">' + pData.name + '</div>';
+                        div.innerHTML = '<img src="' + mainImg + '"><div style="font-weight:bold; font-size:18px;">' + pData.name + '</div>';
                         div.onclick = function() { 
                             sfx.click(); pendingEvoId = id; pendingAction = 'evolve'; closeModals(); 
                             showModal('mathModal', function() { openMathModal('evolve'); }); 
@@ -2044,17 +2772,84 @@
             }
         };
 
+        // 動態產生多等分分數扇形圖
+        function generateFractionSvg(numerator, denominator) {
+            var r = 45, cx = 50, cy = 50;
+            var svg = '<svg viewBox="0 0 100 100" width="130" height="130"><circle cx="50" cy="50" r="45" fill="#f8f9fa" stroke="#2c3e50" stroke-width="4"/>';
+            
+            for (var i = 0; i < numerator; i++) {
+                var startAngle = (i * 2 * Math.PI / denominator) - (Math.PI / 2);
+                var endAngle = ((i + 1) * 2 * Math.PI / denominator) - (Math.PI / 2);
+                var x1 = cx + r * Math.cos(startAngle);
+                var y1 = cy + r * Math.sin(startAngle);
+                var x2 = cx + r * Math.cos(endAngle);
+                var y2 = cy + r * Math.sin(endAngle);
+                var largeArc = (endAngle - startAngle > Math.PI) ? 1 : 0;
+                
+                svg += '<path d="M ' + cx + ' ' + cy + ' L ' + x1 + ' ' + y1 + ' A ' + r + ' ' + r + ' 0 ' + largeArc + ' 1 ' + x2 + ' ' + y2 + ' Z" fill="#e74c3c" stroke="#c0392b" stroke-width="1.5"/>';
+            }
+            
+            for (var d = 0; d < denominator; d++) {
+                var angle = (d * 2 * Math.PI / denominator) - (Math.PI / 2);
+                var lx = cx + r * Math.cos(angle);
+                var ly = cy + r * Math.sin(angle);
+                svg += '<line x1="' + cx + '" y1="' + cy + '" x2="' + lx + '" y2="' + ly + '" stroke="#2c3e50" stroke-width="2.5"/>';
+            }
+            svg += '</svg>';
+            return svg;
+        }
+
         function openMathModal(difficulty) {
             var num1, num2, type, ans, qText, speechQText;
             var isEvolve = (difficulty === 'evolve');
             document.getElementById('mathTitle').innerText = isEvolve ? "✨ 等級提升！進化考驗" : "大木博士的考驗";
-            var qEl = document.getElementById('questionText');
+            
+            mathTotalTime = (myRoleId === 'brother_young') ? 15000 : 8000;
+            mathStartTime = Date.now();
+            isPerfectHit = false;
+            var tBar = document.getElementById('mathTimerBar');
+            tBar.style.width = '100%';
+
+            if (mathTimerInterval) clearInterval(mathTimerInterval);
+            mathTimerInterval = setInterval(function() {
+                var elapsed = Date.now() - mathStartTime;
+                var remainRatio = Math.max(0, (mathTotalTime - elapsed) / mathTotalTime);
+                tBar.style.width = (remainRatio * 100) + '%';
+                if (remainRatio <= 0) {
+                    clearInterval(mathTimerInterval);
+                }
+            }, 60);
 
             if (myRoleId === 'brother_young') {
                 var randType = Math.random();
-                if (randType < 0.25) {
+                
+                // 1. 數寶貝球
+                if (randType < 0.30) {
+                    var ballCount = Math.floor(Math.random() * 6) + 3;
+                    var ballsSvg = '<div style="display:flex; gap:6px; justify-content:center; align-items:center; flex-wrap:wrap; margin:6px 0; max-width:320px;">';
+                    for(var b=0; b<ballCount; b++) {
+                        ballsSvg += '<div style="width:36px; height:36px; border-radius:50%; background:linear-gradient(to bottom, #e74c3c 50%, #ffffff 50%); border:3px solid #2c3e50; position:relative; box-shadow:0 2px 4px rgba(0,0,0,0.3);"><div style="position:absolute; width:10px; height:10px; background:#fff; border-radius:50%; border:2px solid #2c3e50; top:50%; left:50%; transform:translate(-50%,-50%);"></div></div>';
+                    }
+                    ballsSvg += '</div>';
+
+                    qText = ballsSvg + '<div style="font-size:22px;">數一數，畫面上共有幾顆精靈球？</div>';
+                    speechQText = "數一數，畫面上共有幾顆精靈球呢？";
+
+                    var opt1 = ballCount + (Math.random() > 0.5 ? 1 : -1);
+                    if (opt1 <= 0 || opt1 === ballCount) opt1 = ballCount + 2;
+                    var opt2 = ballCount + (Math.random() > 0.5 ? 2 : -2);
+                    if (opt2 <= 0 || opt2 === ballCount || opt2 === opt1) opt2 = ballCount + 3;
+
+                    var options = [ballCount + " 顆", opt1 + " 顆", opt2 + " 顆"];
+                    options.sort(function() { return Math.random() - 0.5; });
+                    window.currentMathAnswerStr = ballCount + " 顆";
+                    renderMathChoices(qText, speechQText, options);
+                    return;
+                }
+                // 2. 時鐘辨識
+                else if (randType < 0.55) {
                     var h = Math.floor(Math.random() * 12) + 1;
-                    var clockSvg = '<svg viewBox="0 0 100 100" width="200" height="200"><circle cx="50" cy="50" r="45" fill="#f8f9fa" stroke="#2c3e50" stroke-width="5"/><circle cx="50" cy="50" r="3.5" fill="#e74c3c"/>';
+                    var clockSvg = '<svg viewBox="0 0 100 100" width="130" height="130"><circle cx="50" cy="50" r="45" fill="#f8f9fa" stroke="#2c3e50" stroke-width="5"/><circle cx="50" cy="50" r="3.5" fill="#e74c3c"/>';
                     for(var i=1; i<=12; i++) {
                         var a = i * 30 * Math.PI / 180;
                         var tx = 50 + 32 * Math.sin(a), ty = 50 - 32 * Math.cos(a);
@@ -2063,25 +2858,42 @@
                     clockSvg += '<line x1="50" y1="50" x2="'+(50 + 22 * Math.sin(h * 30 * Math.PI / 180))+'" y2="'+(50 - 22 * Math.cos(h * 30 * Math.PI / 180))+'" stroke="#2c3e50" stroke-width="6" stroke-linecap="round"/>';
                     clockSvg += '<line x1="50" y1="50" x2="50" y2="12" stroke="#e74c3c" stroke-width="4" stroke-linecap="round"/></svg>';
                     
-                    qText = '<div style="display:flex; flex-direction:column; align-items:center;">' + clockSvg + '<div style="font-size:28px; margin-top:5px;">現在是幾點鐘？</div></div>';
+                    qText = '<div style="display:flex; flex-direction:column; align-items:center;">' + clockSvg + '<div style="font-size:22px; margin-top:4px;">現在是幾點鐘？</div></div>';
                     speechQText = "看時鐘，現在是幾點鐘呢？";
                     
                     var options = [h + "點", ((h % 12) + 1) + "點", (((h + 2) % 12) + 1) + "點"];
                     options.sort(function() { return Math.random() - 0.5; });
                     window.currentMathAnswerStr = h + "點";
-                    
-                    qEl.innerHTML = qText;
-                    var btnsHtml = '<div style="display:flex; gap:14px; justify-content:center; margin-top:15px;">';
-                    for(var i=0; i<3; i++) {
-                        btnsHtml += '<button class="math-option-btn" onclick="checkChoiceStr(\''+options[i]+'\')">'+options[i]+'</button>';
-                    }
-                    btnsHtml += '</div>';
-                    document.getElementById('mathChoices').innerHTML = btnsHtml;
-                    document.getElementById('hintText').innerText = "";
-                    speakQuestion(speechQText);
+                    renderMathChoices(qText, speechQText, options);
+                    return;
+                }
+                // 3. 錢幣總數
+                else if (randType < 0.75) {
+                    var tensCount = Math.floor(Math.random() * 3) + 1;
+                    var onesCount = Math.floor(Math.random() * 5) + 1;
+                    var totalMoney = tensCount * 10 + onesCount;
+
+                    var coinsSvg = '<div style="display:flex; gap:8px; justify-content:center; align-items:center; margin:6px 0;">';
+                    for(var t=0; t<tensCount; t++) coinsSvg += '<div style="width:38px; height:38px; border-radius:50%; background:#f1c40f; color:#d35400; font-size:16px; font-weight:bold; display:flex; align-items:center; justify-content:center; border:2.5px solid #d35400;">10</div>';
+                    for(var o=0; o<onesCount; o++) coinsSvg += '<div style="width:30px; height:30px; border-radius:50%; background:#bdc3c7; color:#2c3e50; font-size:15px; font-weight:bold; display:flex; align-items:center; justify-content:center; border:2.5px solid #7f8c8d;">1</div>';
+                    coinsSvg += '</div>';
+
+                    qText = coinsSvg + '<div style="font-size:22px;">數一數，總共有多少元？</div>';
+                    speechQText = "數一數，這些硬幣總共有多少元？";
+
+                    var opt1 = totalMoney + (Math.random() > 0.5 ? 10 : -10);
+                    if (opt1 <= 0 || opt1 === totalMoney) opt1 = totalMoney + 5;
+                    var opt2 = totalMoney + (Math.random() > 0.5 ? 2 : -2);
+                    if (opt2 <= 0 || opt2 === totalMoney || opt2 === opt1) opt2 = totalMoney + 3;
+
+                    var options = [totalMoney + "元", opt1 + "元", opt2 + "元"];
+                    options.sort(function() { return Math.random() - 0.5; });
+                    window.currentMathAnswerStr = totalMoney + "元";
+                    renderMathChoices(qText, speechQText, options);
                     return;
                 }
 
+                // 4. 基礎加減法
                 type = Math.random() > 0.5 ? '+' : '-';
                 if (type === '+') {
                     num1 = Math.floor(Math.random() * 5) + 1;
@@ -2103,93 +2915,130 @@
                 var options = [ans.toString(), opt1.toString(), opt2.toString()];
                 options.sort(function() { return Math.random() - 0.5; });
                 window.currentMathAnswerStr = ans.toString();
-
-                qEl.innerHTML = qText;
-                var btnsHtml = '<div style="display:flex; gap:16px; justify-content:center; margin-top:15px; flex-wrap:wrap;">';
-                for(var i=0; i<options.length; i++) {
-                    btnsHtml += '<button class="math-option-btn" onclick="checkChoiceStr(\''+options[i]+'\')">'+options[i]+'</button>';
-                }
-                btnsHtml += '</div>';
-                document.getElementById('mathChoices').innerHTML = btnsHtml;
-                document.getElementById('hintText').innerText = "";
-                speakQuestion(speechQText);
+                renderMathChoices(qText, speechQText, options);
                 return;
 
             } else {
+                // --- 哥哥 (升小三) 題目 ---
                 var qMode = Math.random();
-                var opt1, opt2;
 
-                if (qMode < 0.45) {
+                // 1. 多樣化圖形分數題
+                if (qMode < 0.30) {
+                    var denoms = [2, 3, 4, 6, 8];
+                    var den = denoms[Math.floor(Math.random() * denoms.length)];
+                    var num = Math.floor(Math.random() * (den - 1)) + 1;
+                    var ansFraction = num + "/" + den;
+
+                    var fracSvg = generateFractionSvg(num, den);
+                    qText = '<div style="display:flex; flex-direction:column; align-items:center;">' + fracSvg + '<div style="font-size:22px; margin-top:4px;">紅色部分是幾分之幾？</div></div>';
+                    speechQText = "看圖形，紅色部分是幾分之幾？";
+
+                    var fakeOpt1 = (num === 1 ? 2 : num - 1) + "/" + den;
+                    var fakeDen = (den === 4 ? 6 : 4);
+                    var fakeOpt2 = num + "/" + fakeDen;
+
+                    var fOptions = [ansFraction, fakeOpt1, fakeOpt2];
+                    fOptions = Array.from(new Set(fOptions));
+                    while(fOptions.length < 3) {
+                        fOptions.push((Math.floor(Math.random() * (den - 1)) + 1) + "/" + den);
+                        fOptions = Array.from(new Set(fOptions));
+                    }
+                    fOptions.sort(function() { return Math.random() - 0.5; });
+                    window.currentMathAnswerStr = ansFraction;
+                    renderMathChoices(qText, speechQText, fOptions);
+                    return;
+                }
+
+                // 2. 單位換算題
+                if (qMode < 0.55) {
+                    var unitType = Math.random();
+                    if (unitType < 0.5) {
+                        var meters = Math.floor(Math.random() * 5) + 2;
+                        ans = meters * 100;
+                        qText = meters + " 公尺 = ( ? ) 公分";
+                        speechQText = meters + " 公尺等於幾公分？";
+                        var options = [ans + " 公分", (ans - 100) + " 公分", (ans + 50) + " 公分"];
+                        options.sort(function() { return Math.random() - 0.5; });
+                        window.currentMathAnswerStr = ans + " 公分";
+                    } else {
+                        var extraMin = (Math.floor(Math.random() * 5) + 1) * 10;
+                        ans = 60 + extraMin;
+                        qText = "1 小時 " + extraMin + " 分鐘 = ( ? ) 分鐘";
+                        speechQText = "1 小時 " + extraMin + " 分鐘等於幾分鐘？";
+                        var options = [ans + " 分鐘", (ans - 20) + " 分鐘", (ans + 30) + " 分鐘"];
+                        options.sort(function() { return Math.random() - 0.5; });
+                        window.currentMathAnswerStr = ans + " 分鐘";
+                    }
+                    renderMathChoices(qText, speechQText, options);
+                    return;
+                }
+
+                // 3. 九九乘法與填空 (防負數與除零)
+                if (qMode < 0.78) {
                     num1 = Math.floor(Math.random() * 8) + 2;
                     num2 = Math.floor(Math.random() * 8) + 2;
                     ans = num1 * num2;
                     qText = num1 + ' × ' + num2 + ' = ?';
                     speechQText = num1 + " 乘以 " + num2 + " 等於多少？";
                     
-                    opt1 = ans + (Math.random() > 0.5 ? num1 : -num1);
-                    if (opt1 <= 0 || opt1 === ans) opt1 = ans + 2;
-                    opt2 = ans + (Math.random() > 0.5 ? 4 : -4);
-                    if (opt2 <= 0 || opt2 === ans || opt2 === opt1) opt2 = ans + 6;
-                } else if (qMode < 0.75) {
+                    var opt1 = Math.max(1, ans + (Math.random() > 0.5 ? num1 : -num1));
+                    if (opt1 === ans) opt1 = ans + 2;
+                    var opt2 = Math.max(1, ans + (Math.random() > 0.5 ? 4 : -4));
+                    if (opt2 === ans || opt2 === opt1) opt2 = ans + 6;
+                } else {
                     num1 = Math.floor(Math.random() * 7) + 3;
                     ans = Math.floor(Math.random() * 7) + 3;
                     var product = num1 * ans;
                     qText = num1 + ' × ( ? ) = ' + product;
                     speechQText = num1 + " 乘以多少等於 " + product + "？";
 
-                    opt1 = ans + (Math.random() > 0.5 ? 1 : -1);
-                    if (opt1 <= 0 || opt1 === ans) opt1 = ans + 2;
-                    opt2 = ans + (Math.random() > 0.5 ? 2 : -2);
-                    if (opt2 <= 0 || opt2 === ans || opt2 === opt1) opt2 = ans + 3;
-                } else {
-                    var tensA = (Math.floor(Math.random() * 5) + 1) * 10;
-                    var tensB = (Math.floor(Math.random() * 4) + 1) * 10;
-                    var isPlus = Math.random() > 0.5;
-                    if (isPlus) {
-                        ans = tensA + tensB;
-                        qText = tensA + ' + ' + tensB + ' = ?';
-                        speechQText = tensA + " 加 " + tensB + " 等於多少？";
-                    } else {
-                        var bigTens = Math.max(tensA, tensB) + 30;
-                        ans = bigTens - tensB;
-                        qText = bigTens + ' - ' + tensB + ' = ?';
-                        speechQText = bigTens + " 減 " + tensB + " 等於多少？";
-                    }
-                    opt1 = ans + 10;
-                    opt2 = Math.max(10, ans - 10);
+                    var opt1 = Math.max(1, ans + (Math.random() > 0.5 ? 1 : -1));
+                    if (opt1 === ans) opt1 = ans + 2;
+                    var opt2 = Math.max(1, ans + (Math.random() > 0.5 ? 2 : -2));
+                    if (opt2 === ans || opt2 === opt1) opt2 = ans + 3;
                 }
 
                 currentMathAnswer = ans;
                 window.currentMathAnswerStr = ans.toString();
-                qEl.innerHTML = qText;
-
                 var options = [ans.toString(), opt1.toString(), opt2.toString()];
                 options.sort(function() { return Math.random() - 0.5; });
-
-                var btnsHtml = '<div style="display:flex; gap:16px; justify-content:center; margin-top:15px; flex-wrap:wrap;">';
-                for (var i = 0; i < options.length; i++) {
-                    btnsHtml += '<button class="math-option-btn" onclick="checkChoiceStr(\'' + options[i] + '\')">' + options[i] + '</button>';
-                }
-                btnsHtml += '</div>';
-
-                document.getElementById('mathChoices').innerHTML = btnsHtml;
-                document.getElementById('hintText').innerText = "";
-                speakQuestion(speechQText);
+                renderMathChoices(qText, speechQText, options);
                 return;
             }
         }
 
-        window.checkChoiceStr = function(valStr) {
-            handleAnswerResult(valStr === window.currentMathAnswerStr, window.currentMathAnswerStr);
+        function renderMathChoices(qText, speechQText, options) {
+            document.getElementById('questionText').innerHTML = qText;
+            var btnsHtml = '<div style="display:flex; gap:8px; justify-content:center; margin-top:10px; flex-wrap:wrap;">';
+            for (var i = 0; i < options.length; i++) {
+                btnsHtml += '<button class="math-option-btn" onclick="checkChoiceStr(\'' + options[i] + '\', this)">' + options[i] + '</button>';
+            }
+            btnsHtml += '</div>';
+            document.getElementById('mathChoices').innerHTML = btnsHtml;
+            document.getElementById('hintText').innerText = "";
+            speakQuestion(speechQText);
+        }
+
+        window.checkChoiceStr = function(valStr, btnEl) {
+            var isCorrect = (valStr === window.currentMathAnswerStr);
+            if (isCorrect) {
+                if (mathTimerInterval) clearInterval(mathTimerInterval);
+                var elapsed = Date.now() - mathStartTime;
+                isPerfectHit = (elapsed < (mathTotalTime * 0.5)); 
+                handleAnswerResult(true, window.currentMathAnswerStr, btnEl);
+            } else {
+                handleAnswerResult(false, valStr, btnEl);
+            }
         };
 
-        window.handleAnswerResult = function(isCorrect, ansText) {
+        window.handleAnswerResult = function(isCorrect, valStr, btnEl) {
             var hintText = document.getElementById('hintText');
             if (isCorrect) {
                 sfx.upgrade(); 
                 comboCount++;
                 if (comboCount % 2 === 0 && teraEnergy < 5) teraEnergy++;
                 if (sosRescueEnergy < 3) sosRescueEnergy++;
+                spawnConfetti();
                 updateUI();
                 
                 checkSynergyCombo(myRoleName);
@@ -2198,18 +3047,27 @@
                     sendNetAction({ type: 'CORRECT_ANSWER', role: myRoleName });
                 }
 
-                floatTexts.push(new FloatingText(canvas.width/2, 100, "🔥 " + myRoleName + " 答對！(+" + (comboCount * 2) + "% 攻擊力)", "#f1c40f", 34));
-                hintText.innerText = "✅ 答對了！"; hintText.style.color = '#2ecc71';
+                var bonusText = isPerfectHit ? " ⚡ PERFECT 完美速算！" : "";
+                floatTexts.push(new FloatingText(canvas.width/2, 100, "🔥 " + myRoleName + " 答對！" + bonusText, "#f1c40f", 32));
+                hintText.innerText = "✅ 答對了！" + (isPerfectHit ? " 完美神速！" : ""); 
+                hintText.style.color = '#2ecc71';
                 
                 setTimeout(function() {
                     if (pendingAction === 'build') { 
                         myCoins -= POKEMON_DATA[pendingPokeId].cost; 
                         var isShinyVal = !!window.pendingIsShiny;
-                        towers.push(new Tower(pendingC, pendingR, pendingPokeId, isShinyVal, myRoleId)); 
+                        var newTower = new Tower(pendingC, pendingR, pendingPokeId, isShinyVal, myRoleId);
+                        if (isPerfectHit) newTower.gainExp(50); 
+                        towers.push(newTower); 
                         currentBuildChoices = []; 
                         if (isMultiplayer && !isHost) {
                             sendNetAction({ type: 'CLIENT_ACTION', act: 'build', c: pendingC, r: pendingR, pokeId: pendingPokeId, isShiny: isShinyVal, builderRoleId: myRoleId });
                         }
+                    } 
+                    else if (pendingAction === 'unfreezeCell') { 
+                        gridMap[pendingC][pendingR] = 0; 
+                        sfx.shiny();
+                        floatTexts.push(new FloatingText(pendingC * GRID_SIZE + 40, pendingR * GRID_SIZE + 40, "🔥 寒冰已融化！", "#2ecc71", 24));
                     } 
                     else if (pendingAction === 'evolve') { 
                         selectedTower.setPoke(pendingEvoId); selectedTower.exp = 0; 
@@ -2217,18 +3075,24 @@
                             sendNetAction({ type: 'CLIENT_ACTION', act: 'evolve', c: selectedTower.c, r: selectedTower.r, evoId: pendingEvoId });
                         }
                     } 
+                    else if (pendingAction === 'rocketDefeat') { 
+                        rocketEventActive = false;
+                        if (rocketInterval) clearInterval(rocketInterval);
+                        document.getElementById('rocketAlertBar').style.display = 'none';
+                        myCoins += 100;
+                        sfx.shiny();
+                        floatTexts.push(new FloatingText(canvas.width/2, 120, "🚀 火箭隊被打飛了！獲得 💰100 金幣獎勵！", "#f1c40f", 36));
+                    } 
                     else if (pendingAction === 'catchBoss') { 
-                        var emptyCells = [];
-                        for(var c=0; c<COLS; c++) { for(var r=0; r<ROWS; r++) { if(gridMap[c][r] === 0) emptyCells.push({c:c, r:r}); } }
-                        if(emptyCells.length > 0) {
-                            var cell = emptyCells[0];
-                            towers.push(new Tower(cell.c, cell.r, pendingCatchEnemyId, false, myRoleId));
-                            floatTexts.push(new FloatingText(cell.c*GRID_SIZE+40, cell.r*GRID_SIZE+40, "🎉 " + myRoleName + " 成功收服神獸！", "#f1c40f", 36));
-                            sfx.shiny();
-                        }
-                        if (isMultiplayer && !isHost) {
-                            sendNetAction({ type: 'CLIENT_ACTION', act: 'catchBoss', bossId: pendingCatchEnemyId, builderRoleId: myRoleId });
-                        }
+                        var bossData = POKEMON_DATA[pendingCatchEnemyId];
+                        summonedBossBadge = {
+                            id: pendingCatchEnemyId,
+                            name: bossData ? bossData.name : '神獸',
+                            type: bossData ? bossData.type : 'dragon'
+                        };
+                        triggerMangaCutin(pendingCatchEnemyId);
+                        unlockPokemon(pendingCatchEnemyId);
+                        floatTexts.push(new FloatingText(canvas.width/2, 120, "🎉 獲得神獸【" + summonedBossBadge.name + "】召喚大招！", "#f1c40f", 36));
                     } 
                     else if (pendingAction === 'techUpgrade') { 
                         var cost = 300 + (pendingTechType === 'dmg' ? globalDmgLevel : globalRateLevel) * 300; 
@@ -2257,7 +3121,7 @@
                     pendingC = null; 
                     pendingR = null;
                     updateUI(); 
-                    closeModals();
+                    closeModals(); 
                     if (isHost) broadcastState();
                 }, 500); 
             } else {
@@ -2265,21 +3129,15 @@
                 comboCount = 0; 
                 synergyCharge = 0; 
                 updateUI();
-                hintText.innerText = "❌ 答錯啦！答案是 " + ansText; hintText.style.color = '#c0392b';
                 
-                if (pendingAction === 'build' && pendingC !== null && pendingR !== null) {
-                    gridMap[pendingC][pendingR] = 0;
-                    if (isMultiplayer) {
-                        if (isHost) broadcastState();
-                        else sendNetAction({ type: 'UNLOCK_CELL', c: pendingC, r: pendingR });
-                    }
+                // 鎖定答錯按鈕，不可再次點選
+                if (btnEl) {
+                    btnEl.classList.add('disabled-btn');
+                    btnEl.disabled = true;
                 }
-                setTimeout(function() { 
-                    pendingAction = null; 
-                    pendingC = null;
-                    pendingR = null;
-                    closeModals(); 
-                }, 1600); 
+                
+                hintText.innerText = "❌ 答錯了！此選項已排除，請再試試其他答案！";
+                hintText.style.color = '#c0392b';
             }
         };
 
@@ -2294,6 +3152,15 @@
             if (!gameOver && gameStarted && !userPaused) {
                 var skipUpdate = false; if(hitPause > 0) { hitPause--; skipUpdate = true; }
                 if(teraActiveTimer > 0) { teraActiveTimer--; if(teraActiveTimer===0) updateUI(); }
+                if(activeBossSummonTimer > 0) {
+                    activeBossSummonTimer--;
+                    if(activeBossSummonTimer % 60 === 0 && enemies.length > 0) {
+                        var randomEn = enemies[Math.floor(Math.random() * enemies.length)];
+                        hitEnemy(randomEn, 160, null, false, true, summonedBossBadge ? summonedBossBadge.type : 'dragon');
+                        skillAnims.push(new SkillAnim(canvas.width/2, 0, randomEn.x, randomEn.y, summonedBossBadge ? summonedBossBadge.type : 'electric', 'single', '十萬伏特'));
+                    }
+                    if(activeBossSummonTimer === 0) updateUI();
+                }
                 drawMap();
 
                 if(!skipUpdate && (!isMultiplayer || isHost)) {
@@ -2303,15 +3170,18 @@
                             isWaveActive = true; enemiesSpawnedThisWave = 0; spawnTimer = 9999; 
                             var weathers = ['sunny', 'rain', 'snow'];
                             currentWeather = weathers[Math.floor(Math.random() * weathers.length)];
+                            applyWeatherTerrain(); 
+                            checkRocketEventTrigger();
                             updateUI();
                         }
                     } else {
-                        totalEnemiesThisWave = 5 + wave * 2;
+                        totalEnemiesThisWave = 6 + wave * 2;
                         spawnTimer++;
                         if (enemiesSpawnedThisWave < totalEnemiesThisWave) {
-                            if (spawnTimer >= 100) { 
+                            if (spawnTimer >= 60) { 
                                 var spawnBoss = (wave > 0 && (wave + 1) % 3 === 0 && enemiesSpawnedThisWave === totalEnemiesThisWave - 1);
-                                enemies.push(new Enemy(spawnBoss, wave)); 
+                                enemies.push(new Enemy(spawnBoss, wave, 'A')); 
+                                enemies.push(new Enemy(spawnBoss, wave, 'B')); 
                                 enemiesSpawnedThisWave++; spawnTimer = 0; 
                             }
                             if (Math.random() < 0.0004) chests.push(new Chest());
@@ -2319,6 +3189,7 @@
                             isWaveActive = false; waveBreakTimer = 180; rerollsThisWave = 0; wave++; 
                             if (baseLevel < BASE_RATES.length && wave % 2 === 0) baseLevel++;
                             var waveReward = 50 + wave * 10;
+                            if (isDoubleCoinsActive) { waveReward *= 2; isDoubleCoinsActive = false; }
                             myCoins += waveReward;
                             if (isMultiplayer && isHost) clientCoins += waveReward;
                             sfx.coin(); updateUI();
@@ -2330,6 +3201,32 @@
                     netSyncTimer++;
                     if (netSyncTimer >= 3) { broadcastState(); netSyncTimer = 0; }
                 }
+
+                var newFlyaways = [];
+                for(var i=0; i<flyawayEnemies.length; i++) {
+                    var fe = flyawayEnemies[i];
+                    fe.x += fe.vx; fe.y += fe.vy; fe.vy += 0.8; fe.rot += fe.rotSpeed; fe.life--;
+                    ctx.save();
+                    ctx.translate(fe.x, fe.y);
+                    ctx.rotate(fe.rot);
+                    if (fe.img && fe.img.complete) ctx.drawImage(fe.img, -35, -35, 70, 70);
+                    ctx.restore();
+                    if (fe.life > 0) newFlyaways.push(fe);
+                }
+                flyawayEnemies = newFlyaways;
+
+                var newConfetti = [];
+                for(var i=0; i<confettiParticles.length; i++) {
+                    var cp = confettiParticles[i];
+                    cp.x += cp.vx; cp.y += cp.vy; cp.vy += 0.4; cp.life--;
+                    ctx.save();
+                    ctx.globalAlpha = Math.max(0, cp.life / cp.maxLife);
+                    ctx.fillStyle = cp.color;
+                    ctx.fillRect(cp.x, cp.y, cp.size, cp.size);
+                    ctx.restore();
+                    if(cp.life > 0) newConfetti.push(cp);
+                }
+                confettiParticles = newConfetti;
 
                 var newChests = []; for(var i=0; i<chests.length; i++) { if(!skipUpdate) chests[i].update(); chests[i].draw(ctx); if(chests[i].active) newChests.push(chests[i]); } chests = newChests;
                 var newVisualCoins = []; for(var i=0; i<visualCoins.length; i++) { if(!skipUpdate) visualCoins[i].update(); visualCoins[i].draw(ctx); if(visualCoins[i].life>0) newVisualCoins.push(visualCoins[i]); } visualCoins = newVisualCoins;
@@ -2345,18 +3242,16 @@
                 if (!isWaveActive && waveBreakTimer > 0) {
                     var team = getCurrentTeam(wave + 1);
                     ctx.fillStyle = 'rgba(0,0,0,0.75)'; ctx.fillRect(0,0,canvas.width, canvas.height);
-                    ctx.fillStyle = team.color; ctx.font = '50px ZCOOL KuaiLe'; ctx.textAlign = 'center'; 
+                    ctx.fillStyle = team.color; ctx.font = '46px ZCOOL KuaiLe'; ctx.textAlign = 'center'; 
                     ctx.shadowColor = '#000'; ctx.shadowBlur = 8;
-                    ctx.fillText("【" + team.name + "】入侵！", canvas.width/2, canvas.height/2 - 25);
-                    ctx.fillStyle = '#f1c40f'; ctx.font = '34px ZCOOL KuaiLe';
+                    ctx.fillText("【" + team.name + "】雙路入侵！", canvas.width/2, canvas.height/2 - 25);
+                    ctx.fillStyle = '#f1c40f'; ctx.font = '32px ZCOOL KuaiLe';
                     ctx.fillText("第 " + (wave + 1) + " 波即將開戰", canvas.width/2, canvas.height/2 + 35);
                     ctx.shadowBlur = 0;
                 }
                 
-                if (health <= 0 && !gameOver) {
-                    gameOver = true;
-                    document.getElementById('finalWaveText').innerText = "最終抵擋了 " + wave + " 波攻擊";
-                    document.getElementById('gameOverOverlay').style.display = 'flex';
+                if (health <= 0) {
+                    triggerGameOverState();
                 }
             } else {
                 drawMap();
@@ -2366,6 +3261,7 @@
         }
 
         window.addEventListener('load', function() { 
+            resizeApp();
             try { drawMap(); } catch(e) {}
         });
     </script>
