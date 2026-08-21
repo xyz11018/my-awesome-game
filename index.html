@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>寶可夢：數學防衛戰 V115 終極無錯版</title>
+    <title>寶可夢：數學防衛戰 (穩定流暢版)</title>
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
     
@@ -24,10 +24,22 @@
             touch-action: none;
         }
         
-        #main-wrap {
+        #app-scaler {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             width: 1080px;
             height: 980px;
             transform-origin: center center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #main-wrap {
+            width: 1080px;
+            height: 980px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -37,6 +49,7 @@
             box-shadow: 0 0 30px rgba(0,0,0,0.8);
             padding: 8px 15px;
             flex-shrink: 0;
+            border-radius: 12px;
         }
 
         #baseDamageVignette {
@@ -78,7 +91,7 @@
         .ui-group { display: flex; align-items: center; gap: 10px; }
         
         .stone-counters { display: flex; gap: 10px; font-size: 15px; background: #2c3e50; padding: 4px 12px; border-radius: 30px; border: 2px solid #1a252f; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5); color: #f1c40f;}
-        .stone-counters span { display: flex; align-items: center; text-shadow: 1px 1px 0px #000;}
+        .stone-counters span { display: flex; align-items: center; text-shadow: 1px 1px 0px #000; gap: 4px;}
 
         .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, #ffffff, #f1f2f6); color: #2c3e50; border-radius: 25px; border: 8px solid #34495e; box-shadow: 0 25px 50px rgba(0,0,0,0.6), inset 0 0 0 6px #ecf0f1; z-index: 2000; text-align: center; width: 680px; padding: 15px;}
         .modal.active { display: block; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -109,9 +122,10 @@
         .action-btn { background: linear-gradient(to bottom, #f1c40f, #f39c12); color: #c0392b; border: 4px solid #fff; padding: 10px 22px; font-size: 22px; border-radius: 18px; cursor: pointer; margin-top: 8px; font-family: 'ZCOOL KuaiLe', sans-serif; box-shadow: 0 6px 0 #d35400; transition: 0.1s; }
         .action-btn:hover { filter: brightness(1.1); transform: translateY(-3px); }
 
-        .stone-btn { font-size: 18px; padding: 8px 14px; margin: 4px; background: linear-gradient(to bottom, #3498db, #2980b9); color: white; box-shadow: 0 4px 0 #1abc9c; border: 3px solid white; border-radius: 14px; cursor: pointer; font-family: 'ZCOOL KuaiLe';}
+        .stone-btn { font-size: 18px; padding: 8px 14px; margin: 4px; background: linear-gradient(to bottom, #3498db, #2980b9); color: white; box-shadow: 0 4px 0 #1abc9c; border: 3px solid white; border-radius: 14px; cursor: pointer; font-family: 'ZCOOL KuaiLe'; display: inline-flex; align-items: center; gap: 6px;}
         .stone-btn.mega { background: linear-gradient(to bottom, #9b59b6, #8e44ad); box-shadow: 0 4px 0 #2c3e50; }
         .stone-btn.dyna { background: linear-gradient(to bottom, #e74c3c, #c0392b); box-shadow: 0 4px 0 #8e44ad; }
+        .stone-btn svg { vertical-align: middle; }
         
         .skill-card {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -179,209 +193,223 @@
 </head>
 <body>
 
-<div id="main-wrap">
-    <div id="baseDamageVignette"></div>
+<div id="app-scaler">
+    <div id="main-wrap">
+        <div id="baseDamageVignette"></div>
 
-    <div id="rocketAlertBar">
-        <span style="font-size: 22px; color:#fff;">🚨 火箭隊突襲封鎖中央！剩餘 <strong id="rocketTimerText" style="color:#f1c40f; font-size:28px;">15</strong> 秒！</span>
-        <button class="start-btn" style="font-size: 18px; padding: 5px 16px; background: #f1c40f; color:#c0392b; box-shadow: 0 4px 0 #d35400; margin: 0;" onclick="triggerRocketDefeat()">👊 擊飛火箭隊！</button>
-    </div>
+        <div id="rocketAlertBar">
+            <span style="font-size: 22px; color:#fff;">🚨 火箭隊突襲封鎖中央！剩餘 <strong id="rocketTimerText" style="color:#f1c40f; font-size:28px;">15</strong> 秒！</span>
+            <button class="start-btn" style="font-size: 18px; padding: 5px 16px; background: #f1c40f; color:#c0392b; box-shadow: 0 4px 0 #d35400; margin: 0;" onclick="triggerRocketDefeat()">👊 擊飛火箭隊！</button>
+        </div>
 
-    <div id="startOverlay">
-        <h1 style="font-size: 48px; margin-bottom: 25px;">⚡ 寶可夢：數學防衛戰 ⚡</h1>
+        <div id="startOverlay">
+            <h1 style="font-size: 48px; margin-bottom: 25px;">⚡ 寶可夢：數學防衛戰 ⚡</h1>
+            
+            <div id="modeSelectView">
+                <div style="display:flex; flex-direction:column; gap: 15px; align-items:center; justify-content:center;">
+                    <div style="display:flex; gap: 15px; flex-wrap:wrap; justify-content:center;">
+                        <button class="start-btn" style="background:linear-gradient(to bottom, #9b59b6, #8e44ad); box-shadow: 0 7px 0 #5e3370;" onclick="showLobby('host')">🏠 我來建立房間</button>
+                        <button class="start-btn" style="background:linear-gradient(to bottom, #3498db, #2980b9); box-shadow: 0 7px 0 #1f618d;" onclick="showLobby('join')">🚀 加入夥伴房間</button>
+                        <button class="start-btn" style="background:linear-gradient(to bottom, #2ecc71, #27ae60); box-shadow: 0 7px 0 #1e8449;" onclick="showLobby('single')">🎮 單人遊玩模式</button>
+                    </div>
+                    <button class="start-btn" style="background:linear-gradient(to bottom, #f39c12, #e67e22); box-shadow: 0 7px 0 #b9770e; width: 300px;" onclick="openPokedexModal()">📖 寶可夢圖鑑</button>
+                </div>
+            </div>
+
+            <div id="lobbyView" class="lobby-box" style="display:none;">
+                <h2 id="lobbyTitle" style="color:#f1c40f; margin-top:0; font-size:34px;">連線大廳</h2>
+                
+                <div id="hostSection" style="display:none; margin: 15px 0;">
+                    <div style="font-size: 22px;">📡 你的房間號碼：</div>
+                    <div id="hostRoomCode" style="font-size: 50px; color: #f1c40f; letter-spacing: 6px; font-weight: bold; margin: 10px 0;">正在連線伺服器...</div>
+                    <div style="font-size: 18px; color: #bdc3c7;">請另一台設備選擇「加入夥伴房間」並輸入此 4 位數！</div>
+                </div>
+
+                <div id="joinSection" style="display:none; margin: 15px 0;">
+                    <div style="font-size: 22px; margin-bottom: 10px;">請輸入房主螢幕上的 4 位數代碼：</div>
+                    <input type="number" id="joinRoomInput" class="room-input" placeholder="例: 1234">
+                </div>
+
+                <div style="margin: 20px 0; border-top: 2px dashed #7f8c8d; padding-top: 15px;">
+                    <div style="font-size: 22px; margin-bottom: 10px;">請選擇「本台設備」的遊玩角色與領地：</div>
+                    <div style="display:flex; justify-content:center; gap: 15px;">
+                        <button class="start-btn" id="btnDiffEasy" style="font-size:20px; background:#2ecc71; box-shadow:0 5px 0 #27ae60;" onclick="selectMyRole('brother_young')">👶 弟弟 (下半場領地 / 數數加減/時鐘錢幣)</button>
+                        <button class="start-btn" id="btnDiffNormal" style="font-size:20px; background:#3498db; box-shadow:0 5px 0 #1f618d;" onclick="selectMyRole('brother_old')">👦 哥哥 (上半場領地 / 乘法/單位換算/分數)</button>
+                    </div>
+                </div>
+
+                <div style="display:flex; justify-content:center; gap: 15px; margin-top: 15px;">
+                    <button class="start-btn" id="btnConfirmLobby" style="background:#f1c40f; color:#c0392b; box-shadow:0 5px 0 #d35400; font-size:26px;" onclick="confirmLobbyAction()">確認啟動</button>
+                    <button class="start-btn" style="background:#7f8c8d; box-shadow:0 5px 0 #34495e; font-size:22px;" onclick="backToModeSelect()">返回</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="gameOverOverlay">
+            <h1 class="game-over-title">💥防線崩潰💥<br>宇宙毀滅！</h1>
+            <p class="game-over-subtitle" id="finalWaveText">大木博士的研究所被夷為平地了！</p>
+            <button class="start-btn" style="background: linear-gradient(to bottom, #3498db, #2980b9); box-shadow: 0 8px 0 #1f618d; font-size: 34px; padding: 14px 40px;" onclick="location.reload()">🔄 時光倒流 (重新開始)</button>
+        </div>
+
+        <h1>⚡ 精靈寶可夢：數學防衛戰 (兄弟交錯互助版) ⚡</h1>
         
-        <div id="modeSelectView">
-            <div style="display:flex; flex-direction:column; gap: 15px; align-items:center; justify-content:center;">
-                <div style="display:flex; gap: 15px; flex-wrap:wrap; justify-content:center;">
-                    <button class="start-btn" style="background:linear-gradient(to bottom, #9b59b6, #8e44ad); box-shadow: 0 7px 0 #5e3370;" onclick="showLobby('host')">🏠 我來建立房間</button>
-                    <button class="start-btn" style="background:linear-gradient(to bottom, #3498db, #2980b9); box-shadow: 0 7px 0 #1f618d;" onclick="showLobby('join')">🚀 加入夥伴房間</button>
-                    <button class="start-btn" style="background:linear-gradient(to bottom, #2ecc71, #27ae60); box-shadow: 0 7px 0 #1e8449;" onclick="showLobby('single')">🎮 單人遊玩模式</button>
+        <div id="gameWrapper">
+            <div id="gameContainer">
+                <div id="warningMsg">哎呀！這裡不能建造喔！</div>
+                <canvas id="gameCanvas" width="1040" height="720"></canvas>
+            </div>
+
+            <div id="gameControls">
+                <div class="ui-group">
+                    <button id="nextWaveBtn" class="control-btn" style="background: linear-gradient(135deg, #e67e22, #d35400);" onclick="forceNextWave()">⚡ 快進出怪</button>
+                    <button id="gachaBtn" class="control-btn" style="background: linear-gradient(135deg, #fd79a8, #e84393);" onclick="playGacha()">🎰 扭蛋 (💰80)</button>
+                    <button id="itemCandyBtn" class="control-btn" style="background: linear-gradient(135deg, #00b894, #00cec9);" onclick="buyCandy()">🍬 糖果 (💰45)</button>
+                    <button id="itemFreezeBtn" class="control-btn" style="background: linear-gradient(135deg, #0984e3, #74b9ff);" onclick="buyFreeze()">⚡ 電網 (💰60)</button>
+                    <button id="itemDoubleBtn" class="control-btn" style="background: linear-gradient(135deg, #f1c40f, #e67e22);" onclick="buyDoubleCoins()">💰 雙倍卡 (💰35)</button>
+                    <button id="bossSummonBtn" class="control-btn" style="background: linear-gradient(135deg, #e74c3c, #9b59b6); animation: rainbowGlow 2.5s infinite linear; display:none;" onclick="triggerBossSummon()">🌟 召喚神獸！</button>
                 </div>
-                <button class="start-btn" style="background:linear-gradient(to bottom, #f39c12, #e67e22); box-shadow: 0 7px 0 #b9770e; width: 300px;" onclick="openPokedexModal()">📖 寶可夢圖鑑</button>
-            </div>
-        </div>
-
-        <div id="lobbyView" class="lobby-box" style="display:none;">
-            <h2 id="lobbyTitle" style="color:#f1c40f; margin-top:0; font-size:34px;">連線大廳</h2>
-            
-            <div id="hostSection" style="display:none; margin: 15px 0;">
-                <div style="font-size: 22px;">📡 你的房間號碼：</div>
-                <div id="hostRoomCode" style="font-size: 50px; color: #f1c40f; letter-spacing: 6px; font-weight: bold; margin: 10px 0;">正在連線伺服器...</div>
-                <div style="font-size: 18px; color: #bdc3c7;">請另一台設備選擇「加入夥伴房間」並輸入此 4 位數！</div>
-            </div>
-
-            <div id="joinSection" style="display:none; margin: 15px 0;">
-                <div style="font-size: 22px; margin-bottom: 10px;">請輸入房主螢幕上的 4 位數代碼：</div>
-                <input type="number" id="joinRoomInput" class="room-input" placeholder="例: 1234">
-            </div>
-
-            <div style="margin: 20px 0; border-top: 2px dashed #7f8c8d; padding-top: 15px;">
-                <div style="font-size: 22px; margin-bottom: 10px;">請選擇「本台設備」的遊玩角色與領地：</div>
-                <div style="display:flex; justify-content:center; gap: 15px;">
-                    <button class="start-btn" id="btnDiffEasy" style="font-size:20px; background:#2ecc71; box-shadow:0 5px 0 #27ae60;" onclick="selectMyRole('brother_young')">👶 弟弟 (下半場領地 / 數數加減/時鐘錢幣)</button>
-                    <button class="start-btn" id="btnDiffNormal" style="font-size:20px; background:#3498db; box-shadow:0 5px 0 #1f618d;" onclick="selectMyRole('brother_old')">👦 哥哥 (上半場領地 / 乘法/單位換算/分數)</button>
+                <div class="ui-group">
+                    <button id="giftBtn" class="control-btn" style="background: linear-gradient(135deg, #f39c12, #e67e22); display:none;" onclick="giftCoinsToPartner()">🎁 贊助</button>
+                    <button id="sosBtn" class="control-btn" style="background: linear-gradient(135deg, #3498db, #2980b9); display:none;" onclick="triggerSosRescue()">🤝 急凍</button>
+                    <button id="teraBtn" class="control-btn" style="background: linear-gradient(135deg, #00cec9, #6c5ce7, #fd79a8); display:none;" onclick="activateTera()">💎 太晶</button>
+                    <button class="control-btn" style="background: linear-gradient(135deg, #636e72, #2d3436);" onclick="openPokedexModal()">📖 圖鑑</button>
+                    <button id="pauseToggleBtn" class="circle-btn" onclick="toggleUserPause()">⏸️</button>
+                    <button id="musicToggle" class="circle-btn" onclick="toggleMusic()">🔊</button>
                 </div>
             </div>
 
-            <div style="display:flex; justify-content:center; gap: 15px; margin-top: 15px;">
-                <button class="start-btn" id="btnConfirmLobby" style="background:#f1c40f; color:#c0392b; box-shadow:0 5px 0 #d35400; font-size:26px;" onclick="confirmLobbyAction()">確認啟動</button>
-                <button class="start-btn" style="background:#7f8c8d; box-shadow:0 5px 0 #34495e; font-size:22px;" onclick="backToModeSelect()">返回</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="gameOverOverlay">
-        <h1 class="game-over-title">💥防線崩潰💥<br>宇宙毀滅！</h1>
-        <p class="game-over-subtitle" id="finalWaveText">大木博士的研究所被夷為平地了！</p>
-        <button class="start-btn" style="background: linear-gradient(to bottom, #3498db, #2980b9); box-shadow: 0 8px 0 #1f618d; font-size: 34px; padding: 14px 40px;" onclick="location.reload()">🔄 時光倒流 (重新開始)</button>
-    </div>
-
-    <h1>⚡ 精靈寶可夢：數學防衛戰 (兄弟交錯互助版) ⚡</h1>
-    
-    <div id="gameWrapper">
-        <div id="gameContainer">
-            <div id="warningMsg">哎呀！這裡不能建造喔！</div>
-            <canvas id="gameCanvas" width="1040" height="720"></canvas>
-        </div>
-
-        <div id="gameControls">
-            <div class="ui-group">
-                <button id="nextWaveBtn" class="control-btn" style="background: linear-gradient(135deg, #e67e22, #d35400);" onclick="forceNextWave()">⚡ 快進出怪</button>
-                <button id="gachaBtn" class="control-btn" style="background: linear-gradient(135deg, #fd79a8, #e84393);" onclick="playGacha()">🎰 扭蛋 (💰80)</button>
-                <button id="itemCandyBtn" class="control-btn" style="background: linear-gradient(135deg, #00b894, #00cec9);" onclick="buyCandy()">🍬 糖果 (💰45)</button>
-                <button id="itemFreezeBtn" class="control-btn" style="background: linear-gradient(135deg, #0984e3, #74b9ff);" onclick="buyFreeze()">⚡ 電網 (💰60)</button>
-                <button id="itemDoubleBtn" class="control-btn" style="background: linear-gradient(135deg, #f1c40f, #e67e22);" onclick="buyDoubleCoins()">💰 雙倍卡 (💰35)</button>
-                <button id="bossSummonBtn" class="control-btn" style="background: linear-gradient(135deg, #e74c3c, #9b59b6); animation: rainbowGlow 2.5s infinite linear; display:none;" onclick="triggerBossSummon()">🌟 召喚神獸！</button>
-            </div>
-            <div class="ui-group">
-                <button id="giftBtn" class="control-btn" style="background: linear-gradient(135deg, #f39c12, #e67e22); display:none;" onclick="giftCoinsToPartner()">🎁 贊助</button>
-                <button id="sosBtn" class="control-btn" style="background: linear-gradient(135deg, #3498db, #2980b9); display:none;" onclick="triggerSosRescue()">🤝 急凍</button>
-                <button id="teraBtn" class="control-btn" style="background: linear-gradient(135deg, #00cec9, #6c5ce7, #fd79a8); display:none;" onclick="activateTera()">💎 太晶</button>
-                <button class="control-btn" style="background: linear-gradient(135deg, #636e72, #2d3436);" onclick="openPokedexModal()">📖 圖鑑</button>
-                <button id="pauseToggleBtn" class="circle-btn" onclick="toggleUserPause()">⏸️</button>
-                <button id="musicToggle" class="circle-btn" onclick="toggleMusic()">🔊</button>
-            </div>
-        </div>
-
-        <div id="ui">
-            <div class="ui-group">
-                <div id="coinBox" style="font-size: 26px; font-weight: bold; color: #f1c40f; text-shadow: 2px 2px 0 #000;">💰 <span id="coinDisplay">150</span></div>
-                <div class="stone-counters">
-                    <span>🔮 超進:<strong id="uiStoneM" style="font-size: 16px; margin-left: 4px;">0</strong></span>
-                    <span>🌠 極巨:<strong id="uiStoneD" style="font-size: 16px; margin-left: 4px;">0</strong></span>
-                </div>
-                <div id="comboDisplay" style="font-size: 16px; font-weight: bold; color: #ff7675; text-shadow: 1px 1px 0 #000;">
-                    🔥 連擊: <span id="comboCount">0</span> <span id="comboBuffText" style="color:#2ecc71; font-size:14px;">(+0%)</span>
-                </div>
-                <div id="weatherDisplay" style="font-size: 17px; font-weight: bold; text-shadow: 1px 1px 0 #000;">☀️ 晴天</div>
-                <div id="netStatusTag" style="font-size: 14px; background:#2ecc71; padding:3px 8px; border-radius:8px;">單人模式</div>
-            </div>
-            
-            <div class="ui-group">
-                <div style="font-size: 22px; font-weight: bold; color: #e74c3c; text-shadow: 2px 2px 0 #000;">❤️ <span id="healthDisplay">10</span></div>
-                <div style="font-size: 22px; font-weight: bold; color: #3498db; text-shadow: 2px 2px 0 #000;">🌊 第 <span id="waveDisplay">1</span> 波</div>
-            </div>
-        </div>
-
-        <div id="pokedexModal" class="modal" style="width: 780px;">
-            <span class="close-btn" onclick="closeModals()">×</span>
-            <div class="modal-body">
-                <h2 style="color: #e67e22; font-size: 38px; margin-bottom: 5px;">📖 寶可夢大圖鑑</h2>
-                <div style="font-size: 20px; color:#7f8c8d; margin-bottom: 12px;">已解鎖：<span id="dexUnlockedCount" style="color:#e74c3c; font-weight:bold;">0</span> / <span id="dexTotalCount">0</span> 隻寶可夢</div>
-                <div class="dex-grid" id="dexGrid"></div>
-            </div>
-        </div>
-
-        <div id="buildModal" class="modal" style="width: 740px;">
-            <span class="close-btn" onclick="cancelAction()">×</span>
-            <div class="modal-body">
-                <h2 style="font-size: 38px;">選擇防守夥伴！</h2>
-                <div class="choices-container" id="buildChoices"></div>
-                <button id="rerollBtn" class="action-btn" onclick="rerollShop()" style="margin-top: 15px; font-size: 20px; background: linear-gradient(to bottom, #9b59b6, #8e44ad); box-shadow: 0 6px 0 #5e3370; color: white;">🔄 刷新商店 (💰 15) [剩餘 5 次]</button>
-            </div>
-        </div>
-
-        <div id="upgradeModal" class="modal">
-            <span class="close-btn" onclick="cancelAction()">×</span>
-            <div class="modal-body">
-                <h2 id="upgTitle" style="font-size: 40px;">寶可夢</h2>
-                <div style="position:relative; display:inline-block;">
-                    <img id="upgImg" src="" style="width: 120px; filter: drop-shadow(5px 5px 0 rgba(0,0,0,0.3));">
-                    <span id="upgShinyBadge" style="display:none; position:absolute; top:-5px; right:-10px; background:#f1c40f; color:#c0392b; font-size:16px; font-weight:bold; padding:2px 8px; border-radius:10px; border:2px solid #fff;">✨色違</span>
-                </div>
-                <div style="font-size: 22px; margin-top: 5px; font-weight: bold; color:#2c3e50;">
-                    實際攻擊力: <span id="upgDmg" style="font-size: 34px; color:#e74c3c;"></span>
-                    <span id="upgDmgBuff" style="font-size: 18px; color: #2ecc71;"></span>
-                </div>
-                
-                <div id="skillSelectBox" style="display: none; margin: 15px 0; background: rgba(0,0,0,0.05); padding: 12px; border-radius: 20px; border: 3px dashed #bdc3c7;">
-                    <div id="skillSelectTitle" style="font-size: 20px; margin-bottom: 8px; font-weight: bold; color: #34495e;">⚡ 選擇專屬技能流派 (三選一)：</div>
-                    <div id="skillBtns" style="display: flex; justify-content: space-around; flex-wrap: wrap;"></div>
-                </div>
-
-                <div class="exp-bar-container" id="expBarWrap"><div class="exp-bar" id="upgExpBar"></div></div>
-                <div id="upgExpText" style="font-size: 20px; color: #7f8c8d; font-weight: bold;">EXP: 0 / 100</div>
-                
-                <div id="inlineEvoChoices" class="choices-container" style="display: none; margin-top: 15px; border-top: 2px dashed #bdc3c7; padding-top: 15px;"></div>
-                
-                <div id="stoneBtns" style="display: none; margin-top: 15px; background: rgba(0,0,0,0.05); padding: 15px; border-radius: 20px; border: 3px dashed #bdc3c7;">
-                    <div style="font-size: 20px; color: #8e44ad; margin-bottom: 10px; font-weight: bold;">💎 消耗進化石：覺醒極限力量 (限時30秒)</div>
-                    <button id="btnM" class="stone-btn mega" onclick="prepareStone('mega')">🔮 超級進化 (<span id="txtStoneM">0</span>)</button>
-                    <button id="btnX" class="stone-btn" onclick="prepareStone('megaX')">🔵 超級X石 (<span id="txtStoneX">0</span>)</button>
-                    <button id="btnY" class="stone-btn" onclick="prepareStone('megaY')">🔴 超級Y石 (<span id="txtStoneY">0</span>)</button>
-                    <button id="btnD" class="stone-btn dyna" onclick="prepareStone('dynamax')">🌠 極巨化 (<span id="txtStoneD">0</span>)</button>
-                </div>
-
-                <div style="display: flex; justify-content: center; gap: 15px; margin-top: 15px;">
-                    <button id="sellBtn" class="action-btn" onclick="sellTower()" style="background: linear-gradient(to bottom, #e74c3c, #c0392b); box-shadow: 0 6px 0 #922b21; font-size: 22px;">💰 拆除返還</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="baseModal" class="modal" style="width: 650px;">
-            <span class="close-btn" onclick="cancelAction()">×</span>
-            <div class="modal-body">
-                <h2 style="color: #e67e22; font-size: 40px;">大木博士研究所</h2>
-                <div class="tech-box">
-                    <h3 style="color: #2c3e50; margin-top: 0;">🏰 主城等級 (Lv.<span id="baseLvText">1</span>)</h3>
-                    <div style="font-size: 17px; color: #34495e; margin-bottom: 10px;">主城會隨波次<strong style="color:#e74c3c">自動升級</strong>！等級越高，高階招募率越高！</div>
-                    <div style="font-size: 17px; background: #fff; padding: 8px; border-radius: 10px; display: inline-block;">
-                        🟢 一般: <span id="rateCommon" style="font-weight: bold;"></span> | 
-                        🔵 稀有: <span id="rateRare" style="font-weight: bold;"></span> | 
-                        🟣 史詩: <span id="rateEpic" style="font-weight: bold;"></span> | <br>
-                        🟡 傳說: <span id="rateLegendary" style="font-weight: bold; color:#f1c40f; text-shadow:1px 1px 0 #333;"></span> |
-                        <span style="color:#e67e22; font-weight:bold;">🟠 神話: <span id="rateMythic"></span></span>
+            <div id="ui">
+                <div class="ui-group">
+                    <div id="coinBox" style="font-size: 26px; font-weight: bold; color: #f1c40f; text-shadow: 2px 2px 0 #000;">💰 <span id="coinDisplay">150</span></div>
+                    <div class="stone-counters">
+                        <span><svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#9b59b6"/><path d="M7 12 Q12 6 17 12 Q12 18 7 12 Z" fill="#f1c40f"/></svg> 超進:<strong id="uiStoneM" style="font-size: 16px; margin-left: 4px;">0</strong></span>
+                        <span><svg width="20" height="20" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="4" fill="#e74c3c"/><circle cx="12" cy="12" r="4" fill="#f1c40f"/></svg> 極巨:<strong id="uiStoneD" style="font-size: 16px; margin-left: 4px;">0</strong></span>
                     </div>
+                    <div id="comboDisplay" style="font-size: 16px; font-weight: bold; color: #ff7675; text-shadow: 1px 1px 0 #000;">
+                        🔥 連擊: <span id="comboCount">0</span> <span id="comboBuffText" style="color:#2ecc71; font-size:14px;">(+0%)</span>
+                    </div>
+                    <div id="weatherDisplay" style="font-size: 17px; font-weight: bold; text-shadow: 1px 1px 0 #000;">☀️ 晴天</div>
+                    <div id="netStatusTag" style="font-size: 14px; background:#2ecc71; padding:3px 8px; border-radius:8px;">單人模式</div>
                 </div>
-                <div class="tech-box">
-                    <h3 style="color: #2c3e50; margin-top: 0;">🌍 全域科技升級</h3>
-                    <div style="text-align: center;">
-                        <button class="action-btn" onclick="triggerTechUpgrade('dmg')" style="font-size: 19px; background: linear-gradient(to bottom, #e74c3c, #c0392b); box-shadow: 0 5px 0 #922b21; color: white;">
-                            ⚔️ 攻擊力 +20% (💰 <span id="costDmg">300</span>)
+                
+                <div class="ui-group">
+                    <div style="font-size: 22px; font-weight: bold; color: #e74c3c; text-shadow: 2px 2px 0 #000;">❤️ <span id="healthDisplay">10</span></div>
+                    <div style="font-size: 22px; font-weight: bold; color: #3498db; text-shadow: 2px 2px 0 #000;">🌊 第 <span id="waveDisplay">1</span> 波</div>
+                </div>
+            </div>
+
+            <div id="pokedexModal" class="modal" style="width: 780px;">
+                <span class="close-btn" onclick="closeModals()">×</span>
+                <div class="modal-body">
+                    <h2 style="color: #e67e22; font-size: 38px; margin-bottom: 5px;">📖 寶可夢大圖鑑</h2>
+                    <div style="font-size: 20px; color:#7f8c8d; margin-bottom: 12px;">已解鎖：<span id="dexUnlockedCount" style="color:#e74c3c; font-weight:bold;">0</span> / <span id="dexTotalCount">0</span> 隻寶可夢</div>
+                    <div class="dex-grid" id="dexGrid"></div>
+                </div>
+            </div>
+
+            <div id="buildModal" class="modal" style="width: 740px;">
+                <span class="close-btn" onclick="cancelAction()">×</span>
+                <div class="modal-body">
+                    <h2 style="font-size: 38px;">選擇防守夥伴！</h2>
+                    <div class="choices-container" id="buildChoices"></div>
+                    <button id="rerollBtn" class="action-btn" onclick="rerollShop()" style="margin-top: 15px; font-size: 20px; background: linear-gradient(to bottom, #9b59b6, #8e44ad); box-shadow: 0 6px 0 #5e3370; color: white;">🔄 刷新商店 (💰 15) [剩餘 5 次]</button>
+                </div>
+            </div>
+
+            <div id="upgradeModal" class="modal">
+                <span class="close-btn" onclick="cancelAction()">×</span>
+                <div class="modal-body">
+                    <h2 id="upgTitle" style="font-size: 40px;">寶可夢</h2>
+                    <div style="position:relative; display:inline-block;">
+                        <img id="upgImg" src="" style="width: 120px; filter: drop-shadow(5px 5px 0 rgba(0,0,0,0.3));">
+                        <span id="upgShinyBadge" style="display:none; position:absolute; top:-5px; right:-10px; background:#f1c40f; color:#c0392b; font-size:16px; font-weight:bold; padding:2px 8px; border-radius:10px; border:2px solid #fff;">✨色違</span>
+                    </div>
+                    <div style="font-size: 22px; margin-top: 5px; font-weight: bold; color:#2c3e50;">
+                        實際攻擊力: <span id="upgDmg" style="font-size: 34px; color:#e74c3c;"></span>
+                        <span id="upgDmgBuff" style="font-size: 18px; color: #2ecc71;"></span>
+                    </div>
+                    
+                    <div id="skillSelectBox" style="display: none; margin: 15px 0; background: rgba(0,0,0,0.05); padding: 12px; border-radius: 20px; border: 3px dashed #bdc3c7;">
+                        <div id="skillSelectTitle" style="font-size: 20px; margin-bottom: 8px; font-weight: bold; color: #34495e;">⚡ 選擇專屬技能流派 (三選一)：</div>
+                        <div id="skillBtns" style="display: flex; justify-content: space-around; flex-wrap: wrap;"></div>
+                    </div>
+
+                    <div class="exp-bar-container" id="expBarWrap"><div class="exp-bar" id="upgExpBar"></div></div>
+                    <div id="upgExpText" style="font-size: 20px; color: #7f8c8d; font-weight: bold;">EXP: 0 / 100</div>
+                    
+                    <div id="inlineEvoChoices" class="choices-container" style="display: none; margin-top: 15px; border-top: 2px dashed #bdc3c7; padding-top: 15px;"></div>
+                    
+                    <div id="stoneBtns" style="display: none; margin-top: 15px; background: rgba(0,0,0,0.05); padding: 15px; border-radius: 20px; border: 3px dashed #bdc3c7;">
+                        <div style="font-size: 20px; color: #8e44ad; margin-bottom: 10px; font-weight: bold;">💎 消耗道具：覺醒極限力量 (限時30秒)</div>
+                        <button id="btnM" class="stone-btn mega" onclick="prepareStone('mega')">
+                            <svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#9b59b6"/><path d="M7 12 Q12 6 17 12 Q12 18 7 12 Z" fill="#f1c40f"/></svg> 
+                            超級進化 (<span id="txtStoneM">0</span>)
                         </button>
-                        <button class="action-btn" onclick="triggerTechUpgrade('rate')" style="font-size: 19px; background: linear-gradient(to bottom, #3498db, #2980b9); box-shadow: 0 5px 0 #1f618d; color: white;">
-                            ⚡ 攻擊速度 +15% (💰 <span id="costRate">300</span>)
+                        <button id="btnX" class="stone-btn mega" onclick="prepareStone('megaX')">
+                            <svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#2980b9"/><text x="12" y="16" fill="#fff" font-size="12" text-anchor="middle" font-weight="bold">X</text></svg> 
+                            超級X (<span id="txtStoneX">0</span>)
                         </button>
+                        <button id="btnY" class="stone-btn mega" onclick="prepareStone('megaY')">
+                            <svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#e74c3c"/><text x="12" y="16" fill="#fff" font-size="12" text-anchor="middle" font-weight="bold">Y</text></svg> 
+                            超級Y (<span id="txtStoneY">0</span>)
+                        </button>
+                        <button id="btnD" class="stone-btn dyna" onclick="prepareStone('dynamax')">
+                            <svg width="22" height="22" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="4" fill="#e74c3c"/><circle cx="12" cy="12" r="4" fill="#f1c40f"/></svg> 
+                            極巨化 (<span id="txtStoneD">0</span>)
+                        </button>
+                    </div>
+
+                    <div style="display: flex; justify-content: center; gap: 15px; margin-top: 15px;">
+                        <button id="sellBtn" class="action-btn" onclick="sellTower()" style="background: linear-gradient(to bottom, #e74c3c, #c0392b); box-shadow: 0 6px 0 #922b21; font-size: 22px;">💰 拆除返還</button>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div id="mathModal" class="modal" style="width: 640px;">
-            <span class="close-btn" onclick="cancelAction()">×</span>
-            <div class="modal-body">
-                <h2 id="mathTitle" style="font-size: 34px; margin-bottom: 6px;">大木博士的考驗</h2>
-                
-                <div id="mathTimerWrap"><div id="mathTimerBar"></div></div>
-
-                <div style="display:flex; justify-content:center; align-items:center; margin-bottom:6px;">
-                    <button class="voice-btn" onclick="speakCurrentQuestion()">📢 聽題目</button>
-                    <button id="sosAskBtn" class="sos-ask-btn" style="display:none;" onclick="requestPartnerHelp()">🤝 呼叫夥伴求助！</button>
+            <div id="baseModal" class="modal" style="width: 650px;">
+                <span class="close-btn" onclick="cancelAction()">×</span>
+                <div class="modal-body">
+                    <h2 style="color: #e67e22; font-size: 40px;">大木博士研究所</h2>
+                    <div class="tech-box">
+                        <h3 style="color: #2c3e50; margin-top: 0;">🏰 主城等級 (Lv.<span id="baseLvText">1</span>)</h3>
+                        <div style="font-size: 17px; color: #34495e; margin-bottom: 10px;">主城會隨波次<strong style="color:#e74c3c">自動升級</strong>！等級越高，高階招募率越高！</div>
+                        <div style="font-size: 17px; background: #fff; padding: 8px; border-radius: 10px; display: inline-block;">
+                            🟢 一般: <span id="rateCommon" style="font-weight: bold;"></span> | 
+                            🔵 稀有: <span id="rateRare" style="font-weight: bold;"></span> | 
+                            🟣 史詩: <span id="rateEpic" style="font-weight: bold;"></span> | <br>
+                            🟡 傳說: <span id="rateLegendary" style="font-weight: bold; color:#f1c40f; text-shadow:1px 1px 0 #333;"></span> |
+                            <span style="color:#e67e22; font-weight:bold;">🟠 神話: <span id="rateMythic"></span></span>
+                        </div>
+                    </div>
+                    <div class="tech-box">
+                        <h3 style="color: #2c3e50; margin-top: 0;">🌍 全域科技升級</h3>
+                        <div style="text-align: center;">
+                            <button class="action-btn" onclick="triggerTechUpgrade('dmg')" style="font-size: 19px; background: linear-gradient(to bottom, #e74c3c, #c0392b); box-shadow: 0 5px 0 #922b21; color: white;">
+                                ⚔️ 攻擊力 +20% (💰 <span id="costDmg">300</span>)
+                            </button>
+                            <button class="action-btn" onclick="triggerTechUpgrade('rate')" style="font-size: 19px; background: linear-gradient(to bottom, #3498db, #2980b9); box-shadow: 0 5px 0 #1f618d; color: white;">
+                                ⚡ 攻擊速度 +15% (💰 <span id="costRate">300</span>)
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                
-                <div id="questionText" style="font-size: 34px; color: #2c3e50; text-shadow: 2px 2px 0px rgba(0,0,0,0.1); margin: 10px 0; background: #ecf0f1; padding: 12px; border-radius: 20px; border: 5px dashed #bdc3c7;">8 × 7 = ?</div>
-                <div id="mathChoices" style="display:flex; flex-direction:column; align-items:center; gap:5px; margin-top:8px;"></div>
-                <div id="hintText" style="font-size: 22px; margin-top: 10px; min-height: 30px; font-weight: bold;"></div>
+            </div>
+
+            <div id="mathModal" class="modal" style="width: 640px;">
+                <span class="close-btn" onclick="cancelAction()">×</span>
+                <div class="modal-body">
+                    <h2 id="mathTitle" style="font-size: 34px; margin-bottom: 6px;">大木博士的考驗</h2>
+                    
+                    <div id="mathTimerWrap"><div id="mathTimerBar"></div></div>
+
+                    <div style="display:flex; justify-content:center; align-items:center; margin-bottom:6px;">
+                        <button class="voice-btn" onclick="speakCurrentQuestion()">📢 聽題目</button>
+                        <button id="sosAskBtn" class="sos-ask-btn" style="display:none;" onclick="requestPartnerHelp()">🤝 呼叫夥伴求助！</button>
+                    </div>
+                    
+                    <div id="questionText" style="font-size: 34px; color: #2c3e50; text-shadow: 2px 2px 0px rgba(0,0,0,0.1); margin: 10px 0; background: #ecf0f1; padding: 12px; border-radius: 20px; border: 5px dashed #bdc3c7;">8 × 7 = ?</div>
+                    <div id="mathChoices" style="display:flex; flex-direction:column; align-items:center; gap:5px; margin-top:8px;"></div>
+                    <div id="hintText" style="font-size: 22px; margin-top: 10px; min-height: 30px; font-weight: bold;"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -401,17 +429,76 @@
             }
         };
 
+        var SPECIAL_FORM_URLS = {
+            'm_3': 'https://play.pokemonshowdown.com/sprites/gen5/venusaur-mega.png',
+            'gmax_3': 'https://play.pokemonshowdown.com/sprites/gen5/venusaur-gmax.png',
+            'mx_6': 'https://play.pokemonshowdown.com/sprites/gen5/charizard-megax.png',
+            'my_6': 'https://play.pokemonshowdown.com/sprites/gen5/charizard-megay.png',
+            'gmax_6': 'https://play.pokemonshowdown.com/sprites/gen5/charizard-gmax.png',
+            'm_9': 'https://play.pokemonshowdown.com/sprites/gen5/blastoise-mega.png',
+            'gmax_9': 'https://play.pokemonshowdown.com/sprites/gen5/blastoise-gmax.png',
+            'm_18': 'https://play.pokemonshowdown.com/sprites/gen5/pidgeot-mega.png',
+            'gmax_25': 'https://play.pokemonshowdown.com/sprites/gen5/pikachu-gmax.png',
+            'm_65': 'https://play.pokemonshowdown.com/sprites/gen5/alakazam-mega.png',
+            'gmax_68': 'https://play.pokemonshowdown.com/sprites/gen5/machamp-gmax.png',
+            'm_94': 'https://play.pokemonshowdown.com/sprites/gen5/gengar-mega.png',
+            'gmax_94': 'https://play.pokemonshowdown.com/sprites/gen5/gengar-gmax.png',
+            'm_130': 'https://play.pokemonshowdown.com/sprites/gen5/gyarados-mega.png',
+            'mx_150': 'https://play.pokemonshowdown.com/sprites/gen5/mewtwo-megax.png',
+            'my_150': 'https://play.pokemonshowdown.com/sprites/gen5/mewtwo-megay.png',
+            'm_248': 'https://play.pokemonshowdown.com/sprites/gen5/tyranitar-mega.png',
+            'm_254': 'https://play.pokemonshowdown.com/sprites/gen5/sceptile-mega.png',
+            'm_257': 'https://play.pokemonshowdown.com/sprites/gen5/blaziken-mega.png',
+            'm_260': 'https://play.pokemonshowdown.com/sprites/gen5/swampert-mega.png',
+            'm_282': 'https://play.pokemonshowdown.com/sprites/gen5/gardevoir-mega.png',
+            'm_373': 'https://play.pokemonshowdown.com/sprites/gen5/salamence-mega.png',
+            'm_376': 'https://play.pokemonshowdown.com/sprites/gen5/metagross-mega.png',
+            'm_382': 'https://play.pokemonshowdown.com/sprites/gen5/kyogre-primal.png',
+            'm_383': 'https://play.pokemonshowdown.com/sprites/gen5/groudon-primal.png',
+            'm_384': 'https://play.pokemonshowdown.com/sprites/gen5/rayquaza-mega.png',
+            'm_445': 'https://play.pokemonshowdown.com/sprites/gen5/garchomp-mega.png',
+            'm_448': 'https://play.pokemonshowdown.com/sprites/gen5/lucario-mega.png',
+            'm_475': 'https://play.pokemonshowdown.com/sprites/gen5/gallade-mega.png',
+            'gmax_812': 'https://play.pokemonshowdown.com/sprites/gen5/rillaboom-gmax.png',
+            'gmax_815': 'https://play.pokemonshowdown.com/sprites/gen5/cinderace-gmax.png',
+            'gmax_818': 'https://play.pokemonshowdown.com/sprites/gen5/inteleon-gmax.png'
+        };
+
+        var EXCLUSIVE_ULT_SKILLS = {
+            'gmax_3': { name: '超極巨灰飛滅濃', type: 'grass' },
+            'gmax_6': { name: '超極巨地獄滅焰', type: 'fire' },
+            'gmax_9': { name: '超極巨巨炮地獄滅', type: 'water' },
+            'gmax_25': { name: '超極巨萬雷轟頂', type: 'electric' },
+            'gmax_68': { name: '超極巨百裂重拳', type: 'fighting' },
+            'gmax_94': { name: '超極巨幻影幽魂', type: 'ghost' },
+            'gmax_812': { name: '超極巨擂鼓亂打', type: 'grass' },
+            'gmax_815': { name: '超極巨破陣火球', type: 'fire' },
+            'gmax_818': { name: '超極巨狙擊神射', type: 'water' }
+        };
+
+        function getPokemonImageUrl(pokeId, form) {
+            if (form && form !== 'normal') {
+                var key = (form === 'dynamax' ? 'gmax' : (form === 'megaX' ? 'mx' : (form === 'megaY' ? 'my' : 'm'))) + '_' + pokeId;
+                if (SPECIAL_FORM_URLS[key]) return SPECIAL_FORM_URLS[key];
+            }
+            return "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/" + pokeId + ".png";
+        }
+
         var imageCache = {};
-        function getCachedImg(id) {
-            if (imageCache[id]) return imageCache[id];
+        function getCachedImg(id, form) {
+            var cacheKey = id + (form && form !== 'normal' ? '_' + form : '');
+            if (imageCache[cacheKey]) return imageCache[cacheKey];
             var img = new Image();
-            img.crossOrigin = "Anonymous";
-            var baseUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/";
-            var fallImg = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/";
-            img.setAttribute('data-fallback', fallImg + id + ".png");
-            img.onerror = function() { this.src = this.getAttribute('data-fallback'); };
-            img.src = baseUrl + id + ".png";
-            imageCache[id] = img;
+            var primaryUrl = getPokemonImageUrl(id, form);
+            var fallbackUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/" + id + ".png";
+            
+            img.onerror = function() {
+                if (this.src !== fallbackUrl) {
+                    this.src = fallbackUrl;
+                }
+            };
+            img.src = primaryUrl;
+            imageCache[cacheKey] = img;
             return img;
         }
 
@@ -434,11 +521,12 @@
         }
 
         function resizeApp() {
-            var wrap = document.getElementById('main-wrap');
+            var scaler = document.getElementById('app-scaler');
+            if (!scaler) return;
             var baseW = 1080;
             var baseH = 980;
-            var scale = Math.min((window.innerWidth - 10) / baseW, (window.innerHeight - 10) / baseH);
-            wrap.style.transform = 'scale(' + scale + ')';
+            var scale = Math.min(window.innerWidth / baseW, window.innerHeight / baseH);
+            scaler.style.transform = 'translate(-50%, -50%) scale(' + scale + ')';
         }
         window.addEventListener('resize', resizeApp);
         window.addEventListener('orientationchange', function() { setTimeout(resizeApp, 100); });
@@ -462,7 +550,8 @@
         var isModalOpen = false;
         var previewTower = null; 
 
-        var summonedBossBadge = null; 
+        var summonedBossQueue = [];
+        var activeSummonedBoss = null;
         var activeBossSummonTimer = 0; 
         var stones = { mega: 0, dynamax: 0 };
 
@@ -572,7 +661,7 @@
 
                 var div = document.createElement('div');
                 div.className = 'dex-card ' + (isUnlocked ? '' : 'locked');
-                var imgUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/" + pId + ".png";
+                var imgUrl = getPokemonImageUrl(pId);
                 div.innerHTML = '<img src="' + imgUrl + '" style="width:70px; height:70px;">' +
                                 '<div style="font-size:15px; font-weight:bold; margin-top:4px;">' + (isUnlocked ? pData.name : '???') + '</div>';
                 grid.appendChild(div);
@@ -730,9 +819,10 @@
                 for(var i=0; i<enemies.length; i++) enemies[i].statuses.slow = 300;
                 floatTexts.push(new FloatingText(canvas.width/2, 100, "🎰 扭蛋大獎：急凍暴風雪！全場定身 5 秒！", "#3498db", 34));
             } else {
-                summonedBossBadge = { id: 384, name: '✨色違烈空坐', type: 'dragon' };
+                var newBoss = { id: 384, name: '✨色違烈空坐', type: 'dragon' };
+                summonedBossQueue.push(newBoss);
                 triggerMangaCutin(384);
-                floatTexts.push(new FloatingText(canvas.width/2, 100, "🌟 傳奇大獎！獲得【✨色違烈空坐】大招！", "#f1c40f", 36));
+                floatTexts.push(new FloatingText(canvas.width/2, 100, "🌟 傳奇大獎！獲得【✨色違烈空坐】召喚！", "#f1c40f", 36));
             }
             updateUI();
             if (isHost && isMultiplayer) broadcastState();
@@ -841,21 +931,23 @@
         };
 
         window.triggerBossSummon = function() {
-            if (!summonedBossBadge) return;
+            if (summonedBossQueue.length === 0) return;
+            activeSummonedBoss = summonedBossQueue.shift();
             activeBossSummonTimer = 900; 
-            triggerMangaCutin(summonedBossBadge.id);
+            triggerMangaCutin(activeSummonedBoss.id);
             sfx.tera();
             triggerShake(20);
-            floatTexts.push(new FloatingText(canvas.width/2, 100, "🌟 神獸【" + summonedBossBadge.name + "】降臨戰場 15 秒！", "#fd79a8", 40));
+            floatTexts.push(new FloatingText(canvas.width/2, 100, "🌟 神獸【" + activeSummonedBoss.name + "】降臨戰場 15 秒！", "#fd79a8", 40));
             
             for(var i=0; i<enemies.length; i++) {
-                hitEnemy(enemies[i], 350, null, false, true, summonedBossBadge.type);
+                if (enemies[i] && enemies[i].hp > 0) {
+                    hitEnemy(enemies[i], 350, null, false, true, activeSummonedBoss.type);
+                }
             }
-            summonedBossBadge = null; 
             updateUI();
 
             if (isMultiplayer) {
-                sendNetAction({ type: 'TRIGGER_BOSS_SUMMON' });
+                sendNetAction({ type: 'TRIGGER_BOSS_SUMMON', boss: activeSummonedBoss });
             }
         };
 
@@ -999,7 +1091,7 @@
                             en.flash = eData.flash;
                             en.affix = eData.affix;
                             en.shieldType = eData.shieldType;
-                            en.img = getCachedImg(en.id);
+                            en.img = getCachedImg(en.id, 'normal');
                             updatedEnemies.push(en);
                         }
                     }
@@ -1067,7 +1159,7 @@
                                 gridMap[data.c][data.r] = 0;
                                 broadcastState();
                             }
-                        }, 25000);
+                        }, 12000);
                         broadcastState();
                     }
                 } else if (data.type === 'UNLOCK_CELL' && isHost) {
@@ -1089,8 +1181,9 @@
                     floatTexts.push(new FloatingText(canvas.width/2, 120, "🤝 夥伴發動同心援護！全場強效急凍 4 秒！", "#3498db", 38));
                     for(var i=0; i<enemies.length; i++) enemies[i].statuses.slow = 240;
                 } else if (data.type === 'TRIGGER_BOSS_SUMMON') {
+                    activeSummonedBoss = data.boss;
                     activeBossSummonTimer = 900;
-                    triggerMangaCutin(384);
+                    triggerMangaCutin(data.boss.id);
                     sfx.tera();
                     triggerShake(20);
                 } else if (data.type === 'CLIENT_ACTION' && isHost) {
@@ -1185,7 +1278,6 @@
             }
         }
 
-        // --- 音效系統 ---
         var audioCtx; var isMusicPlaying = true; var bgmPlayer = document.getElementById('bgmPlayer');
         var currentSpeechText = "";
 
@@ -1352,35 +1444,35 @@
 
         function setupCuratedData() {
             var EVO_LINES = [
-                [[[1,'妙蛙種子'], [2,'妙蛙草'], [3,'妙蛙花', {m: 10033, gmax: 10195}]], 'grass', 'common'],
-                [[[4,'小火龍'], [5,'火恐龍'], [6,'噴火龍', {mx: 10034, my: 10035, gmax: 10196}]], 'fire', 'common'],
-                [[[7,'傑尼龜'], [8,'卡咪龜'], [9,'水箭龜', {m: 10036, gmax: 10197}]], 'water', 'common'],
-                [[[16,'波波'], [17,'比比鳥'], [18,'大比鳥', {m: 10073}]], 'flying', 'common'],
-                [[[172,'皮丘'], [25,'皮卡丘', {gmax: 10199}]], 'electric', 'common'],
-                [[[63,'凱西'], [64,'勇基拉'], [65,'胡地', {m: 10037}]], 'psychic', 'rare'],
-                [[[66,'腕力'], [67,'豪力'], [68,'怪力', {gmax: 10201}]], 'fighting', 'rare'],
-                [[[92,'鬼斯'], [93,'鬼斯通'], [94,'耿鬼', {m: 10038, gmax: 10202}]], 'ghost', 'rare'],
+                [[[1,'妙蛙種子'], [2,'妙蛙草'], [3,'妙蛙花', {m: true, gmax: true}]], 'grass', 'common'],
+                [[[4,'小火龍'], [5,'火恐龍'], [6,'噴火龍', {mx: true, my: true, gmax: true}]], 'fire', 'common'],
+                [[[7,'傑尼龜'], [8,'卡咪龜'], [9,'水箭龜', {m: true, gmax: true}]], 'water', 'common'],
+                [[[16,'波波'], [17,'比比鳥'], [18,'大比鳥', {m: true}]], 'flying', 'common'],
+                [[[172,'皮丘'], [25,'皮卡丘', {gmax: true}]], 'electric', 'common'],
+                [[[63,'凱西'], [64,'勇基拉'], [65,'胡地', {m: true}]], 'psychic', 'rare'],
+                [[[66,'腕力'], [67,'豪力'], [68,'怪力', {gmax: true}]], 'fighting', 'rare'],
+                [[[92,'鬼斯'], [93,'鬼斯通'], [94,'耿鬼', {m: true, gmax: true}]], 'ghost', 'rare'],
                 [[[147,'迷你龍'], [148,'哈克龍'], [149,'快龍']], 'dragon', 'epic'],
-                [[[252,'木守宮'], [253,'森林蜥蜴'], [254,'蜥蜴王', {m: 10065}]], 'grass', 'common'],
-                [[[255,'火稚雞'], [256,'力壯雞'], [257,'火焰雞', {m: 10050}]], 'fire', 'common'],
-                [[[258,'水躍魚'], [259,'沼躍魚'], [260,'巨沼怪', {m: 10064}]], 'water', 'common'],
-                [[[371,'寶貝龍'], [372,'甲殼龍'], [373,'暴飛龍', {m: 10089}]], 'dragon', 'epic'],
-                [[[374,'鐵啞鈴'], [375,'金屬怪'], [376,'巨金怪', {m: 10076}]], 'steel', 'epic'],
-                [[[443,'圓陸鯊'], [444,'尖牙陸鯊'], [445,'烈咬陸鯊', {m: 10058}]], 'dragon', 'epic'],
-                [[[447,'利歐路'], [448,'路卡利歐', {m: 10059}]], 'fighting', 'rare'],
+                [[[252,'木守宮'], [253,'森林蜥蜴'], [254,'蜥蜴王', {m: true}]], 'grass', 'common'],
+                [[[255,'火稚雞'], [256,'力壯雞'], [257,'火焰雞', {m: true}]], 'fire', 'common'],
+                [[[258,'水躍魚'], [259,'沼躍魚'], [260,'巨沼怪', {m: true}]], 'water', 'common'],
+                [[[371,'寶貝龍'], [372,'甲殼龍'], [373,'暴飛龍', {m: true}]], 'dragon', 'epic'],
+                [[[374,'鐵啞鈴'], [375,'金屬怪'], [376,'巨金怪', {m: true}]], 'steel', 'epic'],
+                [[[443,'圓陸鯊'], [444,'尖牙陸鯊'], [445,'烈咬陸鯊', {m: true}]], 'dragon', 'epic'],
+                [[[447,'利歐路'], [448,'路卡利歐', {m: true}]], 'fighting', 'rare'],
                 [[[610,'牙牙'], [611,'斧牙龍'], [612,'雙斧戰龍']], 'dragon', 'epic'],
                 [[[656,'呱呱泡蛙'], [657,'呱頭蛙'], [658,'甲賀忍蛙']], 'water', 'common'],
                 [[[679,'獨劍鞘'], [680,'雙劍鞘'], [681,'堅盾劍怪']], 'steel', 'rare'],
-                [[[810,'敲音猴'], [811,'啪咚猴'], [812,'轟擂金剛猩', {gmax: 10210}]], 'grass', 'common'],
-                [[[813,'炎兔兒'], [814,'騰蹴小將'], [815,'閃焰王牌', {gmax: 10211}]], 'fire', 'common'],
-                [[[816,'淚眼蜥'], [817,'變澀蜥'], [818,'千面避役', {gmax: 10212}]], 'water', 'common'],
+                [[[810,'敲音猴'], [811,'啪咚猴'], [812,'轟擂金剛猩', {gmax: true}]], 'grass', 'common'],
+                [[[813,'炎兔兒'], [814,'騰蹴小將'], [815,'閃焰王牌', {gmax: true}]], 'fire', 'common'],
+                [[[816,'淚眼蜥'], [817,'變澀蜥'], [818,'千面避役', {gmax: true}]], 'water', 'common'],
                 [[[885,'多龍梅西亞'], [886,'多龍奇'], [887,'多龍巴魯托']], 'dragon', 'epic'],
                 [[[957,'小鍛匠'], [958,'巧鍛匠'], [959,'巨鍛匠', {sName:'巨力錘'}]], 'fairy', 'rare'],
                 [[[906,'新葉喵'], [907,'蒂蕾喵'], [908,'魔幻假面喵', {sName:'千變萬花'}]], 'grass', 'common'],
                 [[[909,'呆火鱷'], [910,'炙燙鱷'], [911,'骨紋巨聲鱷', {sName:'閃焰之歌'}]], 'fire', 'common'],
                 [[[912,'潤水鴨'], [913,'湧躍鴨'], [914,'狂歡浪舞鴨', {sName:'流水旋舞'}]], 'water', 'common'],
-                [[[129,'鯉魚王'], [130,'暴鯉龍', {m: 10041, sName:'破壞死光'}]], 'water', 'rare'],
-                [[[246,'幼基拉斯'], [247,'沙基拉斯'], [248,'班基拉斯', {m: 10045}]], 'rock', 'epic'],
+                [[[129,'鯉魚王'], [130,'暴鯉龍', {m: true, sName:'破壞死光'}]], 'water', 'rare'],
+                [[[246,'幼基拉斯'], [247,'沙基拉斯'], [248,'班基拉斯', {m: true}]], 'rock', 'epic'],
                 [[[175,'波克比'], [176,'波克基古'], [468,'波克基斯']], 'fairy', 'rare']
             ];
 
@@ -1396,10 +1488,10 @@
                         maxExp: isF ? 9999 : (i===0 ? 350 : 850), type: ty, stage: i+1, rarity: rarity
                     };
                     if (isF && opt) {
-                        if(opt.m) POKEMON_DATA[id].megaId = opt.m; 
-                        if(opt.mx) POKEMON_DATA[id].megaXId = opt.mx; 
-                        if(opt.my) POKEMON_DATA[id].megaYId = opt.my;
-                        if(opt.gmax) POKEMON_DATA[id].gmaxId = opt.gmax;
+                        if(opt.m) POKEMON_DATA[id].hasMega = true; 
+                        if(opt.mx) POKEMON_DATA[id].hasMegaX = true; 
+                        if(opt.my) POKEMON_DATA[id].hasMegaY = true;
+                        if(opt.gmax) POKEMON_DATA[id].hasGmax = true;
                         if(opt.sName) POKEMON_DATA[id].sName = opt.sName;
                     }
                 }
@@ -1408,8 +1500,8 @@
 
             POKEMON_DATA[280] = { name: '拉魯拉絲', cost: 30, dmg: 12, range: 400, rate: 130, nextId: 281, maxExp: 350, type: 'psychic', stage: 1, rarity: 'rare' };
             POKEMON_DATA[281] = { name: '奇魯莉安', cost: 0, dmg: 26, range: 440, rate: 120, nextId: [282, 475], maxExp: 850, type: 'psychic', stage: 2, rarity: 'rare' };
-            POKEMON_DATA[282] = { name: '沙奈朵 (♀)', cost: 0, dmg: 60, range: 480, rate: 110, nextId: null, maxExp: 9999, type: 'fairy', stage: 3, megaId: 10051, rarity: 'rare' };
-            POKEMON_DATA[475] = { name: '艾路雷朵 (♂)', cost: 0, dmg: 65, range: 460, rate: 100, nextId: null, maxExp: 9999, type: 'fighting', stage: 3, megaId: 10052, rarity: 'rare' };
+            POKEMON_DATA[282] = { name: '沙奈朵 (♀)', cost: 0, dmg: 60, range: 480, rate: 110, nextId: null, maxExp: 9999, type: 'fairy', stage: 3, hasMega: true, rarity: 'rare' };
+            POKEMON_DATA[475] = { name: '艾路雷朵 (♂)', cost: 0, dmg: 65, range: 460, rate: 100, nextId: null, maxExp: 9999, type: 'fighting', stage: 3, hasMega: true, rarity: 'rare' };
             POOLS.rare.push(280);
 
             POKEMON_DATA[133] = { name: '伊布', cost: 15, dmg: 6, range: 360, rate: 130, nextId: [134,135,136,196,197,470,471,700], maxExp: 400, type: 'normal', stage: 1, rarity: 'common' };
@@ -1424,13 +1516,13 @@
             POKEMON_DATA[700] = { name: '仙子伊布', cost: 0, dmg: 48, range: 480, rate: 105, nextId: null, maxExp: 9999, type: 'fairy', stage: 3, rarity: 'common' };
 
             var LEGENDS = [
-                [150, '超夢', 'psychic', 'mythic', {mx:10043, my:10044, sName:'精神擊破'}],
+                [150, '超夢', 'psychic', 'mythic', {mx:true, my:true, sName:'精神擊破'}],
                 [151, '夢幻', 'psychic', 'mythic', {sName:'精神擊破'}],
                 [249, '洛奇亞', 'flying', 'mythic', {sName:'氣旋攻擊'}],
                 [250, '鳳王', 'fire', 'mythic', {sName:'神聖之火'}],
-                [382, '蓋歐卡', 'water', 'mythic', {m: 10077, sName:'根源波動'}],
-                [383, '固拉多', 'ground', 'mythic', {m: 10078, sName:'斷崖之劍'}],
-                [384, '烈空坐', 'dragon', 'mythic', {m: 10079, sName:'畫龍點睛'}],
+                [382, '蓋歐卡', 'water', 'mythic', {m: true, sName:'根源波動'}],
+                [383, '固拉多', 'ground', 'mythic', {m: true, sName:'斷崖之劍'}],
+                [384, '烈空坐', 'dragon', 'mythic', {m: true, sName:'畫龍點睛'}],
                 [483, '帝牙盧卡', 'steel', 'mythic', {sName:'時光咆哮'}],
                 [484, '帕路奇亞', 'water', 'mythic', {sName:'亞空裂斬'}],
                 [487, '騎拉帝納', 'ghost', 'mythic', {sName:'暗影潛襲'}],
@@ -1452,11 +1544,11 @@
                 var sStats = getRarityBaseStats(sRarity);
                 POKEMON_DATA[sId] = { name: sName, cost: sStats.c, dmg: sStats.d, range: sStats.r, rate: sStats.rt, nextId: null, maxExp: 9999, type: sType, stage: 3, rarity: sRarity };
                 if(sOpt) {
-                    if(sOpt.m) POKEMON_DATA[sId].megaId = sOpt.m; 
-                    if(sOpt.mx) POKEMON_DATA[sId].megaXId = sOpt.mx; 
-                    if(sOpt.my) POKEMON_DATA[sId].megaYId = sOpt.my;
-                    if(sOpt.gmax) POKEMON_DATA[sId].gmaxId = sOpt.gmax;
-                    if(sOpt.sName) POKEMON_DATA[sId].sName = sOpt.sName;
+                    if(sOpt.m) POKEMON_DATA[sId].hasMega = true; 
+                    if(sOpt.mx) POKEMON_DATA[sId].hasMegaX = true; 
+                    if(sOpt.my) POKEMON_DATA[sId].hasMegaY = true;
+                    if(sOpt.gmax) POKEMON_DATA[sId].hasGmax = true;
+                    if(sOpt.sName) POKEMON_DATA[sId].sName = opt = sOpt.sName;
                 }
                 POOLS[sRarity].push(sId);
             }
@@ -1593,16 +1685,31 @@
         }
         Chest.prototype.checkClick = function(cx, cy) { return getDist(this.x, this.y, cx, cy) < 40; }
 
-        function DroppedItem(x, y, type) { this.x = x; this.y = y; this.type = type; this.life = 1200; this.bounceTime = 0; }
+        function DroppedItem(x, y, type) { 
+            this.x = x; this.y = y; this.type = type; this.life = 1200; this.bounceTime = 0; 
+        }
         DroppedItem.prototype.update = function() { this.life--; this.bounceTime += 0.1; }
         DroppedItem.prototype.draw = function(ctx) {
             var bounceY = Math.sin(this.bounceTime) * 10;
-            ctx.save(); ctx.translate(this.x, this.y + bounceY);
-            ctx.fillStyle = this.type === 'mega' ? '#9b59b6' : '#e74c3c';
-            ctx.beginPath(); ctx.arc(0, 0, 18, 0, Math.PI*2); ctx.fill();
-            ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.stroke();
-            ctx.fillStyle = '#fff'; ctx.font = '14px ZCOOL KuaiLe'; ctx.textAlign = 'center';
-            ctx.fillText(this.type === 'mega' ? '🔮' : '🌠', 0, 5);
+            ctx.save(); 
+            ctx.translate(this.x, this.y + bounceY);
+            ctx.shadowColor = this.type === 'mega' ? '#9b59b6' : '#e74c3c';
+            ctx.shadowBlur = 15;
+            
+            if (this.type === 'mega') {
+                ctx.fillStyle = '#9b59b6';
+                ctx.beginPath(); ctx.arc(0, 0, 18, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = '#f1c40f';
+                ctx.beginPath();
+                ctx.moveTo(-8, 0); ctx.quadraticCurveTo(0, -10, 8, 0); ctx.quadraticCurveTo(0, 10, -8, 0); ctx.fill();
+                ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.stroke();
+            } else {
+                ctx.fillStyle = '#e74c3c';
+                ctx.beginPath(); ctx.roundRect(-16, -10, 32, 20, 6); ctx.fill();
+                ctx.fillStyle = '#f1c40f';
+                ctx.beginPath(); ctx.arc(0, 0, 6, 0, Math.PI * 2); ctx.fill();
+                ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.stroke();
+            }
             ctx.restore();
         }
         DroppedItem.prototype.checkClick = function(cx, cy) { return getDist(this.x, this.y, cx, cy) < 30; }
@@ -1617,7 +1724,7 @@
         }
 
         function hitEnemy(enemy, damage, tower, isDoT, isSkill, attackType) {
-            if (enemy.hp <= 0) return; 
+            if (!enemy || enemy.hp <= 0) return; 
             var atkType = attackType || (tower ? tower.data.type : 'normal');
             var multiplier = 1.0;
             var isComboReaction = false;
@@ -1640,7 +1747,7 @@
                 sfx.combo();
                 floatTexts.push(new FloatingText(enemy.x, enemy.y - 40, "⚡ 感電超導！", "#f1c40f", 34));
                 for(var e=0; e<enemies.length; e++) {
-                    if (enemies[e] !== enemy && getDist(enemies[e].x, enemies[e].y, enemy.x, enemy.y) < 140) {
+                    if (enemies[e] && enemies[e] !== enemy && getDist(enemies[e].x, enemies[e].y, enemy.x, enemy.y) < 140) {
                         enemies[e].hp -= Math.floor(damage * 0.9);
                         enemies[e].flash = 6;
                     }
@@ -1732,13 +1839,34 @@
 
         function SkillAnim(x, y, tx, ty, type, skillType, name) {
             this.x = x; this.y = y; this.tx = tx; this.ty = ty; this.type = type; this.skillType = skillType; this.name = name; this.color = getTypeColor(type);
-            this.life = 40; this.maxLife = 40; this.radius = 0; sfx.skill(type);
+            this.life = 45; this.maxLife = 45; this.radius = 0; sfx.skill(type);
         }
-        SkillAnim.prototype.update = function() { this.life--; this.radius += 10; }
+        SkillAnim.prototype.update = function() { this.life--; this.radius += 12; }
         SkillAnim.prototype.draw = function(ctx) {
             var p = 1 - (this.life / this.maxLife); ctx.save(); ctx.globalCompositeOperation = 'screen';
             
-            if (this.name === '日光束') {
+            if (this.name.indexOf('超極巨') !== -1 || this.name.indexOf('超級') !== -1) {
+                ctx.translate(this.tx, this.ty);
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 40;
+                
+                ctx.strokeStyle = 'rgba(231, 76, 60, ' + (1 - p) + ')';
+                ctx.lineWidth = 14 * (1 - p);
+                ctx.beginPath();
+                ctx.arc(0, 0, p * 260, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(0, 0, (1 - p) * 60, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.font = '900 32px "ZCOOL KuaiLe"';
+                ctx.fillStyle = '#f1c40f';
+                ctx.textAlign = 'center';
+                ctx.fillText(this.name, 0, -40 - p * 30);
+            }
+            else if (this.name === '日光束') {
                 var beamWidth = 70 * Math.sin(p * Math.PI);
                 ctx.shadowColor = '#2ecc71'; ctx.shadowBlur = 35;
                 ctx.strokeStyle = 'rgba(46, 204, 113, ' + (1 - p * 0.4) + ')';
@@ -1770,38 +1898,6 @@
                 grad.addColorStop(0, 'rgba(52, 152, 219, '+(1-p)+')'); grad.addColorStop(1, 'transparent');
                 ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI*2); ctx.fill();
                 ctx.strokeStyle = '#ecf0f1'; ctx.lineWidth = 10 * (1-p); ctx.stroke();
-            } else if (this.skillType === 'status') {
-                ctx.translate(this.tx, this.ty);
-                if (this.name === '麻痺粉' || this.name === '電磁波') {
-                    ctx.shadowColor = '#f1c40f'; ctx.shadowBlur = 20;
-                    for(var i=0; i<8; i++) {
-                        var angle = (i * Math.PI / 4) + p * 4;
-                        var dist = 25 + Math.sin(p * 5 + i) * 15;
-                        ctx.fillStyle = '#f1c40f'; ctx.beginPath(); ctx.arc(Math.cos(angle)*dist, Math.sin(angle)*dist, 6 * (1-p*0.5), 0, Math.PI*2); ctx.fill();
-                    }
-                } else if (this.name === '冰凍光束' || this.name === '冰凍之風') {
-                    ctx.shadowColor = '#74b9ff'; ctx.shadowBlur = 25;
-                    ctx.fillStyle = 'rgba(116, 185, 255, '+(1-p*0.4)+')';
-                    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 3;
-                    for(var j=0; j<4; j++) {
-                        var ix = Math.cos(j*Math.PI/2) * 20; var iy = Math.sin(j*Math.PI/2) * 20;
-                        ctx.beginPath(); ctx.moveTo(ix, iy-15); ctx.lineTo(ix+10, iy); ctx.lineTo(ix, iy+15); ctx.lineTo(ix-10, iy); ctx.closePath(); ctx.fill(); ctx.stroke();
-                    }
-                } else if (this.name === '鬼火') {
-                    ctx.shadowColor = '#9b59b6'; ctx.shadowBlur = 30;
-                    for(var k=0; k<3; k++) {
-                        var gAngle = (k * Math.PI * 2 / 3) + p * 6;
-                        ctx.fillStyle = '#9b59b6'; ctx.beginPath(); ctx.arc(Math.cos(gAngle)*35, Math.sin(gAngle)*35, 12*(1-p*0.5), 0, Math.PI*2); ctx.fill();
-                        ctx.fillStyle = '#3498db'; ctx.beginPath(); ctx.arc(Math.cos(gAngle)*35, Math.sin(gAngle)*35, 6*(1-p*0.5), 0, Math.PI*2); ctx.fill();
-                    }
-                } else if (this.name === '劇毒' || this.name === '毒液衝擊') {
-                    ctx.shadowColor = '#8e44ad'; ctx.shadowBlur = 25;
-                    ctx.fillStyle = 'rgba(142, 68, 173, '+(0.8 - p*0.5)+')';
-                    ctx.beginPath(); ctx.ellipse(0, 0, 45, 25, 0, 0, Math.PI*2); ctx.fill();
-                } else {
-                    ctx.strokeStyle = '#fd79a8'; ctx.lineWidth = 8 * (1-p);
-                    ctx.beginPath(); ctx.arc(0, 0, this.radius * 0.8, 0, Math.PI*2); ctx.stroke();
-                }
             } else {
                 ctx.translate(this.tx, this.ty);
                 ctx.strokeStyle = this.color; ctx.lineWidth = 25 * (1-p);
@@ -1821,9 +1917,9 @@
             this.visOffsetX = (Math.random() - 0.5) * 20; 
             this.visOffsetY = (Math.random() - 0.5) * 20;
 
-            var hpMultiplier = Math.pow(1.55, currentWave) * (isMultiplayer ? 1.6 : 1.0); 
-            this.maxHp = Math.floor(25 * hpMultiplier); 
-            if(this.isBoss) this.maxHp = Math.floor(this.maxHp * (isMultiplayer ? 12 : 10)); 
+            var hpMultiplier = Math.pow(1.32, currentWave) * (isMultiplayer ? 1.3 : 1.0); 
+            this.maxHp = Math.floor(20 * hpMultiplier); 
+            if(this.isBoss) this.maxHp = Math.floor(this.maxHp * (isMultiplayer ? 8 : 7)); 
             this.hp = this.maxHp;
             
             this.baseSpeed = 0.22 + (currentWave * 0.02); 
@@ -1861,7 +1957,7 @@
                 }
             }
             this.type = getEnemyType(this.id);
-            this.img = getCachedImg(this.id);
+            this.img = getCachedImg(this.id, 'normal');
         }
         Enemy.prototype.update = function() {
             if(this.flash > 0) this.flash--; if(this.hitScale > 1.0) this.hitScale -= 0.05;
@@ -1875,7 +1971,16 @@
                 return;
             }
 
-            this.speed = this.statuses.slow > 0 ? this.baseSpeed * 0.5 : this.baseSpeed;
+            // 泥濘地塊效果：如果怪物走到泥濘上，大幅減速
+            var c = Math.floor(this.x / GRID_SIZE);
+            var r = Math.floor(this.y / GRID_SIZE);
+            var onMud = (c >= 0 && c < COLS && r >= 0 && r < ROWS && gridMap[c][r] === 6);
+
+            var speedMult = 1.0;
+            if (this.statuses.slow > 0) speedMult *= 0.5;
+            if (onMud) speedMult *= 0.4; // 泥濘陷入減速 60%
+
+            this.speed = this.baseSpeed * speedMult;
             if(this.statuses.slow > 0) this.statuses.slow--;
 
             var currentActivePath = this.pathType === 'A' ? pixelPathA : pixelPathB;
@@ -1968,14 +2073,15 @@
             gridMap[c][r] = 2; 
             this.exp = 0; this.fireTimer = 0;  
             this.form = 'normal'; this.formTimer = 0; this.maxFormTimer = 1800; this.attackCount = 0; this.maxAttackCount = 4; this.frozen = false; 
+            this.savedBaseSkill = null;
             this.fixedSkill = null; 
             this.setPoke(pokeId);
         }
         Tower.prototype.setPoke = function(pokeId) { 
             this.pokeId = pokeId; 
             this.data = POKEMON_DATA[pokeId] || POKEMON_DATA[1]; 
-            this.img = getCachedImg(pokeId);
-            this.fixedSkill = null;
+            this.img = getCachedImg(pokeId, 'normal');
+            if (this.form === 'normal') this.savedBaseSkill = null;
             unlockPokemon(pokeId);
         }
         Tower.prototype.gainExp = function(amount) { if (this.data.nextId && this.exp < this.data.maxExp && this.form === 'normal') { this.exp += amount; if (this.exp > this.data.maxExp) this.exp = this.data.maxExp; } }
@@ -1985,18 +2091,14 @@
                 this.formTimer--; 
                 if (this.formTimer <= 0) { 
                     this.form = 'normal'; 
-                    this.setPoke(this.pokeId);
+                    this.fixedSkill = this.savedBaseSkill;
                 } 
             }
 
             var rateMult = 1.0; var dmgMult = 1.0;
-            if(this.form === 'mega') dmgMult = 1.6;
+            if(this.form === 'mega' || this.form === 'megaX' || this.form === 'megaY') dmgMult = 1.6;
             else if(this.form === 'dynamax') dmgMult = 2.6;
             if(this.isShiny) dmgMult *= 1.5;
-
-            if (currentWeather === 'rain' && gridMap[this.c][this.r] === 6 && (this.data.type !== 'water' && this.data.type !== 'grass')) {
-                rateMult *= 1.4; 
-            }
 
             var comboDmgMult = 1.0 + (comboCount * 0.02);
             var techDmgMult = 1.0 + (globalDmgLevel * 0.20); 
@@ -2009,38 +2111,52 @@
 
             if (this.fireTimer >= effectiveRate) {
                 var target = null;
-                for (var i=0; i<enemies.length; i++) { if (getDist(enemies[i].x, enemies[i].y, this.x, this.y) <= effectiveRange) { target = enemies[i]; break; } }
+                for (var i=0; i<enemies.length; i++) { if (enemies[i] && enemies[i].hp > 0 && getDist(enemies[i].x, enemies[i].y, this.x, this.y) <= effectiveRange) { target = enemies[i]; break; } }
                 if (target) {
                     this.attackCount++; 
-                    var canUseSkill = (this.data.stage >= 2 || this.form !== 'normal' || this.isMythic);
-                    var useSkill = (this.attackCount >= this.maxAttackCount && canUseSkill && this.fixedSkill);
+                    var isSpecialForm = (this.form !== 'normal');
+                    var canUseSkill = (this.data.stage >= 2 || isSpecialForm || this.isMythic);
+                    var useSkill = (this.attackCount >= this.maxAttackCount && canUseSkill && (this.fixedSkill || isSpecialForm));
                     
                     if (useSkill) {
                         this.attackCount = 0;
-                        var sData = getPokemonSkills(this.data); 
-                        var skObj = sData[0];
-                        for(var s=0; s<sData.length; s++) {
-                            if(sData[s].t === this.fixedSkill) { skObj = sData[s]; break; }
-                        }
+                        var gmaxKey = (this.form === 'dynamax' ? 'gmax_' : (this.form === 'megaX' ? 'mx_' : (this.form === 'megaY' ? 'my_' : 'm_'))) + this.pokeId;
+                        var ultSkill = EXCLUSIVE_ULT_SKILLS[gmaxKey];
 
-                        if (this.fixedSkill === 'single') {
-                            var skillDmg = Math.floor(effectiveDmg * 2.5);
-                            hitEnemy(target, skillDmg, this, false, true, this.data.type);
-                            skillAnims.push(new SkillAnim(this.x, this.y, target.x, target.y, this.data.type, 'single', skObj.n));
-                        } else if (this.fixedSkill === 'aoe') {
-                            var skillDmg = Math.floor(effectiveDmg * 1.5);
-                            var splashRange = 160;
+                        if (isSpecialForm && ultSkill) {
+                            var skillDmg = Math.floor(effectiveDmg * 3.0);
                             for (var e = 0; e < enemies.length; e++) {
-                                if (getDist(enemies[e].x, enemies[e].y, target.x, target.y) <= splashRange) {
-                                    hitEnemy(enemies[e], skillDmg, this, false, true, this.data.type);
+                                if (enemies[e] && enemies[e].hp > 0 && getDist(enemies[e].x, enemies[e].y, target.x, target.y) <= 220) {
+                                    hitEnemy(enemies[e], skillDmg, this, false, true, ultSkill.type);
                                 }
                             }
-                            skillAnims.push(new SkillAnim(this.x, this.y, target.x, target.y, this.data.type, 'aoe', skObj.n));
-                        } else if (this.fixedSkill === 'status') {
-                            var skillDmg = Math.floor(effectiveDmg * 1.0);
-                            hitEnemy(target, skillDmg, this, false, true, this.data.type);
-                            applyStatusEffect(target, this.data.type);
-                            skillAnims.push(new SkillAnim(this.x, this.y, target.x, target.y, this.data.type, 'status', skObj.n));
+                            skillAnims.push(new SkillAnim(this.x, this.y, target.x, target.y, ultSkill.type, 'aoe', ultSkill.name));
+                        } else {
+                            var sData = getPokemonSkills(this.data); 
+                            var skObj = sData[0];
+                            for(var s=0; s<sData.length; s++) {
+                                if(sData[s].t === this.fixedSkill) { skObj = sData[s]; break; }
+                            }
+
+                            if (this.fixedSkill === 'single') {
+                                var skillDmg = Math.floor(effectiveDmg * 2.5);
+                                hitEnemy(target, skillDmg, this, false, true, this.data.type);
+                                skillAnims.push(new SkillAnim(this.x, this.y, target.x, target.y, this.data.type, 'single', skObj.n));
+                            } else if (this.fixedSkill === 'aoe') {
+                                var skillDmg = Math.floor(effectiveDmg * 1.5);
+                                var splashRange = 160;
+                                for (var e = 0; e < enemies.length; e++) {
+                                    if (enemies[e] && enemies[e].hp > 0 && getDist(enemies[e].x, enemies[e].y, target.x, target.y) <= splashRange) {
+                                        hitEnemy(enemies[e], skillDmg, this, false, true, this.data.type);
+                                    }
+                                }
+                                skillAnims.push(new SkillAnim(this.x, this.y, target.x, target.y, this.data.type, 'aoe', skObj.n));
+                            } else if (this.fixedSkill === 'status') {
+                                var skillDmg = Math.floor(effectiveDmg * 1.0);
+                                hitEnemy(target, skillDmg, this, false, true, this.data.type);
+                                applyStatusEffect(target, this.data.type);
+                                skillAnims.push(new SkillAnim(this.x, this.y, target.x, target.y, this.data.type, 'status', skObj.n));
+                            }
                         }
                     } else { 
                         sfx.shoot(); 
@@ -2082,15 +2198,7 @@
             }
 
             ctx.save();
-            var drawImg = this.img;
-            if (this.form !== 'normal') {
-                var tid = this.pokeId;
-                if (this.form === 'mega' && this.data.megaId) tid = this.data.megaId;
-                else if (this.form === 'megaX' && this.data.megaXId) tid = this.data.megaXId;
-                else if (this.form === 'megaY' && this.data.megaYId) tid = this.data.megaYId;
-                else if (this.form === 'dynamax' && this.data.gmaxId) tid = this.data.gmaxId;
-                drawImg = getCachedImg(tid);
-            }
+            var drawImg = getCachedImg(this.pokeId, this.form);
 
             if (drawImg && drawImg.complete && drawImg.naturalWidth > 0) { 
                 if (this.isShiny) ctx.filter = 'hue-rotate(180deg) brightness(1.25) contrast(1.1)';
@@ -2183,7 +2291,7 @@
             var cbEl = document.getElementById('comboCount'); if (cbEl) cbEl.innerText = comboCount;
             var cbfEl = document.getElementById('comboBuffText'); if (cbfEl) cbfEl.innerText = '(+' + (comboCount * 2) + '% 攻擊力)';
 
-            var wMap = { sunny: '☀️ 晴天', rain: '🌧️ 暴雨(泥濘)', snow: '❄️ 冰雪(冰封)' };
+            var wMap = { sunny: '☀️ 晴天', rain: '🌧️ 暴雨(泥濘減速)', snow: '❄️ 冰雪(冰封)' };
             var wtEl = document.getElementById('weatherDisplay'); if (wtEl) wtEl.innerText = wMap[currentWeather];
 
             var tBtn = document.getElementById('teraBtn');
@@ -2194,8 +2302,11 @@
 
             var bBtn = document.getElementById('bossSummonBtn');
             if (bBtn) {
-                bBtn.style.display = summonedBossBadge ? 'inline-block' : 'none';
-                if (summonedBossBadge) bBtn.innerText = '🌟 召喚：' + summonedBossBadge.name + '！';
+                bBtn.style.display = summonedBossQueue.length > 0 ? 'inline-block' : 'none';
+                if (summonedBossQueue.length > 0) {
+                    var nextBoss = summonedBossQueue[0];
+                    bBtn.innerText = '🌟 召喚：' + nextBoss.name + (summonedBossQueue.length > 1 ? ' (' + summonedBossQueue.length + ')' : '') + '！';
+                }
             }
 
             var rBtn = document.getElementById('rerollBtn');
@@ -2210,17 +2321,23 @@
         }
 
         function applyWeatherTerrain() {
+            // 清理舊天氣地塊
             for(var c=0; c<COLS; c++) {
                 for(var r=0; r<ROWS; r++) {
-                    if(gridMap[c][r] === 6 || gridMap[c][r] === 7) gridMap[c][r] = 0;
+                    if(gridMap[c][r] === 6) gridMap[c][r] = 1; // 恢復道路
+                    else if(gridMap[c][r] === 7) gridMap[c][r] = 0; // 恢復建造格
                 }
             }
             if (currentWeather === 'rain') {
-                var count = 0;
-                while(count < 2) {
-                    var rc = Math.floor(Math.random() * COLS);
+                // 泥濘生成在怪物前進的道路上，確實達到減速怪物的戰略用途
+                var mudCount = 0;
+                while(mudCount < 3) {
+                    var rc = Math.floor(Math.random() * (COLS - 2)) + 1;
                     var rr = Math.floor(Math.random() * ROWS);
-                    if (gridMap[rc][rr] === 0) { gridMap[rc][rr] = 6; count++; }
+                    if (gridMap[rc][rr] === 1) { 
+                        gridMap[rc][rr] = 6; 
+                        mudCount++; 
+                    }
                 }
             } else if (currentWeather === 'snow') {
                 var count = 0;
@@ -2289,16 +2406,18 @@
                         ctx.beginPath(); ctx.roundRect(x, y, GRID_SIZE - 8, GRID_SIZE - 8, 10); ctx.fill();
                         ctx.strokeStyle = '#e67e22'; ctx.lineWidth = 3; ctx.setLineDash([4, 4]);
                         ctx.stroke(); ctx.setLineDash([]);
-                    } else if (cellVal === 5) {
+                    } else if (cellVal === 5) { 
                         ctx.fillStyle = 'rgba(0, 206, 201, 0.15)';
                         ctx.beginPath(); ctx.roundRect(x, y, GRID_SIZE - 8, GRID_SIZE - 8, 10); ctx.fill();
                         ctx.strokeStyle = 'rgba(0, 206, 201, 0.6)'; ctx.lineWidth = 2;
                         ctx.stroke();
                         ctx.beginPath(); ctx.moveTo(x + 12, y + 12); ctx.lineTo(x + GRID_SIZE - 20, y + GRID_SIZE - 20); ctx.stroke();
                     } else if (cellVal === 6) { 
-                        ctx.fillStyle = 'rgba(109, 76, 65, 0.5)';
-                        ctx.beginPath(); ctx.roundRect(x, y, GRID_SIZE - 8, GRID_SIZE - 8, 10); ctx.fill();
-                        ctx.fillStyle = '#f1c40f'; ctx.font = '14px ZCOOL KuaiLe'; ctx.fillText("泥濘", x+15, y+20);
+                        ctx.fillStyle = 'rgba(93, 64, 55, 0.85)';
+                        ctx.beginPath(); ctx.roundRect(x, y, GRID_SIZE - 8, GRID_SIZE - 8, 12); ctx.fill();
+                        ctx.strokeStyle = '#3e2723'; ctx.lineWidth = 3; ctx.stroke();
+                        ctx.fillStyle = '#f1c40f'; ctx.font = 'bold 15px ZCOOL KuaiLe'; ctx.fillText("💧泥濘", x+12, y+30);
+                        ctx.fillStyle = '#fff'; ctx.font = '12px ZCOOL KuaiLe'; ctx.fillText("-60%速", x+14, y+48);
                     } else if (cellVal === 7) { 
                         ctx.fillStyle = 'rgba(116, 185, 255, 0.7)';
                         ctx.beginPath(); ctx.roundRect(x, y, GRID_SIZE - 8, GRID_SIZE - 8, 10); ctx.fill();
@@ -2351,7 +2470,7 @@
                 ctx.lineWidth = 6;
                 ctx.stroke();
 
-                var mImg = getCachedImg(mangaPokeId);
+                var mImg = getCachedImg(mangaPokeId, 'normal');
                 if (mImg && mImg.complete) {
                     ctx.drawImage(mImg, mw / 2 - 110, my - 10, 240, 240);
                 }
@@ -2365,16 +2484,34 @@
                 ctx.restore();
             }
 
-            if (activeBossSummonTimer > 0) {
+            if (activeBossSummonTimer > 0 && activeSummonedBoss) {
                 ctx.save();
-                var sPulse = Math.sin(Date.now() / 80) * 0.2 + 1.0;
-                ctx.strokeStyle = '#fd79a8';
-                ctx.lineWidth = 6;
-                ctx.shadowColor = '#fd79a8';
-                ctx.shadowBlur = 25;
-                ctx.beginPath();
-                ctx.arc(canvas.width / 2, canvas.height / 2, 220 * sPulse, 0, Math.PI * 2);
-                ctx.stroke();
+                var scx = canvas.width / 2, scy = canvas.height / 2;
+                var rot = Date.now() / 300;
+                ctx.translate(scx, scy);
+                ctx.rotate(rot);
+
+                ctx.strokeStyle = getTypeColor(activeSummonedBoss.type);
+                ctx.lineWidth = 5;
+                ctx.shadowColor = '#f1c40f';
+                ctx.shadowBlur = 30;
+
+                ctx.beginPath(); ctx.arc(0, 0, 180, 0, Math.PI * 2); ctx.stroke();
+                ctx.beginPath(); ctx.arc(0, 0, 240, 0, Math.PI * 2); ctx.stroke();
+
+                for (var i = 0; i < 6; i++) {
+                    var a = i * Math.PI / 3;
+                    ctx.beginPath();
+                    ctx.moveTo(Math.cos(a) * 180, Math.sin(a) * 180);
+                    ctx.lineTo(Math.cos(a) * 240, Math.sin(a) * 240);
+                    ctx.stroke();
+                }
+
+                var bImg = getCachedImg(activeSummonedBoss.id, 'normal');
+                if (bImg.complete) {
+                    ctx.rotate(-rot);
+                    ctx.drawImage(bImg, -80, -80, 160, 160);
+                }
                 ctx.restore();
             }
         }
@@ -2432,7 +2569,7 @@
                 previewTower = null;
                 showModal('baseModal', function() { openBaseModal(); });
             }
-            else if (cellType === 1) {
+            else if (cellType === 1 || cellType === 6) {
                 previewTower = null;
                 showWarning("哎呀！這裡是怪物行走的道路，不能建造喔！");
             }
@@ -2456,7 +2593,7 @@
                     showModal('upgradeModal', function() { openUpgradeModal(tower); });
                 }
             }
-            else if (cellType === 0 || cellType === 6) { 
+            else if (cellType === 0) { 
                 previewTower = null;
                 if (isMultiplayer) {
                     if (myRoleId === 'brother_old' && r > 3) {
@@ -2482,7 +2619,7 @@
                                 gridMap[c][r] = 0;
                                 broadcastState();
                             }
-                        }, 25000);
+                        }, 12000);
                         broadcastState();
                     } else {
                         sendNetAction({ type: 'LOCK_CELL', c: c, r: r });
@@ -2512,6 +2649,14 @@
             for(var i=0; i<m.length; i++) m[i].classList.remove('active'); 
             isModalOpen = false;
             if (mathTimerInterval) clearInterval(mathTimerInterval);
+
+            if (pendingC !== null && pendingR !== null && gridMap[pendingC] && gridMap[pendingC][pendingR] === 4) {
+                gridMap[pendingC][pendingR] = 0;
+                if (isMultiplayer) {
+                    if (isHost) broadcastState();
+                    else sendNetAction({ type: 'UNLOCK_CELL', c: pendingC, r: pendingR });
+                }
+            }
         };
         
         window.cancelAction = function() { 
@@ -2565,17 +2710,27 @@
             var container = document.getElementById('buildChoices'); container.innerHTML = '';
             if (currentBuildChoices.length === 0) {
                 var rates = BASE_RATES[Math.min(baseLevel - 1, BASE_RATES.length-1)];
-                while (currentBuildChoices.length < 3) {
+                var maxAttempts = 20;
+                var attempts = 0;
+
+                while (currentBuildChoices.length < 3 && attempts < maxAttempts) {
+                    attempts++;
                     var rnd = Math.random(); var poolType = 'common'; 
                     if (rnd > rates.c) poolType = 'rare'; if (rnd > rates.c + rates.r) poolType = 'epic'; if (rnd > rates.c + rates.r + rates.e) poolType = 'legendary'; if (rnd > rates.c + rates.r + rates.e + rates.l) poolType = 'mythic';
                     var pool = POOLS[poolType]; 
-                    if(pool && pool.length > 0) { 
+                    if (pool && pool.length > 0) { 
                         var pick = pool[Math.floor(Math.random() * pool.length)]; 
                         var isShiny = Math.random() < 0.03; 
-                        if(currentBuildChoices.filter(function(x){ return x.id === pick; }).length === 0) {
+                        if (currentBuildChoices.filter(function(x){ return x.id === pick; }).length === 0) {
                             currentBuildChoices.push({ id: pick, isShiny: isShiny, rarity: poolType });
                         }
                     }
+                }
+
+                // 防當機後備：若池子抽不滿3隻，從普通池自動填滿
+                while (currentBuildChoices.length < 3) {
+                    var fallbackPick = POOLS.common[Math.floor(Math.random() * POOLS.common.length)];
+                    currentBuildChoices.push({ id: fallbackPick, isShiny: false, rarity: 'common' });
                 }
             }
             
@@ -2586,7 +2741,7 @@
                     var data = POKEMON_DATA[choice.id]; var canAfford = myCoins >= data.cost;
                     var div = document.createElement('div'); div.className = 'choice-card'; div.style.opacity = canAfford ? '1' : '0.5';
                     if (choice.isShiny) { div.style.border = '5px solid gold'; div.style.boxShadow = '0 0 20px gold'; }
-                    var mainImg = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/" + choice.id + ".png";
+                    var mainImg = getPokemonImageUrl(choice.id);
                     var shinyTag = choice.isShiny ? '<span style="color:gold;">✨色違 </span>' : '';
                     var rText = rarityNames[data.rarity] || '🟢 一般';
                     var rClass = 'rarity-' + (data.rarity || 'common');
@@ -2627,7 +2782,7 @@
         function openUpgradeModal(tower) {
             selectedTower = tower; 
             document.getElementById('upgTitle').innerText = (tower.isShiny ? '✨色違 ' : '') + tower.data.name; 
-            document.getElementById('upgImg').src = tower.img ? tower.img.src : getCachedImg(tower.pokeId).src;
+            document.getElementById('upgImg').src = getPokemonImageUrl(tower.pokeId, tower.form);
             
             var badge = document.getElementById('upgShinyBadge');
             if (tower.isShiny) {
@@ -2639,7 +2794,7 @@
             }
             
             var dmgMult = 1.0;
-            if(tower.form === 'mega') dmgMult = 1.6;
+            if(tower.form === 'mega' || tower.form === 'megaX' || tower.form === 'megaY') dmgMult = 1.6;
             else if(tower.form === 'dynamax') dmgMult = 2.6;
             if(tower.isShiny) dmgMult *= 1.5;
 
@@ -2691,6 +2846,7 @@
                             }
                             if (cost > 0) myCoins -= cost;
                             tower.fixedSkill = sk.t;
+                            tower.savedBaseSkill = sk.t;
                             sfx.upgrade();
                             if (isMultiplayer && !isHost) {
                                 sendNetAction({ type: 'CLIENT_ACTION', act: 'changeSkill', c: tower.c, r: tower.r, skill: sk.t });
@@ -2719,7 +2875,7 @@
                     (function(id){
                         var pData = POKEMON_DATA[id];
                         var div = document.createElement('div'); div.className = 'choice-card';
-                        var mainImg = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/" + id + ".png";
+                        var mainImg = getPokemonImageUrl(id);
                         div.innerHTML = '<img src="' + mainImg + '"><div style="font-weight:bold; font-size:18px;">' + pData.name + '</div>';
                         div.onclick = function() { 
                             sfx.click(); pendingEvoId = id; pendingAction = 'evolve'; closeModals(); 
@@ -2742,14 +2898,14 @@
             }
 
             var stoneBox = document.getElementById('stoneBtns');
-            var hasMegaOrGmax = (tower.data.megaId || tower.data.megaXId || tower.data.megaYId || tower.data.gmaxId);
+            var hasMegaOrGmax = (tower.data.hasMega || tower.data.hasMegaX || tower.data.hasMegaY || tower.data.hasGmax);
             
             if (!hasNext && hasMegaOrGmax && tower.form === 'normal') {
                 stoneBox.style.display = 'block';
-                document.getElementById('btnM').style.display = tower.data.megaId ? 'inline-block' : 'none';
-                document.getElementById('btnX').style.display = tower.data.megaXId ? 'inline-block' : 'none';
-                document.getElementById('btnY').style.display = tower.data.megaYId ? 'inline-block' : 'none';
-                document.getElementById('btnD').style.display = tower.data.gmaxId ? 'inline-block' : 'none';
+                document.getElementById('btnM').style.display = tower.data.hasMega ? 'inline-flex' : 'none';
+                document.getElementById('btnX').style.display = tower.data.hasMegaX ? 'inline-flex' : 'none';
+                document.getElementById('btnY').style.display = tower.data.hasMegaY ? 'inline-flex' : 'none';
+                document.getElementById('btnD').style.display = tower.data.hasGmax ? 'inline-flex' : 'none';
 
                 document.getElementById('txtStoneM').innerText = stones.mega;
                 document.getElementById('txtStoneX').innerText = stones.mega;
@@ -2768,11 +2924,10 @@
                 sfx.click(); pendingStoneType = type; pendingAction = 'useStone'; closeModals(); showModal('mathModal', function() { openMathModal(3); }); 
             } else {
                 sfx.error();
-                showWarning("進化石不足！打倒每3波Boss可取得！");
+                showWarning("道具不足！打倒每3波Boss可取得！");
             }
         };
 
-        // 動態產生多等分分數扇形圖
         function generateFractionSvg(numerator, denominator) {
             var r = 45, cx = 50, cy = 50;
             var svg = '<svg viewBox="0 0 100 100" width="130" height="130"><circle cx="50" cy="50" r="45" fill="#f8f9fa" stroke="#2c3e50" stroke-width="4"/>';
@@ -2823,7 +2978,6 @@
             if (myRoleId === 'brother_young') {
                 var randType = Math.random();
                 
-                // 1. 數寶貝球
                 if (randType < 0.30) {
                     var ballCount = Math.floor(Math.random() * 6) + 3;
                     var ballsSvg = '<div style="display:flex; gap:6px; justify-content:center; align-items:center; flex-wrap:wrap; margin:6px 0; max-width:320px;">';
@@ -2846,7 +3000,6 @@
                     renderMathChoices(qText, speechQText, options);
                     return;
                 }
-                // 2. 時鐘辨識
                 else if (randType < 0.55) {
                     var h = Math.floor(Math.random() * 12) + 1;
                     var clockSvg = '<svg viewBox="0 0 100 100" width="130" height="130"><circle cx="50" cy="50" r="45" fill="#f8f9fa" stroke="#2c3e50" stroke-width="5"/><circle cx="50" cy="50" r="3.5" fill="#e74c3c"/>';
@@ -2867,7 +3020,6 @@
                     renderMathChoices(qText, speechQText, options);
                     return;
                 }
-                // 3. 錢幣總數
                 else if (randType < 0.75) {
                     var tensCount = Math.floor(Math.random() * 3) + 1;
                     var onesCount = Math.floor(Math.random() * 5) + 1;
@@ -2893,7 +3045,6 @@
                     return;
                 }
 
-                // 4. 基礎加減法
                 type = Math.random() > 0.5 ? '+' : '-';
                 if (type === '+') {
                     num1 = Math.floor(Math.random() * 5) + 1;
@@ -2919,10 +3070,8 @@
                 return;
 
             } else {
-                // --- 哥哥 (升小三) 題目 ---
                 var qMode = Math.random();
 
-                // 1. 多樣化圖形分數題
                 if (qMode < 0.30) {
                     var denoms = [2, 3, 4, 6, 8];
                     var den = denoms[Math.floor(Math.random() * denoms.length)];
@@ -2949,7 +3098,6 @@
                     return;
                 }
 
-                // 2. 單位換算題
                 if (qMode < 0.55) {
                     var unitType = Math.random();
                     if (unitType < 0.5) {
@@ -2973,7 +3121,6 @@
                     return;
                 }
 
-                // 3. 九九乘法與填空 (防負數與除零)
                 if (qMode < 0.78) {
                     num1 = Math.floor(Math.random() * 8) + 2;
                     num2 = Math.floor(Math.random() * 8) + 2;
@@ -3033,6 +3180,12 @@
 
         window.handleAnswerResult = function(isCorrect, valStr, btnEl) {
             var hintText = document.getElementById('hintText');
+            
+            var allOptionBtns = document.querySelectorAll('.math-option-btn');
+            for (var i = 0; i < allOptionBtns.length; i++) {
+                allOptionBtns[i].disabled = true;
+            }
+
             if (isCorrect) {
                 sfx.upgrade(); 
                 comboCount++;
@@ -3085,14 +3238,15 @@
                     } 
                     else if (pendingAction === 'catchBoss') { 
                         var bossData = POKEMON_DATA[pendingCatchEnemyId];
-                        summonedBossBadge = {
+                        var capturedBoss = {
                             id: pendingCatchEnemyId,
                             name: bossData ? bossData.name : '神獸',
                             type: bossData ? bossData.type : 'dragon'
                         };
+                        summonedBossQueue.push(capturedBoss);
                         triggerMangaCutin(pendingCatchEnemyId);
                         unlockPokemon(pendingCatchEnemyId);
-                        floatTexts.push(new FloatingText(canvas.width/2, 120, "🎉 獲得神獸【" + summonedBossBadge.name + "】召喚大招！", "#f1c40f", 36));
+                        floatTexts.push(new FloatingText(canvas.width/2, 120, "🎉 獲得神獸【" + capturedBoss.name + "】召喚大招！", "#f1c40f", 36));
                     } 
                     else if (pendingAction === 'techUpgrade') { 
                         var cost = 300 + (pendingTechType === 'dmg' ? globalDmgLevel : globalRateLevel) * 300; 
@@ -3104,6 +3258,7 @@
                     else if (pendingAction === 'useStone') { 
                         var consumeType = (pendingStoneType === 'mega' || pendingStoneType === 'megaX' || pendingStoneType === 'megaY') ? 'mega' : 'dynamax';
                         stones[consumeType]--; 
+                        selectedTower.savedBaseSkill = selectedTower.fixedSkill;
                         selectedTower.form = pendingStoneType; 
                         selectedTower.formTimer = selectedTower.maxFormTimer;
                         if (isMultiplayer && !isHost) {
@@ -3130,10 +3285,14 @@
                 synergyCharge = 0; 
                 updateUI();
                 
-                // 鎖定答錯按鈕，不可再次點選
                 if (btnEl) {
                     btnEl.classList.add('disabled-btn');
-                    btnEl.disabled = true;
+                }
+                
+                for (var i = 0; i < allOptionBtns.length; i++) {
+                    if (!allOptionBtns[i].classList.contains('disabled-btn')) {
+                        allOptionBtns[i].disabled = false;
+                    }
                 }
                 
                 hintText.innerText = "❌ 答錯了！此選項已排除，請再試試其他答案！";
@@ -3152,14 +3311,20 @@
             if (!gameOver && gameStarted && !userPaused) {
                 var skipUpdate = false; if(hitPause > 0) { hitPause--; skipUpdate = true; }
                 if(teraActiveTimer > 0) { teraActiveTimer--; if(teraActiveTimer===0) updateUI(); }
-                if(activeBossSummonTimer > 0) {
+                if(activeBossSummonTimer > 0 && activeSummonedBoss) {
                     activeBossSummonTimer--;
-                    if(activeBossSummonTimer % 60 === 0 && enemies.length > 0) {
-                        var randomEn = enemies[Math.floor(Math.random() * enemies.length)];
-                        hitEnemy(randomEn, 160, null, false, true, summonedBossBadge ? summonedBossBadge.type : 'dragon');
-                        skillAnims.push(new SkillAnim(canvas.width/2, 0, randomEn.x, randomEn.y, summonedBossBadge ? summonedBossBadge.type : 'electric', 'single', '十萬伏特'));
+                    if(activeBossSummonTimer % 50 === 0 && enemies.length > 0) {
+                        var livingEnemies = enemies.filter(function(e){ return e && e.hp > 0; });
+                        if (livingEnemies.length > 0) {
+                            var randomEn = livingEnemies[Math.floor(Math.random() * livingEnemies.length)];
+                            hitEnemy(randomEn, 180, null, false, true, activeSummonedBoss.type);
+                            skillAnims.push(new SkillAnim(canvas.width/2, 0, randomEn.x, randomEn.y, activeSummonedBoss.type, 'single', '天降神罰'));
+                        }
                     }
-                    if(activeBossSummonTimer === 0) updateUI();
+                    if(activeBossSummonTimer === 0) {
+                        activeSummonedBoss = null;
+                        updateUI();
+                    }
                 }
                 drawMap();
 
@@ -3175,10 +3340,10 @@
                             updateUI();
                         }
                     } else {
-                        totalEnemiesThisWave = 6 + wave * 2;
+                        totalEnemiesThisWave = 5 + wave;
                         spawnTimer++;
                         if (enemiesSpawnedThisWave < totalEnemiesThisWave) {
-                            if (spawnTimer >= 60) { 
+                            if (spawnTimer >= 65) { 
                                 var spawnBoss = (wave > 0 && (wave + 1) % 3 === 0 && enemiesSpawnedThisWave === totalEnemiesThisWave - 1);
                                 enemies.push(new Enemy(spawnBoss, wave, 'A')); 
                                 enemies.push(new Enemy(spawnBoss, wave, 'B')); 
